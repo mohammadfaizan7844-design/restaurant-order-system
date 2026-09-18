@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Table QR Code</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 20px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 21px;
+        }
+
+        .header p {
+            margin-top: 5px;
+            color: #d1d5db;
+            font-size: 13px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: white;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 9px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        /* ================= MAIN ================= */
+
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .qr-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        /* ================= CARD HEADER ================= */
+
+        .card-header {
+            padding: 25px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table-badge {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #111827;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .card-header h2 {
+            font-size: 25px;
+            color: #111827;
+        }
+
+        .card-header p {
+            margin-top: 7px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* ================= QR ================= */
+
+        .qr-area {
+            padding: 35px 25px;
+        }
+
+        .qr-wrapper {
+            display: inline-flex;
+            padding: 18px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        .qr-wrapper img {
+            display: block;
+            width: 270px;
+            height: 270px;
+        }
+
+        .instruction {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        .instruction strong {
+            color: #111827;
+        }
+
+        /* ================= URL ================= */
+
+        .url-box {
+            margin: 25px auto 0;
+            max-width: 650px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 13px 15px;
+            word-break: break-all;
+        }
+
+        .url-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .url {
+            font-size: 13px;
+            color: #374151;
+        }
+
+        /* ================= ACTIONS ================= */
+
+        .actions {
+            padding: 20px 25px 28px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .print-btn {
+            background: #111827;
+            color: white;
+        }
+
+        .print-btn:hover {
+            background: #374151;
+        }
+
+        .tables-btn {
+            background: #f3f4f6;
+            color: #111827;
+            border: 1px solid #d1d5db;
+        }
+
+        .tables-btn:hover {
+            background: #e5e7eb;
+        }
+
+        /* ================= PRINT ================= */
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            .header,
+            .actions,
+            .url-box {
+                display: none;
+            }
+
+            .container {
+                margin: 0;
+                max-width: 100%;
+            }
+
+            .qr-card {
+                border: none;
+                box-shadow: none;
+            }
+
+            .qr-area {
+                padding-top: 30px;
+            }
+
+            .qr-wrapper {
+                box-shadow: none;
+            }
+
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 600px) {
+
+            .header {
+                padding: 17px 18px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .back-btn {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .container {
+                margin: 25px auto;
+                padding: 0 14px;
+            }
+
+            .card-header {
+                padding: 22px 18px;
+            }
+
+            .card-header h2 {
+                font-size: 22px;
+            }
+
+            .qr-area {
+                padding: 25px 15px;
+            }
+
+            .qr-wrapper {
+                padding: 12px;
+            }
+
+            .qr-wrapper img {
+                width: 230px;
+                height: 230px;
+            }
+
+            .actions {
+                flex-direction: column;
+                padding: 18px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+
+        <div>
+            <h1>QR Code Management</h1>
+            <p>Restaurant table QR code</p>
+        </div>
+
+        <a href="/admin/tables" class="back-btn">
+            ← Tables
+        </a>
+
+    </div>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="container">
+
+        <div class="qr-card">
+
+            <!-- CARD HEADER -->
+
+            <div class="card-header">
+
+                <div class="table-badge">
+                    TABLE {{ table.table_number }}
+                </div>
+
+                <h2>Table {{ table.table_number }} QR Code</h2>
+
+                <p>
+                    Customers can scan this QR code to open the menu.
+                </p>
+
+            </div>
+
+
+            <!-- QR AREA -->
+
+            <div class="qr-area">
+
+                <div class="qr-wrapper">
+
+                    <img
+                        src="{{ url_for('static', filename='qr/' + qr_filename) }}"
+                        alt="Table QR Code"
+                    >
+
+                </div>
+
+
+                <div class="instruction">
+
+                    📱 Scan this QR code to
+                    <strong>open the restaurant menu</strong>
+
+                </div>
+
+
+                <!-- MENU URL -->
+
+                <div class="url-box">
+
+                    <div class="url-label">
+                        Menu URL
+                    </div>
+
+                    <div class="url">
+                        {{ menu_url }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="actions">
+
+                <button
+                    onclick="window.print()"
+                    class="btn print-btn"
+                >
+                    🖨 Print QR
+                </button>
+
+
+                <a
+                    href="/admin/tables"
+                    class="btn tables-btn"
+                >
+                    ← Back to Tables
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

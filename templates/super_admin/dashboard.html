@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Super Admin Dashboard</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: #f5f7fb;
+        color: #111827;
+      }
+
+      .header {
+        background: #111827;
+        color: white;
+        padding: 18px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .brand h2 {
+        font-size: 21px;
+      }
+
+      .brand p {
+        color: #9ca3af;
+        font-size: 13px;
+        margin-top: 4px;
+      }
+
+      .admin-info {
+        text-align: right;
+      }
+
+      .admin-info span {
+        display: block;
+        font-size: 14px;
+      }
+
+      .logout {
+        display: inline-block;
+        margin-top: 5px;
+        color: #fca5a5;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 35px auto;
+        padding: 0 20px;
+      }
+
+      .welcome {
+        margin-bottom: 25px;
+      }
+
+      .welcome h1 {
+        font-size: 28px;
+        margin-bottom: 7px;
+      }
+
+      .welcome p {
+        color: #6b7280;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 22px;
+        border-radius: 14px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+      }
+
+      .stat-card p {
+        color: #6b7280;
+        font-size: 14px;
+      }
+
+      .stat-card h2 {
+        margin-top: 8px;
+        font-size: 28px;
+      }
+
+      .section {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+      }
+
+      .section-header {
+        padding: 20px 22px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .section-header h2 {
+        font-size: 19px;
+      }
+
+      .section-header p {
+        color: #6b7280;
+        font-size: 13px;
+        margin-top: 5px;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 15px 20px;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      th {
+        background: #f9fafb;
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      td {
+        font-size: 14px;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .restaurant-name {
+        font-weight: bold;
+        color: #111827;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 5px 10px;
+        background: #ecfdf5;
+        color: #047857;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .empty {
+        padding: 40px;
+        text-align: center;
+        color: #6b7280;
+      }
+
+      @media (max-width: 700px) {
+        .header {
+          padding: 15px 18px;
+        }
+
+        .container {
+          margin-top: 25px;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+        }
+
+        .welcome h1 {
+          font-size: 24px;
+        }
+
+        .admin-info {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="brand">
+        <h2>Cafe QR System</h2>
+        <p>Super Admin Panel</p>
+      </div>
+
+      <div class="admin-info">
+        <span>{{ super_admin_name }}</span>
+        <a href="/super-admin/logout" class="logout">Logout</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="welcome">
+        <a
+          href="/super-admin/restaurants/add"
+          style="
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 18px;
+            background: #111827;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+          "
+        >
+          + Add Restaurant
+        </a>
+        <h1>Super Admin Dashboard</h1>
+        <p>Manage restaurants and their administration accounts.</p>
+      </div>
+
+      <!-- Statistics -->
+
+      <div class="stats">
+        <div class="stat-card">
+          <p>Total Restaurants</p>
+          <h2>{{ restaurants|length }}</h2>
+        </div>
+
+        <div class="stat-card">
+          <p>Restaurant Admins</p>
+          <h2>{{ restaurants|sum(attribute='admin_count') }}</h2>
+        </div>
+
+        <div class="stat-card">
+          <p>System Status</p>
+          <h2>Active</h2>
+        </div>
+      </div>
+
+      <!-- Restaurants -->
+
+      <div class="section">
+        <div class="section-header">
+          <h2>Restaurants</h2>
+          <p>All restaurants registered in the system</p>
+        </div>
+
+        {% if restaurants %}
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Restaurant</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Admins</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for restaurant in restaurants %}
+
+              <tr>
+                <td>#{{ restaurant.id }}</td>
+
+                <td>
+                  <div class="restaurant-name">{{ restaurant.name }}</div>
+                </td>
+
+                <td>{{ restaurant.phone or '-' }}</td>
+
+                <td>{{ restaurant.email or '-' }}</td>
+
+                <td>{{ restaurant.admin_count }}</td>
+
+                <td>
+                  {% if restaurant.status == 'ACTIVE' %}
+                  <span class="badge">Active</span>
+                  {% else %}
+                  <span
+                    class="badge"
+                    style="background: #fee2e2; color: #dc2626"
+                  >
+                    Disabled
+                  </span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  <a
+                    href="{{ url_for('edit_restaurant', restaurant_id=restaurant.id) }}"
+                    style="
+                      display: inline-block;
+                      padding: 8px 14px;
+                      background: #111827;
+                      color: white;
+                      text-decoration: none;
+                      border-radius: 7px;
+                      font-size: 13px;
+                      font-weight: bold;
+                    "
+                  >
+                    Edit
+                  </a>
+                  <form
+                    method="POST"
+                    action="{{ url_for('toggle_restaurant', restaurant_id=restaurant.id) }}"
+                    style="display: inline"
+                  >
+                    <button
+                      type="submit"
+                      style="
+      padding: 8px 14px;
+      margin-left: 5px;
+      border: none;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      background: {% if restaurant.status == 'ACTIVE' %}#fee2e2{% else %}#dcfce7{% endif %};
+      color: {% if restaurant.status == 'ACTIVE' %}#dc2626{% else %}#15803d{% endif %};
+    "
+                    >
+                      {% if restaurant.status == 'ACTIVE' %} Disable {% else %}
+                      Enable {% endif %}
+                    </button>
+                  </form>
+                </td>
+              </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {% else %}
+
+        <div class="empty">No restaurants found.</div>
+
+        {% endif %}
+      </div>
+    </main>
+  </body>
+</html>

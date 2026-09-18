@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Order Details</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* HEADER */
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .title-section h1 {
+            font-size: 30px;
+            color: #111827;
+            margin-bottom: 6px;
+        }
+
+        .title-section p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #111827;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.25s;
+        }
+
+        .back-btn:hover {
+            background: #000;
+            transform: translateY(-2px);
+        }
+
+        /* ORDER SUMMARY */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-card .label {
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .summary-card .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-new {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-preparing {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .status-ready {
+            background: #f5f3ff;
+            color: #6d28d9;
+        }
+
+        .status-served {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-cancelled {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* CARD */
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            margin-bottom: 22px;
+            box-shadow: 0 5px 22px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .card-header p {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* ITEMS TABLE */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 20px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 17px 20px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .item-name {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .price {
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .quantity {
+            background: #f3f4f6;
+            padding: 6px 10px;
+            border-radius: 7px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .subtotal {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        /* TOTAL */
+
+        .total-section {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px 22px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .total-box {
+            text-align: right;
+        }
+
+        .total-box span {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .total-box strong {
+            display: block;
+            margin-top: 5px;
+            font-size: 26px;
+            color: #111827;
+        }
+
+        /* UPDATE STATUS */
+
+        .status-form {
+            padding: 22px;
+        }
+
+        .status-form label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .status-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .status-select {
+            flex: 1;
+            max-width: 350px;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            background: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .status-select:focus {
+            border-color: #111827;
+        }
+
+        .update-btn {
+            border: none;
+            background: #111827;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .update-btn:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        /* QUICK STATUS */
+
+        .quick-status {
+            padding: 0 22px 22px;
+        }
+
+        .quick-status-title {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .status-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .info-badge {
+            padding: 7px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 850px) {
+
+            body {
+                padding: 18px;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .top-header {
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .top-header {
+                flex-direction: column;
+            }
+
+            .back-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .summary-card {
+                padding: 15px;
+            }
+
+            .summary-card .value {
+                font-size: 17px;
+            }
+
+            .title-section h1 {
+                font-size: 25px;
+            }
+
+            .status-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .status-select {
+                max-width: none;
+                width: 100%;
+            }
+
+            .update-btn {
+                width: 100%;
+            }
+
+            .total-section {
+                justify-content: stretch;
+            }
+
+            .total-box {
+                width: 100%;
+                text-align: right;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="top-header">
+
+        <div class="title-section">
+            <h1>Order Details</h1>
+            <p>View items, order information and update status</p>
+        </div>
+
+        <a href="{{ url_for('admin_orders') }}" class="back-btn">
+            ← Back to Orders
+        </a>
+
+    </div>
+
+
+    <!-- ORDER SUMMARY -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+            <div class="label">Order Number</div>
+            <div class="value">#{{ order.order_number }}</div>
+        </div>
+
+        <div class="summary-card">
+            <div class="label">Table</div>
+            <div class="value">Table {{ order.table_number }}</div>
+        </div>
+
+        <div class="summary-card">
+            <div class="label">Order Status</div>
+
+            <div class="value">
+
+                {% if order.status == "NEW" %}
+                    <span class="status status-new">● NEW</span>
+
+                {% elif order.status == "PREPARING" %}
+                    <span class="status status-preparing">● PREPARING</span>
+
+                {% elif order.status == "READY" %}
+                    <span class="status status-ready">● READY</span>
+
+                {% elif order.status == "SERVED" %}
+                    <span class="status status-served">● SERVED</span>
+
+                {% elif order.status == "COMPLETED" %}
+                    <span class="status status-completed">✓ COMPLETED</span>
+
+                {% elif order.status == "CANCELLED" %}
+                    <span class="status status-cancelled">✕ CANCELLED</span>
+
+                {% else %}
+                    <span class="status">{{ order.status }}</span>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="label">Total Amount</div>
+            <div class="value">₹{{ order.total_amount }}</div>
+        </div>
+
+    </div>
+
+
+    <!-- ORDER ITEMS -->
+
+    <div class="card">
+
+        <div class="card-header">
+            <h2>Order Items</h2>
+            <p>Items included in this customer order</p>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for item in order_items %}
+
+                    <tr>
+
+                        <td>
+                            <span class="item-name">
+                                {{ item.name }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="price">
+                                ₹{{ item.price }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="quantity">
+                                × {{ item.quantity }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="subtotal">
+                                ₹{{ item.subtotal }}
+                            </span>
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- TOTAL -->
+
+        <div class="total-section">
+
+            <div class="total-box">
+
+                <span>Order Total</span>
+
+                <strong>
+                    ₹{{ order.total_amount }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- UPDATE STATUS -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>Update Order Status</h2>
+
+            <p>
+                Change the current status of this order
+            </p>
+
+        </div>
+
+
+        <form method="POST"
+              action="{{ url_for('update_order_status', order_id=order.id) }}"
+              class="status-form">
+
+            <label for="status">
+                Select New Status
+            </label>
+
+            <div class="status-controls">
+
+                <select name="status"
+                        id="status"
+                        class="status-select">
+
+                    <option value="NEW"
+                        {% if order.status == "NEW" %}selected{% endif %}>
+                        🟠 NEW
+                    </option>
+
+                    <option value="PREPARING"
+                        {% if order.status == "PREPARING" %}selected{% endif %}>
+                        🔵 PREPARING
+                    </option>
+
+                    <option value="READY"
+                        {% if order.status == "READY" %}selected{% endif %}>
+                        🟣 READY
+                    </option>
+
+                    <option value="SERVED"
+                        {% if order.status == "SERVED" %}selected{% endif %}>
+                        🟢 SERVED
+                    </option>
+
+                    <option value="COMPLETED"
+                        {% if order.status == "COMPLETED" %}selected{% endif %}>
+                        ✅ COMPLETED
+                    </option>
+
+                    <option value="CANCELLED"
+                        {% if order.status == "CANCELLED" %}selected{% endif %}>
+                        🔴 CANCELLED
+                    </option>
+
+                </select>
+
+                <button type="submit" class="update-btn">
+                    Update Status
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <!-- STATUS GUIDE -->
+
+        <div class="quick-status">
+
+            <div class="quick-status-title">
+                Status Guide
+            </div>
+
+            <div class="status-info">
+
+                <span class="info-badge status-new">
+                    NEW
+                </span>
+
+                <span class="info-badge status-preparing">
+                    PREPARING
+                </span>
+
+                <span class="info-badge status-ready">
+                    READY
+                </span>
+
+                <span class="info-badge status-served">
+                    SERVED
+                </span>
+
+                <span class="info-badge status-completed">
+                    COMPLETED
+                </span>
+
+                <span class="info-badge status-cancelled">
+                    CANCELLED
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Your Cart</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f6f8;
+            color: #1f2937;
+        }
+
+        /* ================= HEADER ================= */
+
+        .topbar {
+            background: #111827;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .topbar h1 {
+            font-size: 24px;
+        }
+
+        .topbar p {
+            margin-top: 6px;
+            color: #d1d5db;
+            font-size: 13px;
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 0 18px;
+        }
+
+        /* ================= CART CARD ================= */
+
+        .cart-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .cart-header {
+            padding: 22px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h2 {
+            font-size: 20px;
+            color: #111827;
+        }
+
+        .cart-header span {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* ================= ITEMS ================= */
+
+        .items {
+            padding: 0 25px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #edf0f2;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 7px;
+        }
+
+        .item-details {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .subtotal {
+            margin-top: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        /* ================= REMOVE ================= */
+
+        .remove {
+            background: #fff1f2;
+            color: #dc2626;
+            border: 1px solid #fecdd3;
+            padding: 9px 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .remove:hover {
+            background: #fee2e2;
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary {
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            padding: 22px 25px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            margin-top: 10px;
+            border-top: 1px solid #dfe3e7;
+        }
+
+        .total-label {
+            font-size: 17px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .total {
+            font-size: 25px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        /* ================= ACTIONS ================= */
+
+        .actions {
+            padding: 20px 25px 25px;
+        }
+
+        .order-btn,
+        .clear-btn,
+        .back-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 9px;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .order-btn {
+            background: #111827;
+            color: white;
+            border: none;
+        }
+
+        .order-btn:hover {
+            background: #374151;
+            transform: translateY(-1px);
+        }
+
+        .clear-btn {
+            margin-top: 10px;
+            background: white;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .clear-btn:hover {
+            background: #fef2f2;
+        }
+
+        .back-btn {
+            margin-top: 10px;
+            background: #f3f4f6;
+            color: #111827;
+            border: 1px solid #d1d5db;
+        }
+
+        .back-btn:hover {
+            background: #e5e7eb;
+        }
+
+        /* ================= EMPTY CART ================= */
+
+        .empty {
+            text-align: center;
+            padding: 70px 25px;
+        }
+
+        .empty-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 18px;
+            background: #f3f4f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .empty h2 {
+            font-size: 21px;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .empty p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                padding: 17px;
+            }
+
+            .topbar h1 {
+                font-size: 21px;
+            }
+
+            .container {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+            .cart-header {
+                padding: 18px;
+            }
+
+            .items {
+                padding: 0 18px;
+            }
+
+            .item {
+                align-items: flex-start;
+            }
+
+            .item-name {
+                font-size: 16px;
+            }
+
+            .remove {
+                padding: 8px 10px;
+            }
+
+            .summary {
+                padding: 20px 18px;
+            }
+
+            .actions {
+                padding: 18px;
+            }
+
+            .total {
+                font-size: 22px;
+            }
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="topbar">
+
+        <h1>🛒 Your Cart</h1>
+
+        <p>Review your items before placing the order</p>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="cart-card">
+
+            {% if cart %}
+
+            <!-- CART HEADER -->
+
+            <div class="cart-header">
+
+                <h2>Order Summary</h2>
+
+                <span>
+                    {{ cart|length }} item{% if cart|length != 1 %}s{% endif %}
+                </span>
+
+            </div>
+
+
+            <!-- CART ITEMS -->
+
+            <div class="items">
+
+                {% for item in cart %}
+
+                <div class="item">
+
+                    <div class="item-info">
+
+                        <div class="item-name">
+                            {{ item.name }}
+                        </div>
+
+                        <div class="item-details">
+                            ₹{{ '%.2f'|format(item.price) }}
+                            × {{ item.quantity }}
+                        </div>
+
+                        <div class="subtotal">
+                            ₹{{ '%.2f'|format(item.subtotal) }}
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        method="GET"
+                        action="{{ url_for('remove_from_cart', item_id=item.item_id) }}"
+                    >
+
+                        <button
+                            class="remove"
+                            type="submit"
+                        >
+                            Remove
+                        </button>
+
+                    </form>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- SUMMARY -->
+
+            <div class="summary">
+
+                <div class="summary-row">
+                    <span>Items Total</span>
+                    <span>₹{{ '%.2f'|format(total) }}</span>
+                </div>
+
+
+                <div class="total-row">
+
+                    <span class="total-label">
+                        Total Amount
+                    </span>
+
+                    <span class="total">
+                        ₹{{ '%.2f'|format(total) }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="actions">
+
+                <form
+                    method="POST"
+                    action="{{ url_for('place_order') }}"
+                >
+
+                    <button
+                        class="order-btn"
+                        type="submit"
+                    >
+                        ✅ Place Order
+                    </button>
+
+                </form>
+
+
+                <a
+                    class="clear-btn"
+                    href="{{ url_for('clear_cart') }}"
+                >
+                    🗑️ Clear Cart
+                </a>
+
+
+                {% if restaurant_id and table_number %}
+
+                <a
+                    class="back-btn"
+                    href="{{ url_for(
+                        'customer_menu',
+                        restaurant=restaurant_id,
+                        table=table_number
+                    ) }}"
+                >
+                    ← Continue Shopping
+                </a>
+
+                {% endif %}
+
+            </div>
+
+
+            {% else %}
+
+            <!-- EMPTY CART -->
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🛒
+                </div>
+
+                <h2>Your Cart is Empty</h2>
+
+                <p>
+                    You haven't added any food items yet.
+                </p>
+
+                {% if restaurant_id and table_number %}
+
+                <a
+                    class="back-btn"
+                    href="{{ url_for(
+                        'customer_menu',
+                        restaurant=restaurant_id,
+                        table=table_number
+                    ) }}"
+                    style="margin-top:25px;"
+                >
+                    ← Browse Menu
+                </a>
+
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

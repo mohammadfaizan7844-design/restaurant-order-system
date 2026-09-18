@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Order Successful</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px 15px;
+        }
+
+        .success-card {
+            width: 100%;
+            max-width: 520px;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        /* TOP */
+
+        .success-top {
+            background: #111827;
+            color: white;
+            padding: 32px 25px;
+        }
+
+        .success-icon {
+            width: 78px;
+            height: 78px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            background: #16a34a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            box-shadow: 0 5px 18px rgba(22, 163, 74, 0.3);
+        }
+
+        .success-top h1 {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .success-top p {
+            color: #d1d5db;
+            font-size: 14px;
+        }
+
+        /* BODY */
+
+        .content {
+            padding: 30px 25px;
+        }
+
+        .message {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* ORDER DETAILS */
+
+        .details {
+            border: 1px solid #e5e7eb;
+            border-radius: 11px;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px 17px;
+            border-bottom: 1px solid #edf0f2;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .value {
+            color: #111827;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .order-number {
+            color: #111827;
+            letter-spacing: 0.3px;
+        }
+
+        .amount-row {
+            background: #f8fafc;
+        }
+
+        .amount {
+            font-size: 21px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        /* STATUS */
+
+        .status {
+            margin-top: 22px;
+            padding: 14px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 9px;
+            color: #15803d;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* BUTTON */
+
+        .btn {
+            display: block;
+            width: 100%;
+            margin-top: 22px;
+            padding: 14px;
+            background: #111827;
+            color: white;
+            text-decoration: none;
+            border-radius: 9px;
+            font-size: 15px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: #374151;
+            transform: translateY(-1px);
+        }
+
+        /* FOOTER */
+
+        .footer {
+            padding: 18px 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 15px 10px;
+            }
+
+            .success-top {
+                padding: 28px 18px;
+            }
+
+            .success-top h1 {
+                font-size: 22px;
+            }
+
+            .content {
+                padding: 25px 18px;
+            }
+
+            .success-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 33px;
+            }
+
+            .detail-row {
+                padding: 14px;
+            }
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="success-card">
+
+    <!-- SUCCESS HEADER -->
+
+    <div class="success-top">
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h1>
+            Order Placed Successfully!
+        </h1>
+
+        <p>
+            Thank you for your order
+        </p>
+
+    </div>
+
+
+    <!-- CONTENT -->
+
+    <div class="content">
+
+        <div class="message">
+
+            Your order has been received successfully.
+            Please wait while our team prepares your food.
+
+        </div>
+
+
+        <!-- ORDER DETAILS -->
+
+        <div class="details">
+
+            <div class="detail-row">
+
+                <span class="label">
+                    Order Number
+                </span>
+
+                <span class="value order-number">
+                    {{ order_number }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span class="label">
+                    Table
+                </span>
+
+                <span class="value">
+                    Table {{ table_number }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-row amount-row">
+
+                <span class="label">
+                    Total Amount
+                </span>
+
+                <span class="value amount">
+                    ₹{{ '%.2f'|format(total) }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="status">
+            ✓ Order received — Your food is being prepared
+        </div>
+
+
+        <!-- BACK TO MENU -->
+
+        <a
+            class="btn"
+            href="{{ url_for(
+                'customer_menu',
+                restaurant=restaurant_id,
+                table=table_number
+            ) }}"
+        >
+            ← Back to Menu
+        </a>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+        Please keep your order number for reference.
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Orders</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        /* HEADER */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .page-title h1 {
+            font-size: 30px;
+            margin-bottom: 6px;
+            color: #111827;
+        }
+
+        .page-title p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* DASHBOARD BUTTON */
+        .dashboard-btn {
+            text-decoration: none;
+            background: #111827;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dashboard-btn:hover {
+            background: #000;
+            transform: translateY(-2px);
+        }
+
+        /* SUMMARY CARDS */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+            border: 1px solid #e5e7eb;
+        }
+
+        .summary-card span {
+            display: block;
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .summary-card strong {
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .summary-card.new {
+            border-left: 5px solid #f59e0b;
+        }
+
+        .summary-card.preparing {
+            border-left: 5px solid #3b82f6;
+        }
+
+        .summary-card.ready {
+            border-left: 5px solid #8b5cf6;
+        }
+
+        .summary-card.completed {
+            border-left: 5px solid #16a34a;
+        }
+
+        /* TOOLBAR */
+        .toolbar {
+            background: white;
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+        }
+
+        .search-box {
+            flex: 1;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            border-color: #111827;
+        }
+
+        .filter-box select {
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            background: white;
+            outline: none;
+            min-width: 170px;
+        }
+
+        /* TABLE CARD */
+        .orders-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 22px rgba(0,0,0,0.06);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .table-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table-header h2 {
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px 20px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 17px 20px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        /* ORDER NUMBER */
+        .order-number {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        /* TABLE NUMBER */
+        .table-badge {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #374151;
+            padding: 6px 10px;
+            border-radius: 7px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* PRICE */
+        .amount {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        /* STATUS */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .status-new {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-preparing {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .status-ready {
+            background: #f5f3ff;
+            color: #6d28d9;
+        }
+
+        .status-served {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-cancelled {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* ACTION BUTTONS */
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .action-btn {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .view-btn {
+            background: #111827;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: #000;
+        }
+
+        .bill-btn {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .bill-btn:hover {
+            background: #e5e7eb;
+        }
+
+        /* EMPTY */
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .empty h3 {
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .empty p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            body {
+                padding: 18px;
+            }
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .top-header {
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .top-header {
+                flex-direction: column;
+            }
+
+            .dashboard-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .summary {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .summary-card {
+                padding: 15px;
+            }
+
+            .summary-card strong {
+                font-size: 22px;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-box select {
+                width: 100%;
+            }
+
+            .page-title h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="top-header">
+
+        <div class="page-title">
+            <h1>Manage Orders</h1>
+            <p>View and manage all customer orders</p>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="dashboard-btn">
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    {% if orders %}
+
+    <!-- SUMMARY -->
+    <div class="summary">
+
+        <div class="summary-card new">
+            <span>New Orders</span>
+            <strong id="newCount">0</strong>
+        </div>
+
+        <div class="summary-card preparing">
+            <span>Preparing</span>
+            <strong id="preparingCount">0</strong>
+        </div>
+
+        <div class="summary-card ready">
+            <span>Ready</span>
+            <strong id="readyCount">0</strong>
+        </div>
+
+        <div class="summary-card completed">
+            <span>Completed</span>
+            <strong id="completedCount">0</strong>
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH + FILTER -->
+    <div class="toolbar">
+
+        <div class="search-box">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search order number or table..."
+            >
+        </div>
+
+        <div class="filter-box">
+            <select id="statusFilter">
+                <option value="ALL">All Status</option>
+                <option value="NEW">New</option>
+                <option value="PREPARING">Preparing</option>
+                <option value="READY">Ready</option>
+                <option value="SERVED">Served</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="CANCELLED">Cancelled</option>
+            </select>
+        </div>
+
+    </div>
+
+
+    <!-- ORDERS -->
+    <div class="orders-card">
+
+        <div class="table-header">
+            <h2>Recent Orders</h2>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table id="ordersTable">
+
+                <thead>
+                    <tr>
+                        <th>Order No.</th>
+                        <th>Table</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date & Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for order in orders %}
+
+                    <tr
+                        data-status="{{ order.status }}"
+                        data-search="{{ order.order_number }} Table {{ order.table_number }}"
+                    >
+
+                        <td>
+                            <span class="order-number">
+                                #{{ order.order_number }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="table-badge">
+                                Table {{ order.table_number }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="amount">
+                                ₹{{ order.total_amount }}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            {% if order.status == "NEW" %}
+
+                                <span class="status status-new">
+                                    ● NEW
+                                </span>
+
+                            {% elif order.status == "PREPARING" %}
+
+                                <span class="status status-preparing">
+                                    ● PREPARING
+                                </span>
+
+                            {% elif order.status == "READY" %}
+
+                                <span class="status status-ready">
+                                    ● READY
+                                </span>
+
+                            {% elif order.status == "SERVED" %}
+
+                                <span class="status status-served">
+                                    ● SERVED
+                                </span>
+
+                            {% elif order.status == "COMPLETED" %}
+
+                                <span class="status status-completed">
+                                    ✓ COMPLETED
+                                </span>
+
+                            {% elif order.status == "CANCELLED" %}
+
+                                <span class="status status-cancelled">
+                                    ✕ CANCELLED
+                                </span>
+
+                            {% else %}
+
+                                <span class="status">
+                                    {{ order.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ order.created_at }}
+                        </td>
+
+                        <td>
+
+                            <div class="actions">
+
+                                <a
+                                    href="{{ url_for('admin_order_detail', order_id=order.id) }}"
+                                    class="action-btn view-btn"
+                                >
+                                    View
+                                </a>
+
+                                <a
+                                    href="{{ url_for('generate_bill', order_id=order.id) }}"
+                                    class="action-btn bill-btn"
+                                >
+                                    Bill
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <!-- EMPTY ORDERS -->
+    <div class="orders-card">
+
+        <div class="empty">
+
+            <div class="empty-icon">📋</div>
+
+            <h3>No Orders Found</h3>
+
+            <p>Customer orders will appear here when they place an order.</p>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<script>
+
+    const rows = document.querySelectorAll("#ordersTable tbody tr");
+
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+
+    function filterOrders() {
+
+        const search = searchInput.value.toLowerCase();
+        const status = statusFilter.value;
+
+        rows.forEach(row => {
+
+            const rowText = row
+                .getAttribute("data-search")
+                .toLowerCase();
+
+            const rowStatus = row.getAttribute("data-status");
+
+            const matchesSearch =
+                rowText.includes(search);
+
+            const matchesStatus =
+                status === "ALL" || rowStatus === status;
+
+            if (matchesSearch && matchesStatus) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+
+        });
+
+    }
+
+
+    searchInput.addEventListener(
+        "input",
+        filterOrders
+    );
+
+    statusFilter.addEventListener(
+        "change",
+        filterOrders
+    );
+
+
+    /* SUMMARY COUNTS */
+
+    let newCount = 0;
+    let preparingCount = 0;
+    let readyCount = 0;
+    let completedCount = 0;
+
+    rows.forEach(row => {
+
+        const status =
+            row.getAttribute("data-status");
+
+        if (status === "NEW") {
+            newCount++;
+        }
+
+        if (status === "PREPARING") {
+            preparingCount++;
+        }
+
+        if (status === "READY") {
+            readyCount++;
+        }
+
+        if (status === "COMPLETED") {
+            completedCount++;
+        }
+
+    });
+
+    document.getElementById("newCount").textContent =
+        newCount;
+
+    document.getElementById("preparingCount").textContent =
+        preparingCount;
+
+    document.getElementById("readyCount").textContent =
+        readyCount;
+
+    document.getElementById("completedCount").textContent =
+        completedCount;
+
+</script>
+
+</body>
+</html>

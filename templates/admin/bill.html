@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Invoice - {{ order.order_number }}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #eef1f4;
+            color: #18202b;
+            padding: 30px 15px;
+        }
+
+        /* ================= MAIN INVOICE ================= */
+
+        .bill {
+            width: 850px;
+            max-width: 100%;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.10);
+        }
+
+        /* ================= HEADER ================= */
+
+        .invoice-header {
+            position: relative;
+            padding: 34px 40px;
+            color: white;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(22, 138, 56, 0.35), transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(255, 190, 70, 0.12), transparent 28%),
+                linear-gradient(135deg, #101827, #172233, #0c141f);
+            overflow: hidden;
+        }
+
+        .invoice-header::after {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            right: -100px;
+            top: -120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .restaurant h1 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .restaurant p {
+            color: #cbd5e1;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-title h2 {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 9px;
+        }
+
+        .invoice-title p {
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        /* ================= BODY ================= */
+
+        .invoice-body {
+            padding: 35px 40px;
+        }
+
+        /* ================= ORDER INFO ================= */
+
+        .order-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            position: relative;
+            background: #f8fafc;
+            border: 1px solid #e3e8ee;
+            border-radius: 12px;
+            padding: 17px;
+            overflow: hidden;
+        }
+
+        .info-box::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #168a38;
+        }
+
+        .info-label {
+            font-size: 10px;
+            color: #7a8491;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #18202b;
+            word-break: break-word;
+        }
+
+        /* ================= ITEMS ================= */
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .section-heading h3 {
+            font-size: 17px;
+            color: #18202b;
+        }
+
+        .section-heading span {
+            font-size: 12px;
+            color: #7a8491;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e5e9ee;
+            border-radius: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 560px;
+        }
+
+        thead {
+            background: #f4f6f8;
+        }
+
+        th {
+            padding: 14px 13px;
+            text-align: left;
+            font-size: 11px;
+            color: #596575;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        td {
+            padding: 16px 13px;
+            border-top: 1px solid #edf0f3;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #fafbfc;
+        }
+
+        .item-name {
+            font-weight: 700;
+            color: #18202b;
+        }
+
+        .number {
+            text-align: right;
+        }
+
+        /* ================= TOTAL ================= */
+
+        .total-section {
+            margin-top: 22px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .total-box {
+            width: 340px;
+            border: 1px solid #e0e5ea;
+            border-radius: 14px;
+            background: #f8fafc;
+            padding: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #687384;
+            font-size: 13px;
+        }
+
+        .summary-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .grand-total {
+            border-top: 1px dashed #cbd2da;
+            margin-top: 13px;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .grand-total span:first-child {
+            font-size: 15px;
+            font-weight: 700;
+            color: #303b4a;
+        }
+
+        .grand-total span:last-child {
+            font-size: 27px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        /* ================= PAYMENT ================= */
+
+        .payment {
+            margin-top: 30px;
+            border: 1px solid #e3e7ec;
+            border-radius: 14px;
+            padding: 22px;
+            background: #ffffff;
+        }
+
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .payment-header h3 {
+            font-size: 17px;
+            color: #18202b;
+        }
+
+        .payment-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 12px;
+            border-radius: 30px;
+            background: #fff7ed;
+            color: #c2410c;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+        }
+
+        .payment-status.paid {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .payment-form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .payment-form label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        select {
+            height: 42px;
+            padding: 0 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            font-size: 13px;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: #168a38;
+        }
+
+        .payment-btn {
+            height: 42px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 8px;
+            background: #168a38;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .payment-btn:hover {
+            background: #126f2d;
+            transform: translateY(-1px);
+        }
+
+        .paid-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .paid-item {
+            background: #f8fafc;
+            border: 1px solid #e7ebef;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .paid-item span {
+            display: block;
+            font-size: 10px;
+            color: #7a8491;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+
+        .paid-item strong {
+            font-size: 15px;
+            color: #18202b;
+        }
+
+        /* ================= ACTIONS ================= */
+
+        .actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 9px;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .print-btn {
+            background: #111827;
+            color: white;
+        }
+
+        .print-btn:hover {
+            background: #273244;
+            transform: translateY(-1px);
+        }
+
+        .clear-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+        }
+
+        /* ================= FOOTER ================= */
+
+        .invoice-footer {
+            border-top: 1px solid #e6e9ed;
+            text-align: center;
+            padding: 24px 20px;
+            background: #fafbfc;
+            color: #7a8491;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .invoice-footer strong {
+            color: #374151;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 650px) {
+
+            body {
+                padding: 8px;
+            }
+
+            .bill {
+                border-radius: 13px;
+            }
+
+            .invoice-header {
+                padding: 25px 20px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 22px;
+            }
+
+            .restaurant h1 {
+                font-size: 24px;
+            }
+
+            .invoice-title {
+                text-align: left;
+            }
+
+            .invoice-title h2 {
+                font-size: 27px;
+            }
+
+            .invoice-body {
+                padding: 24px 15px;
+            }
+
+            .order-info {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .info-box {
+                padding: 14px;
+            }
+
+            .total-section {
+                justify-content: stretch;
+            }
+
+            .total-box {
+                width: 100%;
+            }
+
+            .grand-total span:last-child {
+                font-size: 25px;
+            }
+
+            .payment {
+                padding: 18px;
+            }
+
+            .payment-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .paid-details {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            select,
+            .payment-btn {
+                width: 100%;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* ================= PRINT ================= */
+
+        @media print {
+
+            @page {
+                margin: 10mm;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .bill {
+                width: 100%;
+                max-width: 100%;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .invoice-header {
+                background: white !important;
+                color: #111827;
+                border-bottom: 2px solid #111827;
+            }
+
+            .restaurant h1,
+            .invoice-title h2 {
+                color: #111827;
+            }
+
+            .restaurant p,
+            .invoice-title p {
+                color: #4b5563;
+            }
+
+            .info-box,
+            .total-box,
+            .paid-item {
+                background: white;
+            }
+
+            tbody tr:hover {
+                background: transparent;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="bill">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="invoice-header">
+
+        <div class="header-content">
+
+            <div class="restaurant">
+
+                <h1>{{ order.restaurant_name }}</h1>
+
+                <p>{{ order.address }}</p>
+
+                <p>
+                    Phone: {{ order.phone }}
+                </p>
+
+                {% if order.email %}
+                <p>
+                    Email: {{ order.email }}
+                </p>
+                {% endif %}
+
+                {% if order.gst_number %}
+                <p>
+                    GST No: {{ order.gst_number }}
+                </p>
+                {% endif %}
+
+            </div>
+
+
+            <div class="invoice-title">
+
+                <h2>INVOICE</h2>
+
+                <p>
+                    Order #{{ order.order_number }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= BODY ================= -->
+
+    <div class="invoice-body">
+
+
+        <!-- ORDER INFORMATION -->
+
+        <div class="order-info">
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Order Number
+                </div>
+
+                <div class="info-value">
+                    {{ order.order_number }}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Table
+                </div>
+
+                <div class="info-value">
+                    Table {{ order.table_number }}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Date & Time
+                </div>
+
+                <div class="info-value">
+                    {{ order.created_at }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ITEMS -->
+
+        <div class="section-heading">
+
+            <h3>Order Items</h3>
+
+            <span>{{ order_items|length }} item(s)</span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Item</th>
+                        <th class="number">Qty</th>
+                        <th class="number">Price</th>
+                        <th class="number">Amount</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in order_items %}
+
+                    <tr>
+
+                        <td class="item-name">
+                            {{ item.name }}
+                        </td>
+
+                        <td class="number">
+                            {{ item.quantity }}
+                        </td>
+
+                        <td class="number">
+                            ₹{{ item.price }}
+                        </td>
+
+                        <td class="number">
+                            ₹{{ item.subtotal }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- TOTAL -->
+
+        <div class="total-section">
+
+            <div class="total-box">
+
+                <div class="summary-row">
+                    <span>Items</span>
+                    <span>{{ order_items|length }}</span>
+                </div>
+
+                <div class="grand-total">
+
+                    <span>Total Amount</span>
+
+                    <span>
+                        ₹{{ order.total_amount }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PAYMENT -->
+
+        <div class="payment">
+
+            <div class="payment-header">
+
+                <h3>Payment</h3>
+
+
+                {% if payment.status == 'PAID' %}
+
+                <div class="payment-status paid">
+                    ✓ PAYMENT PAID
+                </div>
+
+                {% else %}
+
+                <div class="payment-status">
+                    PAYMENT PENDING
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            {% if payment.status == 'PAID' %}
+
+
+            <div class="paid-details">
+
+                <div class="paid-item">
+
+                    <span>Payment Method</span>
+
+                    <strong>
+                        {{ payment.payment_method }}
+                    </strong>
+
+                </div>
+
+
+                <div class="paid-item">
+
+                    <span>Paid Amount</span>
+
+                    <strong>
+                        ₹{{ payment.amount }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            {% else %}
+
+
+            <form
+                method="POST"
+                action="{{ url_for('update_payment', order_id=order.id) }}"
+                class="payment-form"
+            >
+
+                <label>
+                    Payment Method
+                </label>
+
+
+                <select name="payment_method" required>
+
+                    <option value="">
+                        Select Method
+                    </option>
+
+                    <option value="CASH">
+                        Cash
+                    </option>
+
+                    <option value="UPI">
+                        UPI
+                    </option>
+
+                    <option value="CARD">
+                        Card
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    class="payment-btn"
+                >
+                    ✓ Mark as Paid
+                </button>
+
+            </form>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="actions no-print">
+
+            <button
+                class="btn print-btn"
+                onclick="window.print()"
+            >
+                🖨 Print Invoice
+            </button>
+
+
+            {% if payment.status == 'PAID' %}
+
+            <form
+                method="POST"
+                action="{{ url_for('clear_table', order_id=order.id) }}"
+                style="display:inline;"
+            >
+
+                <button
+                    class="btn clear-btn"
+                    type="submit"
+                    onclick="return confirm('Clear this table?')"
+                >
+                    ✓ Clear Table
+                </button>
+
+            </form>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="invoice-footer">
+
+        <p>
+            Thank you for visiting
+            <strong>{{ order.restaurant_name }}</strong>
+        </p>
+
+        <p>
+            We hope to serve you again!
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 22px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .restaurant-info h1 {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .restaurant-info p {
+            color: #d1d5db;
+            font-size: 14px;
+        }
+
+        .admin-badge {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            max-width: 1250px;
+            margin: 35px auto;
+            padding: 0 25px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .welcome p {
+            margin-top: 7px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* ================= STAT CARDS ================= */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+            margin-bottom: 35px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            right: -25px;
+            top: -25px;
+            width: 90px;
+            height: 90px;
+            background: #f3f4f6;
+            border-radius: 50%;
+        }
+
+        .card-label {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .card h2 {
+            font-size: 34px;
+            color: #111827;
+        }
+
+        .card-icon {
+            font-size: 25px;
+            margin-bottom: 12px;
+        }
+
+        /* ================= MANAGEMENT ================= */
+
+        .section-title {
+            margin-bottom: 18px;
+        }
+
+        .section-title h3 {
+            font-size: 20px;
+            color: #111827;
+        }
+
+        .section-title p {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .menu a {
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 22px;
+            color: #111827;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: 0.2s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+        }
+
+        .menu a:hover {
+            transform: translateY(-3px);
+            border-color: #9ca3af;
+            box-shadow: 0 7px 18px rgba(0,0,0,0.08);
+        }
+
+        .menu-icon {
+            font-size: 27px;
+            margin-bottom: 12px;
+        }
+
+        .menu-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .menu-desc {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        /* ================= LOGOUT ================= */
+
+        .logout-area {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .logout {
+            display: inline-block;
+            padding: 11px 20px;
+            background: #dc2626;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .logout:hover {
+            background: #b91c1c;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 900px) {
+
+            .menu {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .header {
+                padding: 18px 20px;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .restaurant-info h1 {
+                font-size: 20px;
+            }
+
+            .admin-badge {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            .container {
+                margin: 25px auto;
+                padding: 0 15px;
+            }
+
+            .welcome h2 {
+                font-size: 24px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .menu {
+                grid-template-columns: 1fr;
+            }
+
+            .menu a {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+
+        <div class="restaurant-info">
+            <h1>{{ restaurant.name }}</h1>
+            <p>Restaurant Management System</p>
+        </div>
+
+        <div class="admin-badge">
+            👤 {{ admin_name }}
+        </div>
+
+    </div>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="container">
+
+        <div class="welcome">
+            <h2>Dashboard</h2>
+            <p>Welcome back, {{ admin_name }}. Manage your restaurant from here.</p>
+        </div>
+
+
+        <!-- ================= STAT CARDS ================= -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <div class="card-icon">🪑</div>
+
+                <div class="card-label">
+                    Total Tables
+                </div>
+
+                <h2>{{ table_count }}</h2>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">🍽️</div>
+
+                <div class="card-label">
+                    Menu Items
+                </div>
+
+                <h2>{{ menu_count }}</h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= MANAGEMENT ================= -->
+
+        <div class="section-title">
+
+            <h3>Management</h3>
+
+            <p>
+                Quickly access and manage your restaurant operations.
+            </p>
+
+        </div>
+
+
+        <div class="menu">
+
+            <!-- MENU -->
+
+            <a href="/admin/menu">
+
+                <div class="menu-icon">
+                    🍽️
+                </div>
+
+                <div class="menu-title">
+                    Manage Menu
+                </div>
+
+                <div class="menu-desc">
+                    Add, manage and update your restaurant menu items.
+                </div>
+
+            </a>
+
+
+            <!-- ORDERS -->
+
+            <a href="{{ url_for('admin_orders') }}">
+
+                <div class="menu-icon">
+                    📋
+                </div>
+
+                <div class="menu-title">
+                    Manage Orders
+                </div>
+
+                <div class="menu-desc">
+                    View customer orders and update order status.
+                </div>
+
+            </a>
+
+
+            <!-- TABLES -->
+
+            <a href="/admin/tables">
+
+                <div class="menu-icon">
+                    🪑
+                </div>
+
+                <div class="menu-title">
+                    Manage Tables
+                </div>
+
+                <div class="menu-desc">
+                    Manage tables and generate QR codes for customers.
+                </div>
+
+            </a>
+
+
+            <!-- SETTINGS -->
+
+            <a href="/admin/settings">
+
+                <div class="menu-icon">
+                    ⚙️
+                </div>
+
+                <div class="menu-title">
+                    Restaurant Settings
+                </div>
+
+                <div class="menu-desc">
+                    Update restaurant profile and business information.
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- ================= LOGOUT ================= -->
+
+        <div class="logout-area">
+
+            <a href="/logout" class="logout">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

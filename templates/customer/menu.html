@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{{ restaurant.name }} - Menu</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --primary: #168a38;
+        --primary-dark: #106b2b;
+        --dark: #151515;
+        --text: #222;
+        --muted: #777;
+        --light: #f6f7f5;
+        --white: #ffffff;
+        --border: #e8e8e8;
+        --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(22, 138, 56, 0.06),
+            transparent 30%
+          ),
+          #f6f7f5;
+        color: var(--text);
+        padding-bottom: 100px;
+      }
+
+      /* =========================
+       HEADER
+    ========================= */
+
+      .header {
+        position: relative;
+        overflow: hidden;
+        color: white;
+        padding: 32px 16px 36px;
+        text-align: center;
+        border-radius: 0 0 30px 30px;
+        background:
+          radial-gradient(
+            circle at 15% 20%,
+            rgba(22, 138, 56, 0.45),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at 85% 80%,
+            rgba(255, 190, 70, 0.16),
+            transparent 30%
+          ),
+          linear-gradient(135deg, #08130d, #111b15, #07100b);
+        background-size: 180% 180%;
+        animation: headerBackground 12s ease infinite;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        top: -170px;
+        left: -100px;
+        background: rgba(22, 138, 56, 0.2);
+        filter: blur(30px);
+        animation: floatingGlow 7s ease-in-out infinite alternate;
+      }
+
+      .header::after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        right: -100px;
+        bottom: -130px;
+        background: rgba(255, 190, 70, 0.1);
+        filter: blur(25px);
+        animation: floatingGlow2 9s ease-in-out infinite alternate;
+      }
+
+      .header-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      @keyframes headerBackground {
+        0% {
+          background-position: 0% 50%;
+        }
+
+        50% {
+          background-position: 100% 50%;
+        }
+
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      @keyframes floatingGlow {
+        from {
+          transform: translate(0, 0) scale(1);
+        }
+
+        to {
+          transform: translate(45px, 35px) scale(1.18);
+        }
+      }
+
+      @keyframes floatingGlow2 {
+        from {
+          transform: translate(0, 0) scale(1);
+        }
+
+        to {
+          transform: translate(-35px, -30px) scale(1.15);
+        }
+      }
+      .logo-wrapper {
+        width: 104px;
+        height: 104px;
+        padding: 5px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffffff, #b7b7b7);
+        box-shadow:
+          0 10px 30px rgba(0, 0, 0, 0.35),
+          0 0 0 7px rgba(255, 255, 255, 0.06);
+        animation: logoFloat 4s ease-in-out infinite;
+      }
+
+      @keyframes logoFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      .restaurant-logo {
+        width: 94px;
+        height: 94px;
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+        background: white;
+      }
+
+      .logo-placeholder {
+        width: 94px;
+        height: 94px;
+        border-radius: 50%;
+        background: white;
+        color: #222;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+      }
+
+      .welcome-text {
+        color: #b8d9c1;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .header h1 {
+        font-size: clamp(27px, 7vw, 42px);
+        line-height: 1.1;
+        margin-bottom: 10px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        text-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+      }
+      .restaurant-tagline {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 13px;
+        margin-bottom: 18px;
+      }
+
+      .table-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        padding: 9px 16px;
+        border-radius: 30px;
+        font-size: 13px;
+        backdrop-filter: blur(10px);
+      }
+
+      .table-number {
+        color: #baf2c7;
+        font-weight: 800;
+      }
+
+      /* =========================
+       CONTAINER
+    ========================= */
+
+      .container {
+        width: 100%;
+        max-width: 1150px;
+        margin: auto;
+        padding: 25px 15px;
+      }
+
+      .menu-intro {
+        margin-bottom: 20px;
+      }
+
+      .menu-intro-small {
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 5px;
+      }
+
+      .menu-title {
+        font-size: 27px;
+        margin-bottom: 5px;
+        font-weight: 800;
+      }
+
+      .menu-subtitle {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* =========================
+       SEARCH
+    ========================= */
+
+      .search-box {
+        position: relative;
+        margin-bottom: 18px;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 17px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        pointer-events: none;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 15px 18px 15px 48px;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        outline: none;
+        font-size: 15px;
+        background: white;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+        transition: 0.25s ease;
+      }
+
+      .search-box input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 6px 25px rgba(22, 138, 56, 0.12);
+      }
+
+      /* =========================
+       CATEGORY
+    ========================= */
+
+      .categories {
+        display: flex;
+        gap: 9px;
+        overflow-x: auto;
+        padding: 2px 2px 10px;
+        margin-bottom: 22px;
+        scrollbar-width: none;
+      }
+
+      .categories::-webkit-scrollbar {
+        display: none;
+      }
+
+      .category-btn {
+        border: 1px solid #dedede;
+        background: white;
+        color: #444;
+        padding: 10px 17px;
+        border-radius: 30px;
+        white-space: nowrap;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s ease;
+      }
+
+      .category-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .category-btn.active {
+        background: var(--dark);
+        color: white;
+        border-color: var(--dark);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.14);
+      }
+
+      /* =========================
+       MENU GRID
+    ========================= */
+
+      .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+        gap: 20px;
+      }
+
+      /* =========================
+       FOOD CARD
+    ========================= */
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.28s ease,
+          box-shadow 0.28s ease;
+        animation: cardAppear 0.45s ease both;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
+      }
+
+      @keyframes cardAppear {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .image-container {
+        position: relative;
+        width: 100%;
+        height: 205px;
+        overflow: hidden;
+        background: #eeeeee;
+      }
+
+      .image-container::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.15),
+          transparent 45%
+        );
+        pointer-events: none;
+      }
+
+      .card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.45s ease;
+      }
+
+      .card:hover img {
+        transform: scale(1.06);
+      }
+
+      .no-image {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #777;
+        font-size: 14px;
+        background: linear-gradient(135deg, #eeeeee, #dddddd);
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      .content h3 {
+        font-size: 18px;
+        line-height: 1.25;
+        margin-bottom: 8px;
+        font-weight: 750;
+      }
+
+      .category-label {
+        display: inline-block;
+        font-size: 11px;
+        color: var(--primary);
+        background: rgba(22, 138, 56, 0.09);
+        padding: 5px 9px;
+        border-radius: 20px;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      .description {
+        color: #777;
+        font-size: 13px;
+        line-height: 1.45;
+        min-height: 38px;
+        margin-bottom: 10px;
+      }
+
+      .bottom-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .price {
+        font-size: 20px;
+        font-weight: 800;
+        color: #151515;
+      }
+
+      .price-label {
+        font-size: 10px;
+        color: #999;
+        display: block;
+        font-weight: normal;
+        margin-bottom: 2px;
+      }
+
+      /* =========================
+       ADD BUTTON
+    ========================= */
+
+      .add-btn {
+        border: none;
+        background: var(--dark);
+        color: white;
+        padding: 11px 15px;
+        border-radius: 11px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: bold;
+        min-width: 78px;
+        transition: 0.2s ease;
+      }
+
+      .add-btn:hover {
+        background: var(--primary);
+        transform: translateY(-1px);
+      }
+
+      .add-btn:active {
+        transform: scale(0.95);
+      }
+
+      .add-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      .add-btn.added {
+        background: var(--primary);
+      }
+
+      /* =========================
+       NO RESULTS
+    ========================= */
+
+      .no-results {
+        display: none;
+        text-align: center;
+        background: white;
+        padding: 45px 20px;
+        border-radius: 18px;
+        color: #777;
+        box-shadow: var(--shadow);
+      }
+
+      .no-results-icon {
+        font-size: 42px;
+        margin-bottom: 10px;
+      }
+
+      .no-results h3 {
+        color: #333;
+        margin-bottom: 6px;
+      }
+
+      .no-results p {
+        font-size: 13px;
+      }
+
+      /* =========================
+       FIXED CART
+    ========================= */
+
+      .cart-area {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.92);
+        padding: 11px 14px;
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        backdrop-filter: blur(14px);
+      }
+
+      .cart-btn {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        width: 100%;
+        max-width: 620px;
+        margin: auto;
+        padding: 15px;
+        background: linear-gradient(135deg, #168a38, #106b2b);
+        color: white;
+        text-decoration: none;
+        border-radius: 14px;
+        font-weight: bold;
+        font-size: 15px;
+        box-shadow: 0 8px 20px rgba(22, 138, 56, 0.28);
+        transition: 0.2s ease;
+      }
+
+      .cart-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(22, 138, 56, 0.35);
+      }
+
+      .cart-count {
+        min-width: 22px;
+        height: 22px;
+        padding: 0 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        color: var(--primary);
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      /* =========================
+       SESSION EXPIRED
+    ========================= */
+
+      .session-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.72);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(5px);
+      }
+
+      .session-box {
+        width: 100%;
+        max-width: 390px;
+        background: white;
+        border-radius: 24px;
+        padding: 32px 23px 25px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: popupIn 0.25s ease;
+      }
+
+      @keyframes popupIn {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(15px);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      .session-icon {
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff4df;
+        border-radius: 50%;
+        font-size: 34px;
+      }
+
+      .session-box h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #222;
+      }
+
+      .session-box p {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.55;
+        margin-bottom: 22px;
+      }
+
+      .scan-again-btn {
+        width: 100%;
+        padding: 14px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+
+      .scan-again-btn:hover {
+        background: var(--primary-dark);
+      }
+
+      /* =========================
+       MOBILE
+    ========================= */
+
+      @media (max-width: 600px) {
+        .header {
+          padding: 28px 14px 31px;
+          border-radius: 0 0 26px 26px;
+        }
+
+        .logo-wrapper {
+          width: 94px;
+          height: 94px;
+        }
+
+        .restaurant-logo,
+        .logo-placeholder {
+          width: 84px;
+          height: 84px;
+        }
+
+        .header h1 {
+          font-size: 26px;
+        }
+
+        .restaurant-tagline {
+          font-size: 12px;
+        }
+
+        .container {
+          padding: 22px 12px;
+        }
+
+        .menu-title {
+          font-size: 23px;
+        }
+
+        .menu-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .card {
+          border-radius: 18px;
+        }
+
+        .image-container {
+          height: 215px;
+        }
+
+        .content h3 {
+          font-size: 17px;
+        }
+
+        .description {
+          min-height: auto;
+        }
+
+        .price {
+          font-size: 19px;
+        }
+      }
+
+      @media (min-width: 601px) {
+        .card:nth-child(2n) {
+          animation-delay: 0.05s;
+        }
+
+        .card:nth-child(3n) {
+          animation-delay: 0.1s;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- =========================
+       SESSION EXPIRED POPUP
+  ========================= -->
+
+    <div class="session-overlay" id="sessionExpired">
+      <div class="session-box">
+        <div class="session-icon">⏰</div>
+
+        <h2>Session Expired</h2>
+
+        <p>
+          Your 20-minute ordering session has ended. Please scan the table QR
+          code again to continue ordering.
+        </p>
+
+        <button class="scan-again-btn" type="button" onclick="leaveMenu()">
+          OK
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================
+       RESTAURANT HEADER
+  ========================= -->
+
+    <header class="header">
+      <div class="header-content">
+        <div class="logo-wrapper">
+          {% if restaurant.logo %}
+
+          <img
+            class="restaurant-logo"
+            src="{{ url_for('static', filename='images/' + restaurant.logo) }}"
+            alt="{{ restaurant.name }}"
+          />
+
+          {% else %}
+
+          <div class="logo-placeholder">🍽️</div>
+
+          {% endif %}
+        </div>
+
+        <div class="welcome-text" id="welcomeText">Welcome</div>
+
+        <h1>{{ restaurant.name }}</h1>
+
+        <div class="restaurant-tagline">
+          Fresh food • Great taste • Happy moments
+        </div>
+
+        <div class="table-info">
+          🪑
+          <span>Table</span>
+          <span class="table-number"> {{ table.table_number }} </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- =========================
+       MAIN CONTENT
+  ========================= -->
+
+    <main class="container">
+      <div class="menu-intro">
+        <div class="menu-intro-small">Explore & Enjoy</div>
+
+        <h2 class="menu-title">Our Menu</h2>
+
+        <p class="menu-subtitle">
+          Choose your favourite food and add it to your cart.
+        </p>
+      </div>
+
+      <!-- =========================
+         SEARCH
+    ========================= -->
+
+      <div class="search-box">
+        <span class="search-icon"> 🔍 </span>
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search your favourite food..."
+          autocomplete="off"
+          onkeyup="filterMenu()"
+        />
+      </div>
+
+      <!-- =========================
+         CATEGORY BUTTONS
+    ========================= -->
+
+      <div class="categories" id="categoryButtons">
+        <button
+          class="category-btn active"
+          type="button"
+          data-category="ALL"
+          onclick="filterCategory('ALL', this)"
+        >
+          All
+        </button>
+
+        {% set categories = [] %} {% for item in menu_items %} {% if
+        item.category and item.category not in categories %} {% set _ =
+        categories.append(item.category) %}
+
+        <button
+          class="category-btn"
+          type="button"
+          data-category="{{ item.category }}"
+        >
+          {{ item.category }}
+        </button>
+
+        {% endif %} {% endfor %}
+      </div>
+
+      <!-- =========================
+         MENU
+    ========================= -->
+
+      <div class="menu-grid" id="menuGrid">
+        {% for item in menu_items %}
+
+        <div
+          class="card menu-item"
+          data-name="{{ item.name|lower }}"
+          data-category="{{ item.category|lower if item.category else '' }}"
+        >
+          <div class="image-container">
+            {% if item.image %}
+
+            <img
+              src="{{ url_for('static', filename='images/menu/' + item.image) }}"
+              alt="{{ item.name }}"
+              loading="lazy"
+            />
+
+            {% else %}
+
+            <div class="no-image">🍽️ No Image</div>
+
+            {% endif %}
+          </div>
+
+          <div class="content">
+            <h3>{{ item.name }}</h3>
+
+            {% if item.category %}
+
+            <span class="category-label"> {{ item.category }} </span>
+
+            {% endif %} {% if item.description %}
+
+            <p class="description">{{ item.description }}</p>
+
+            {% else %}
+
+            <p class="description">Delicious food prepared fresh for you.</p>
+
+            {% endif %}
+
+            <div class="bottom-row">
+              <div class="price">
+                <span class="price-label"> Price </span>
+
+                ₹{{ "%.2f"|format(item.price|float) }}
+              </div>
+
+              <!-- EXISTING ADD TO CART FUNCTIONALITY -->
+
+              <form method="POST" action="{{ url_for('add_to_cart') }}">
+                <input
+                  type="hidden"
+                  name="restaurant_id"
+                  value="{{ restaurant.id }}"
+                />
+
+                <input
+                  type="hidden"
+                  name="table_number"
+                  value="{{ table.table_number }}"
+                />
+
+                <input type="hidden" name="item_id" value="{{ item.id }}" />
+
+                <button class="add-btn" type="submit">+ Add</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+      </div>
+
+      <!-- =========================
+         NO RESULTS
+    ========================= -->
+
+      <div class="no-results" id="noResults">
+        <div class="no-results-icon">😕</div>
+
+        <h3>No food found</h3>
+
+        <p>Try another food name or category.</p>
+      </div>
+    </main>
+
+    <!-- =========================
+       FIXED CART
+  ========================= -->
+
+    <div class="cart-area">
+      <a class="cart-btn" href="{{ url_for('cart') }}">
+        🛒
+        <span>View Cart</span>
+      </a>
+    </div>
+
+    <!-- =========================
+       JAVASCRIPT
+  ========================= -->
+
+    <script>
+      /* =========================
+       DYNAMIC GREETING
+    ========================= */
+
+      function updateGreeting() {
+        const hour = new Date().getHours();
+
+        const welcomeText = document.getElementById("welcomeText");
+
+        if (!welcomeText) {
+          return;
+        }
+
+        if (hour >= 5 && hour < 12) {
+          welcomeText.innerHTML = "Good Morning ☀️";
+        } else if (hour >= 12 && hour < 17) {
+          welcomeText.innerHTML = "Good Afternoon ☀️";
+        } else if (hour >= 17 && hour < 22) {
+          welcomeText.innerHTML = "Good Evening 🌙";
+        } else {
+          welcomeText.innerHTML = "Welcome 🌙";
+        }
+      }
+
+      updateGreeting();
+
+      /* =========================
+       CATEGORY FILTER
+    ========================= */
+
+      let selectedCategory = "ALL";
+
+      function filterMenu() {
+        const searchInput = document.getElementById("searchInput");
+
+        const searchText = searchInput.value.toLowerCase().trim();
+
+        const items = document.querySelectorAll(".menu-item");
+
+        let visibleCount = 0;
+
+        items.forEach(function (item) {
+          const name = item.dataset.name || "";
+
+          const category = item.dataset.category || "";
+
+          const matchesSearch = name.includes(searchText);
+
+          const matchesCategory =
+            selectedCategory === "ALL" ||
+            category === selectedCategory.toLowerCase();
+
+          if (matchesSearch && matchesCategory) {
+            item.style.display = "";
+
+            visibleCount++;
+          } else {
+            item.style.display = "none";
+          }
+        });
+
+        const noResults = document.getElementById("noResults");
+
+        if (noResults) {
+          noResults.style.display = visibleCount === 0 ? "block" : "none";
+        }
+      }
+
+      function filterCategory(category, button) {
+        selectedCategory = category;
+
+        document.querySelectorAll(".category-btn").forEach(function (btn) {
+          btn.classList.remove("active");
+        });
+
+        button.classList.add("active");
+
+        filterMenu();
+      }
+
+      /* =========================
+       CATEGORY BUTTON EVENTS
+       ========================= */
+
+      document.querySelectorAll(".category-btn").forEach(function (button) {
+        button.addEventListener("click", function () {
+          const category = button.dataset.category;
+
+          filterCategory(category, button);
+        });
+      });
+
+      /* =========================
+       ADD TO CART
+    ========================= */
+
+      document
+        .querySelectorAll('form[action="{{ url_for("add_to_cart") }}"]')
+        .forEach(function (form) {
+          form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const button = form.querySelector(".add-btn");
+
+            if (!button) {
+              return;
+            }
+
+            const originalText = button.innerHTML;
+
+            button.disabled = true;
+
+            button.innerHTML = "Adding...";
+
+            try {
+              const response = await fetch(form.action, {
+                method: "POST",
+                body: new FormData(form),
+              });
+
+              /* =========================
+                 SUCCESS
+              ========================= */
+
+              if (response.ok) {
+                button.innerHTML = "✓ Added";
+
+                /* CART COUNT */
+
+                const cartButton = document.querySelector(".cart-btn");
+
+                if (cartButton) {
+                  let badge = cartButton.querySelector(".cart-count");
+
+                  if (!badge) {
+                    badge = document.createElement("span");
+
+                    badge.className = "cart-count";
+
+                    cartButton.appendChild(badge);
+                  }
+
+                  let count = parseInt(badge.textContent || "0");
+
+                  badge.textContent = count + 1;
+                }
+
+                button.classList.add("added");
+
+                setTimeout(function () {
+                  button.innerHTML = originalText;
+
+                  button.disabled = false;
+
+                  button.classList.remove("added");
+                }, 1000);
+              } else if (response.status === 403) {
+                /* =========================
+                 SESSION EXPIRED
+              ========================= */
+                document.querySelectorAll(".add-btn").forEach(function (btn) {
+                  btn.disabled = true;
+
+                  btn.innerHTML = "Session Expired";
+                });
+
+                const popup = document.getElementById("sessionExpired");
+
+                if (popup) {
+                  popup.style.display = "flex";
+                }
+              } else {
+                /* =========================
+                 OTHER ERROR
+              ========================= */
+                button.innerHTML = "Try Again";
+
+                button.disabled = false;
+              }
+            } catch (error) {
+              /* =========================
+               NETWORK ERROR
+            ========================= */
+
+              console.error(error);
+
+              button.innerHTML = "Try Again";
+
+              button.disabled = false;
+            }
+          });
+        });
+
+      /* =========================
+       LEAVE MENU AFTER EXPIRY
+    ========================= */
+
+      function leaveMenu() {
+        /*
+        Clear browser session data.
+        This does NOT affect Flask database.
+      */
+
+        sessionStorage.clear();
+
+        /*
+        Remove current menu page.
+        Customer must scan QR again.
+      */
+
+        window.location.href = "about:blank";
+      }
+    </script>
+  </body>
+</html>

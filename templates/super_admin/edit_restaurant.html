@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Restaurant</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: auto;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .header p {
+            margin-top: 6px;
+            color: #6b7280;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 7px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #111827;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        input[readonly] {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 9px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .save {
+            background: #111827;
+            color: white;
+        }
+
+        .cancel {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .save:hover {
+            background: #000000;
+        }
+
+        .cancel:hover {
+            background: #d1d5db;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 20px 12px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Edit Restaurant</h1>
+        <p>Update restaurant and owner information</p>
+    </div>
+
+    <div class="card">
+
+        <div class="section-title">
+            Restaurant Information
+        </div>
+
+        <form method="POST">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Restaurant Name</label>
+                    <input
+                        type="text"
+                        name="restaurant_name"
+                        value="{{ restaurant.name }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Owner Name</label>
+                    <input
+                        type="text"
+                        name="owner_name"
+                        value="{{ admin.name if admin else '' }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input
+                        type="text"
+                        name="phone"
+                        value="{{ restaurant.phone or '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ restaurant.email or '' }}"
+                    >
+                </div>
+
+                <div class="form-group full">
+                    <label>Address</label>
+                    <textarea
+                        name="address"
+                    >{{ restaurant.address or '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>GST Number</label>
+                    <input
+                        type="text"
+                        name="gst_number"
+                        value="{{ restaurant.gst_number or '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Admin Username</label>
+                    <input
+                        type="text"
+                        value="{{ admin.username if admin else '' }}"
+                        readonly
+                    >
+                </div>
+
+            </div>
+
+            <div class="buttons">
+
+                <button
+                    type="submit"
+                    class="btn save"
+                >
+                    Save Changes
+                </button>
+
+                <a
+                    href="{{ url_for('super_admin_dashboard') }}"
+                    class="btn cancel"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

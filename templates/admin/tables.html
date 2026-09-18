@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Table Management</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* HEADER */
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .title-section h1 {
+            font-size: 30px;
+            color: #111827;
+            margin-bottom: 6px;
+        }
+
+        .title-section p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .dashboard-btn {
+            text-decoration: none;
+            background: #111827;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.25s;
+        }
+
+        .dashboard-btn:hover {
+            background: #000;
+            transform: translateY(-2px);
+        }
+
+        /* SUMMARY */
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-card span {
+            display: block;
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .summary-card strong {
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .summary-card.total {
+            border-left: 5px solid #111827;
+        }
+
+        .summary-card.available {
+            border-left: 5px solid #16a34a;
+        }
+
+        .summary-card.occupied {
+            border-left: 5px solid #dc2626;
+        }
+
+        /* ADD TABLE */
+
+        .box {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 22px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 5px 22px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .box-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .box-header h2 {
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .box-header p {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .add-form {
+            padding: 22px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .add-form input {
+            flex: 1;
+            max-width: 350px;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .add-form input:focus {
+            border-color: #111827;
+        }
+
+        .add-btn {
+            padding: 12px 20px;
+            border: none;
+            background: #111827;
+            color: white;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        /* TABLE LIST */
+
+        .table-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table-header h2 {
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .table-header p {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px 20px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 17px 20px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        /* TABLE NUMBER */
+
+        .table-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #111827;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .available {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .occupied {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* ACTIONS */
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            text-decoration: none;
+            padding: 9px 13px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .qr-btn {
+            background: #111827;
+            color: white;
+        }
+
+        .qr-btn:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        .delete-btn {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .delete-btn:hover {
+            background: #fee2e2;
+        }
+
+        /* EMPTY */
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .empty h3 {
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .empty p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* QR INFO */
+
+        .qr-info {
+            padding: 15px 22px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            body {
+                padding: 18px;
+            }
+
+            .summary {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .top-header {
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .top-header {
+                flex-direction: column;
+            }
+
+            .dashboard-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .summary {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .summary-card {
+                padding: 15px;
+            }
+
+            .summary-card strong {
+                font-size: 22px;
+            }
+
+            .title-section h1 {
+                font-size: 25px;
+            }
+
+            .add-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .add-form input {
+                max-width: none;
+                width: 100%;
+            }
+
+            .add-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="top-header">
+
+        <div class="title-section">
+
+            <h1>Table Management</h1>
+
+            <p>
+                Manage restaurant tables, availability and QR codes
+            </p>
+
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="dashboard-btn">
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="summary">
+
+        <div class="summary-card total">
+
+            <span>Total Tables</span>
+
+            <strong id="totalTables">0</strong>
+
+        </div>
+
+
+        <div class="summary-card available">
+
+            <span>Available</span>
+
+            <strong id="availableTables">0</strong>
+
+        </div>
+
+
+        <div class="summary-card occupied">
+
+            <span>Occupied</span>
+
+            <strong id="occupiedTables">0</strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- ADD TABLE -->
+
+    <div class="box">
+
+        <div class="box-header">
+
+            <h2>Add New Table</h2>
+
+            <p>
+                Create a new table for your restaurant
+            </p>
+
+        </div>
+
+
+        <form method="POST"
+              action="/admin/tables/add"
+              class="add-form">
+
+            <input
+                type="number"
+                name="table_number"
+                placeholder="Enter table number"
+                min="1"
+                required
+            >
+
+            <button type="submit" class="add-btn">
+                + Add Table
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- TABLE LIST -->
+
+    <div class="box">
+
+        <div class="table-header">
+
+            <h2>Restaurant Tables</h2>
+
+            <p>
+                View table status and manage QR codes
+            </p>
+
+        </div>
+
+
+        {% if tables %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Table</th>
+                        <th>Status</th>
+                        <th>QR Code</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for table in tables %}
+
+                    <tr>
+
+                        <!-- TABLE NUMBER -->
+
+                        <td>
+
+                            <span class="table-number">
+                                {{ table.table_number }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if table.status == "AVAILABLE" %}
+
+                                <span class="status available">
+                                    ● AVAILABLE
+                                </span>
+
+                            {% else %}
+
+                                <span class="status occupied">
+                                    ● OCCUPIED
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- QR -->
+
+                        <td>
+
+                            <a
+                                href="/admin/tables/qr/{{ table.id }}"
+                                class="action-btn qr-btn"
+                            >
+                                Generate QR
+                            </a>
+
+                        </td>
+
+
+                        <!-- DELETE -->
+
+                        <td>
+
+                            <div class="actions">
+
+                                <a
+                                    href="/admin/tables/delete/{{ table.id }}"
+                                    class="action-btn delete-btn"
+                                    onclick="return confirm('Are you sure you want to delete Table {{ table.table_number }}?');"
+                                >
+                                    Delete
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="qr-info">
+            💡 Generate a QR code for each table and place it on the respective table.
+        </div>
+
+
+        {% else %}
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                🪑
+            </div>
+
+            <h3>No Tables Added</h3>
+
+            <p>
+                Add your first restaurant table using the form above.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const rows = document.querySelectorAll("tbody tr");
+
+    let total = rows.length;
+    let available = 0;
+    let occupied = 0;
+
+    rows.forEach(row => {
+
+        const status = row.querySelector(".status");
+
+        if (status) {
+
+            if (status.classList.contains("available")) {
+                available++;
+            }
+
+            if (status.classList.contains("occupied")) {
+                occupied++;
+            }
+
+        }
+
+    });
+
+
+    document.getElementById("totalTables").textContent = total;
+    document.getElementById("availableTables").textContent = available;
+    document.getElementById("occupiedTables").textContent = occupied;
+
+</script>
+
+</body>
+
+</html>
