@@ -840,7 +840,8 @@ def delete_menu(item_id):
 
     db.session.execute(
         db.text("""
-            DELETE FROM menu_items
+            UPDATE menu_items
+            SET available = FALSE
             WHERE id = :item_id
             AND restaurant_id = :restaurant_id
         """),
@@ -853,8 +854,6 @@ def delete_menu(item_id):
     db.session.commit()
 
     return redirect(url_for("menu"))
-
-
 # =========================
 # TOGGLE MENU AVAILABILITY
 # =========================
