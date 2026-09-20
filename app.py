@@ -764,6 +764,31 @@ def add_menu():
     description = request.form["description"]
     price = request.form["price"]
 
+    image = request.files.get("image")
+
+    image_filename = None
+
+    if image and image.filename:
+        image_filename = image.filename
+
+        upload_folder = os.path.join(
+            "static",
+            "images",
+            "menu"
+        )
+
+        os.makedirs(
+            upload_folder,
+            exist_ok=True
+        )
+
+        image_path = os.path.join(
+            upload_folder,
+            image_filename
+        )
+
+        image.save(image_path)
+
     db.session.execute(
         db.text("""
             INSERT INTO menu_items
@@ -773,6 +798,7 @@ def add_menu():
                 category,
                 description,
                 price,
+                image,
                 available
             )
             VALUES
@@ -782,6 +808,7 @@ def add_menu():
                 :category,
                 :description,
                 :price,
+                :image,
                 TRUE
             )
         """),
@@ -790,14 +817,14 @@ def add_menu():
             "name": name,
             "category": category,
             "description": description,
-            "price": price
+            "price": price,
+            "image": image_filename
         }
     )
 
     db.session.commit()
 
     return redirect(url_for("menu"))
-
 
 # =========================
 # DELETE MENU ITEM
