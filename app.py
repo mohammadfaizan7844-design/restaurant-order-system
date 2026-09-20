@@ -1000,11 +1000,11 @@ def generate_table_qr(table_id):
 
     if not table:
         return "Table not found", 404
-
-    menu_url = (
-f"http://192.168.31.251:5000/menu"  f"?restaurant={restaurant_id}"
+menu_url = (
+    f"https://restaurant-order-system-production-df75.up.railway.app/menu"
+    f"?restaurant={restaurant_id}"
     f"&table={table['table_number']}"
-    )
+)
 
     qr_folder = os.path.join(
         "static",
