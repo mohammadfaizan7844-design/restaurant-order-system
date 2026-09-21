@@ -884,10 +884,148 @@ def toggle_menu(item_id):
 
     return redirect(url_for("menu"))
 
+# =========================
+# SECTION MANAGEMENT
+# =========================
 
+@app.route("/admin/sections")
+def sections():
+
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    sections = db.session.execute(
+        db.text("""
+            SELECT
+                s.id,
+                s.name,
+                s.created_at,
+                COUNT(ct.id) AS table_count
+            FROM sections s
+            LEFT JOIN cafe_tables ct
+                ON ct.section_id = s.id
+            WHERE s.restaurant_id = :restaurant_id
+            GROUP BY
+                s.id,
+                s.name,
+                s.created_at
+            ORDER BY s.id DESC
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().all()
+
+    return render_template(
+        "admin/sections.html",
+        sections=sections
+    )
+
+
+# =========================
+# ADD SECTION
+# =========================
+
+@app.route("/admin/sections/add", methods=["POST"])
+def add_section():
+
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    name = request.form["name"].strip()
+
+    if not name:
+        return redirect(url_for("sections"))
+
+    existing = db.session.execute(
+        db.text("""
+            SELECT id
+            FROM sections
+            WHERE restaurant_id = :restaurant_id
+            AND LOWER(name) = LOWER(:name)
+        """),
+        {
+            "restaurant_id": restaurant_id,
+            "name": name
+        }
+    ).first()
+
+    if existing:
+        return redirect(url_for("sections"))
+
+    db.session.execute(
+        db.text("""
+            INSERT INTO sections
+            (
+                restaurant_id,
+                name
+            )
+            VALUES
+            (
+                :restaurant_id,
+                :name
+            )
+        """),
+        {
+            "restaurant_id": restaurant_id,
+            "name": name
+        }
+    )
+
+    db.session.commit()
+
+    return redirect(url_for("sections"))
+
+
+# =========================
+# DELETE SECTION
+# =========================
+
+@app.route("/admin/sections/delete/<int:section_id>")
+def delete_section(section_id):
+
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    # Section ke tables ko pehle unassigned kar do
+    db.session.execute(
+        db.text("""
+            UPDATE cafe_tables
+            SET section_id = NULL
+            WHERE section_id = :section_id
+            AND restaurant_id = :restaurant_id
+        """),
+        {
+            "section_id": section_id,
+            "restaurant_id": restaurant_id
+        }
+    )
+
+    db.session.execute(
+        db.text("""
+            DELETE FROM sections
+            WHERE id = :section_id
+            AND restaurant_id = :restaurant_id
+        """),
+        {
+            "section_id": section_id,
+            "restaurant_id": restaurant_id
+        }
+    )
+
+    db.session.commit()
+
+    return redirect(url_for("sections"))
 # =========================
 # TABLE MANAGEMENT
 # =========================
+
 
 @app.route("/admin/tables")
 def tables():
@@ -899,10 +1037,28 @@ def tables():
 
     tables = db.session.execute(
         db.text("""
+            SELECT
+                ct.*,
+                s.name AS section_name
+            FROM cafe_tables ct
+            LEFT JOIN sections s
+                ON ct.section_id = s.id
+            WHERE ct.restaurant_id = :restaurant_id
+            ORDER BY
+                COALESCE(s.name, 'Unassigned'),
+                ct.table_number
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().all()
+
+    sections = db.session.execute(
+        db.text("""
             SELECT *
-            FROM cafe_tables
+            FROM sections
             WHERE restaurant_id = :restaurant_id
-            ORDER BY table_number
+            ORDER BY name
         """),
         {
             "restaurant_id": restaurant_id
@@ -911,9 +1067,93 @@ def tables():
 
     return render_template(
         "admin/tables.html",
-        tables=tables
+        tables=tables,
+        sections=sections
     )
 
+
+# =========================
+# ADD TABLE
+# =========================
+
+@app.route("/admin/tables/add", methods=["POST"])
+def add_table():
+
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    table_number = request.form["table_number"]
+    section_id = request.form.get("section_id")
+
+    # Convert empty section to NULL
+    if not section_id:
+        section_id = None
+    else:
+        section_id = int(section_id)
+
+        # Make sure section belongs to this restaurant
+        section = db.session.execute(
+            db.text("""
+                SELECT id
+                FROM sections
+                WHERE id = :section_id
+                AND restaurant_id = :restaurant_id
+            """),
+            {
+                "section_id": section_id,
+                "restaurant_id": restaurant_id
+            }
+        ).first()
+
+        if not section:
+            return redirect(url_for("tables"))
+
+    # Check duplicate table number
+    existing_table = db.session.execute(
+        db.text("""
+            SELECT id
+            FROM cafe_tables
+            WHERE restaurant_id = :restaurant_id
+            AND table_number = :table_number
+        """),
+        {
+            "restaurant_id": restaurant_id,
+            "table_number": table_number
+        }
+    ).first()
+
+    if existing_table:
+        return redirect(url_for("tables"))
+
+    db.session.execute(
+        db.text("""
+            INSERT INTO cafe_tables
+            (
+                restaurant_id,
+                table_number,
+                section_id,
+                status
+            )
+            VALUES
+            (
+                :restaurant_id,
+                :table_number,
+                :section_id,
+                'AVAILABLE'
+            )
+        """),
+        {
+            "restaurant_id": restaurant_id,
+            "table_number": table_number,
+            "section_id": section_id
+        }
+    )
+
+    db.session.commit()
+
+    return redirect(url_for("tables"))
 
 # =========================
 # ADD TABLE

@@ -2,33 +2,34 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Table Management</title>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Tables</title>
 
     <style>
+
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f6f9;
-            color: #1f2937;
-            padding: 30px;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #111827;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1150px;
             margin: auto;
+            padding: 30px 20px;
         }
 
-        /* HEADER */
-
-        .top-header {
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -36,216 +37,168 @@
             margin-bottom: 25px;
         }
 
-        .title-section h1 {
+        .header h1 {
+            margin: 0;
             font-size: 30px;
-            color: #111827;
-            margin-bottom: 6px;
         }
 
-        .title-section p {
+        .header p {
+            margin: 6px 0 0;
             color: #6b7280;
-            font-size: 14px;
         }
 
-        .dashboard-btn {
+        .top-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
             text-decoration: none;
-            background: #111827;
-            color: white;
-            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            padding: 11px 16px;
             border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
-            transition: 0.25s;
         }
 
-        .dashboard-btn:hover {
-            background: #000;
-            transform: translateY(-2px);
+        .dashboard-btn {
+            background: #111827;
+            color: white;
         }
 
-        /* SUMMARY */
-
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-bottom: 25px;
+        .section-btn {
+            background: #eff6ff;
+            color: #2563eb;
         }
-
-        .summary-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
-        }
-
-        .summary-card span {
-            display: block;
-            color: #6b7280;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
-        .summary-card strong {
-            font-size: 28px;
-            color: #111827;
-        }
-
-        .summary-card.total {
-            border-left: 5px solid #111827;
-        }
-
-        .summary-card.available {
-            border-left: 5px solid #16a34a;
-        }
-
-        .summary-card.occupied {
-            border-left: 5px solid #dc2626;
-        }
-
-        /* ADD TABLE */
 
         .box {
             background: white;
             border-radius: 16px;
-            margin-bottom: 22px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 5px 22px rgba(0, 0, 0, 0.06);
-            overflow: hidden;
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
         }
 
-        .box-header {
-            padding: 20px 22px;
-            border-bottom: 1px solid #e5e7eb;
+        .box h2 {
+            margin-top: 0;
+            margin-bottom: 6px;
         }
 
-        .box-header h2 {
-            font-size: 18px;
-            color: #111827;
-        }
-
-        .box-header p {
-            margin-top: 5px;
+        .box p {
             color: #6b7280;
-            font-size: 13px;
+            margin-top: 0;
         }
 
-        .add-form {
-            padding: 22px;
-            display: flex;
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
             gap: 12px;
-            align-items: center;
+            align-items: end;
         }
 
-        .add-form input {
-            flex: 1;
-            max-width: 350px;
-            padding: 12px 14px;
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
             border: 1px solid #d1d5db;
-            border-radius: 9px;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .add-form input:focus {
-            border-color: #111827;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
         }
 
         .add-btn {
-            padding: 12px 20px;
+            background: #2563eb;
+            color: white;
             border: none;
-            background: #111827;
-            color: white;
-            border-radius: 9px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .add-btn:hover {
-            background: #000;
-            transform: translateY(-1px);
-        }
-
-        /* TABLE LIST */
-
-        .table-header {
-            padding: 20px 22px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .table-header h2 {
-            font-size: 18px;
-            color: #111827;
-        }
-
-        .table-header p {
-            margin-top: 5px;
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 700px;
-        }
-
-        th {
-            text-align: left;
-            padding: 15px 20px;
-            background: #f9fafb;
-            color: #6b7280;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            padding: 17px 20px;
-            border-top: 1px solid #f0f0f0;
-            font-size: 14px;
-        }
-
-        tbody tr {
-            transition: 0.2s;
-        }
-
-        tbody tr:hover {
-            background: #fafafa;
-        }
-
-        /* TABLE NUMBER */
-
-        .table-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 42px;
-            height: 42px;
+            padding: 13px 20px;
             border-radius: 10px;
-            background: #111827;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* SECTION */
+
+        .section-block {
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            background: linear-gradient(
+                135deg,
+                #111827,
+                #1f2937
+            );
+
             color: white;
-            font-size: 15px;
+
+            padding: 18px 20px;
+
+            border-radius: 16px 16px 0 0;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 20px;
             font-weight: 700;
         }
 
-        /* STATUS */
+        .section-count {
+            background: rgba(255,255,255,0.12);
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .tables-grid {
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 0 0 16px 16px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 16px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,0.06);
+        }
+
+        .table-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+            background: #fff;
+        }
+
+        .table-number {
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
 
         .status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 12px;
+            display: inline-block;
+            padding: 6px 11px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 700;
+            margin-bottom: 15px;
         }
 
         .available {
@@ -258,33 +211,24 @@
             color: #dc2626;
         }
 
-        /* ACTIONS */
-
         .actions {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            gap: 7px;
+            justify-content: center;
             flex-wrap: wrap;
         }
 
         .action-btn {
             text-decoration: none;
-            padding: 9px 13px;
+            padding: 8px 11px;
             border-radius: 8px;
             font-size: 12px;
             font-weight: 600;
-            transition: 0.2s;
-            white-space: nowrap;
         }
 
         .qr-btn {
-            background: #111827;
-            color: white;
-        }
-
-        .qr-btn:hover {
-            background: #000;
-            transform: translateY(-1px);
+            background: #eff6ff;
+            color: #2563eb;
         }
 
         .delete-btn {
@@ -292,156 +236,103 @@
             color: #dc2626;
         }
 
-        .delete-btn:hover {
-            background: #fee2e2;
+        .unassigned {
+            background: #fff7ed;
+            color: #c2410c;
         }
-
-        /* EMPTY */
 
         .empty {
             text-align: center;
-            padding: 60px 20px;
-        }
-
-        .empty-icon {
-            font-size: 45px;
-            margin-bottom: 15px;
-        }
-
-        .empty h3 {
-            color: #111827;
-            margin-bottom: 8px;
-        }
-
-        .empty p {
+            padding: 50px 20px;
+            background: white;
+            border-radius: 16px;
             color: #6b7280;
-            font-size: 14px;
         }
 
-        /* QR INFO */
+        @media (max-width: 900px) {
 
-        .qr-info {
-            padding: 15px 22px;
-            background: #f9fafb;
-            border-top: 1px solid #e5e7eb;
-            color: #6b7280;
-            font-size: 12px;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 800px) {
-
-            body {
-                padding: 18px;
+            .tables-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
 
-            .summary {
+            .form-grid {
                 grid-template-columns: 1fr 1fr;
-            }
-
-            .top-header {
-                align-items: flex-start;
-            }
-        }
-
-        @media (max-width: 600px) {
-
-            .top-header {
-                flex-direction: column;
-            }
-
-            .dashboard-btn {
-                width: 100%;
-                text-align: center;
-            }
-
-            .summary {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .summary-card {
-                padding: 15px;
-            }
-
-            .summary-card strong {
-                font-size: 22px;
-            }
-
-            .title-section h1 {
-                font-size: 25px;
-            }
-
-            .add-form {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .add-form input {
-                max-width: none;
-                width: 100%;
             }
 
             .add-btn {
                 width: 100%;
             }
+
         }
+
+        @media (max-width: 650px) {
+
+            .container {
+                padding: 18px 14px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .top-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tables-grid {
+                grid-template-columns: 1fr 1fr;
+                padding: 14px;
+            }
+
+        }
+
     </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
+
     <!-- HEADER -->
 
-    <div class="top-header">
+    <div class="header">
 
-        <div class="title-section">
+        <div>
 
-            <h1>Table Management</h1>
+            <h1>Manage Tables</h1>
 
             <p>
-                Manage restaurant tables, availability and QR codes
+                Manage tables section-wise
             </p>
 
         </div>
 
-        <a href="{{ url_for('dashboard') }}" class="dashboard-btn">
-            ← Dashboard
-        </a>
+        <div class="top-actions">
 
-    </div>
+            <a
+                href="{{ url_for('sections') }}"
+                class="btn section-btn"
+            >
+                Manage Sections
+            </a>
 
-
-    <!-- SUMMARY -->
-
-    <div class="summary">
-
-        <div class="summary-card total">
-
-            <span>Total Tables</span>
-
-            <strong id="totalTables">0</strong>
-
-        </div>
-
-
-        <div class="summary-card available">
-
-            <span>Available</span>
-
-            <strong id="availableTables">0</strong>
-
-        </div>
-
-
-        <div class="summary-card occupied">
-
-            <span>Occupied</span>
-
-            <strong id="occupiedTables">0</strong>
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="btn dashboard-btn"
+            >
+                ← Dashboard
+            </a>
 
         </div>
 
@@ -452,212 +343,213 @@
 
     <div class="box">
 
-        <div class="box-header">
+        <h2>Add New Table</h2>
 
-            <h2>Add New Table</h2>
+        <p>
+            Select a section and add a table.
+        </p>
 
-            <p>
-                Create a new table for your restaurant
-            </p>
+        <form
+            method="POST"
+            action="{{ url_for('add_table') }}"
+        >
 
-        </div>
+            <div class="form-grid">
+
+                <div>
+
+                    <label>Section</label>
+
+                    <select
+                        name="section_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select Section
+                        </option>
+
+                        {% for section in sections %}
+
+                            <option
+                                value="{{ section.id }}"
+                            >
+                                {{ section.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
 
 
-        <form method="POST"
-              action="/admin/tables/add"
-              class="add-form">
+                <div>
 
-            <input
-                type="number"
-                name="table_number"
-                placeholder="Enter table number"
-                min="1"
-                required
-            >
+                    <label>Table Number</label>
 
-            <button type="submit" class="add-btn">
-                + Add Table
-            </button>
+                    <input
+                        type="number"
+                        name="table_number"
+                        min="1"
+                        placeholder="Example: 1"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="add-btn"
+                >
+                    + Add Table
+                </button>
+
+            </div>
 
         </form>
 
     </div>
 
 
-    <!-- TABLE LIST -->
+    <!-- TABLE SECTIONS -->
 
-    <div class="box">
+    {% set grouped_sections = {} %}
 
-        <div class="table-header">
+    {% for table in tables %}
 
-            <h2>Restaurant Tables</h2>
+        {% set section_name =
+            table.section_name or "Unassigned"
+        %}
 
-            <p>
-                View table status and manage QR codes
-            </p>
+        {% if section_name not in grouped_sections %}
 
-        </div>
+            {% set _ =
+                grouped_sections.update({
+                    section_name: []
+                })
+            %}
 
+        {% endif %}
 
-        {% if tables %}
+        {% set _ =
+            grouped_sections[section_name].append(table)
+        %}
 
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-                        <th>Table</th>
-                        <th>Status</th>
-                        <th>QR Code</th>
-                        <th>Action</th>
-                    </tr>
-
-                </thead>
+    {% endfor %}
 
 
-                <tbody>
+    {% if grouped_sections %}
 
-                {% for table in tables %}
+        {% for section_name, section_tables
+              in grouped_sections.items() %}
 
-                    <tr>
+            <div class="section-block">
 
-                        <!-- TABLE NUMBER -->
+                <div class="section-header">
 
-                        <td>
+                    <div class="section-title">
 
-                            <span class="table-number">
-                                {{ table.table_number }}
-                            </span>
+                        {% if section_name == "Unassigned" %}
+                            📦 Unassigned
+                        {% else %}
+                            📍 {{ section_name }}
+                        {% endif %}
 
-                        </td>
+                    </div>
+
+                    <div class="section-count">
+
+                        {{ section_tables|length }} Tables
+
+                    </div>
+
+                </div>
 
 
-                        <!-- STATUS -->
+                <div class="tables-grid">
 
-                        <td>
+                    {% for table in section_tables %}
+
+                        <div class="table-card">
+
+                            <div class="table-number">
+
+                                Table {{ table.table_number }}
+
+                            </div>
+
 
                             {% if table.status == "AVAILABLE" %}
 
-                                <span class="status available">
+                                <div class="status available">
                                     ● AVAILABLE
-                                </span>
+                                </div>
 
                             {% else %}
 
-                                <span class="status occupied">
+                                <div class="status occupied">
                                     ● OCCUPIED
-                                </span>
+                                </div>
 
                             {% endif %}
 
-                        </td>
-
-
-                        <!-- QR -->
-
-                        <td>
-
-                            <a
-                                href="/admin/tables/qr/{{ table.id }}"
-                                class="action-btn qr-btn"
-                            >
-                                Generate QR
-                            </a>
-
-                        </td>
-
-
-                        <!-- DELETE -->
-
-                        <td>
 
                             <div class="actions">
 
                                 <a
-                                    href="/admin/tables/delete/{{ table.id }}"
+                                    href="{{ url_for(
+                                        'generate_table_qr',
+                                        table_id=table.id
+                                    ) }}"
+                                    class="action-btn qr-btn"
+                                >
+                                    QR
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for(
+                                        'delete_table',
+                                        table_id=table.id
+                                    ) }}"
                                     class="action-btn delete-btn"
-                                    onclick="return confirm('Are you sure you want to delete Table {{ table.table_number }}?');"
+                                    onclick="return confirm(
+                                        'Delete this table?'
+                                    )"
                                 >
                                     Delete
                                 </a>
 
                             </div>
 
-                        </td>
+                        </div>
 
-                    </tr>
+                    {% endfor %}
 
-                {% endfor %}
+                </div>
 
-                </tbody>
+            </div>
 
-            </table>
+        {% endfor %}
 
-        </div>
-
-
-        <div class="qr-info">
-            💡 Generate a QR code for each table and place it on the respective table.
-        </div>
-
-
-        {% else %}
+    {% else %}
 
         <div class="empty">
-
-            <div class="empty-icon">
-                🪑
-            </div>
 
             <h3>No Tables Added</h3>
 
             <p>
-                Add your first restaurant table using the form above.
+                Create a section first, then add tables.
             </p>
 
         </div>
 
-        {% endif %}
+    {% endif %}
 
-    </div>
 
 </div>
-
-
-<script>
-
-    const rows = document.querySelectorAll("tbody tr");
-
-    let total = rows.length;
-    let available = 0;
-    let occupied = 0;
-
-    rows.forEach(row => {
-
-        const status = row.querySelector(".status");
-
-        if (status) {
-
-            if (status.classList.contains("available")) {
-                available++;
-            }
-
-            if (status.classList.contains("occupied")) {
-                occupied++;
-            }
-
-        }
-
-    });
-
-
-    document.getElementById("totalTables").textContent = total;
-    document.getElementById("availableTables").textContent = available;
-    document.getElementById("occupiedTables").textContent = occupied;
-
-</script>
 
 </body>
 

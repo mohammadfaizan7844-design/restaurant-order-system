@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Sections</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #111827;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .header p {
+            margin: 6px 0 0;
+            color: #6b7280;
+        }
+
+        .dashboard-btn {
+            text-decoration: none;
+            background: #111827;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .box {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        }
+
+        .box h2 {
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .box p {
+            color: #6b7280;
+            margin-top: 0;
+        }
+
+        form {
+            display: flex;
+            gap: 12px;
+        }
+
+        input {
+            flex: 1;
+            padding: 13px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+        }
+
+        .add-btn {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 13px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eff6ff;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .section-name {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .table-count {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        .delete-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 9px 13px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 16px;
+            padding: 50px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        @media (max-width: 800px) {
+
+            .section-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 18px 14px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .dashboard-btn {
+                text-align: center;
+            }
+
+            form {
+                flex-direction: column;
+            }
+
+            .add-btn {
+                width: 100%;
+            }
+
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div>
+            <h1>Manage Sections</h1>
+
+            <p>
+                Create and manage restaurant table sections
+            </p>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}"
+           class="dashboard-btn">
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- ADD SECTION -->
+
+    <div class="box">
+
+        <h2>Add New Section</h2>
+
+        <p>
+            Example: Girl Section, Family Section, AC Section
+        </p>
+
+        <form method="POST"
+              action="{{ url_for('add_section') }}">
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Enter section name"
+                required
+            >
+
+            <button
+                type="submit"
+                class="add-btn">
+                + Add Section
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- SECTION LIST -->
+
+    {% if sections %}
+
+        <div class="section-grid">
+
+            {% for section in sections %}
+
+                <div class="section-card">
+
+                    <div class="section-icon">
+                        📍
+                    </div>
+
+                    <div class="section-name">
+                        {{ section.name }}
+                    </div>
+
+                    <div class="table-count">
+                        {{ section.table_count }} table(s)
+                    </div>
+
+                    <a
+                        href="{{ url_for(
+                            'delete_section',
+                            section_id=section.id
+                        ) }}"
+                        class="delete-btn"
+                        onclick="return confirm(
+                            'Delete this section? Tables will become unassigned.'
+                        )"
+                    >
+                        Delete Section
+                    </a>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty">
+
+            <h3>No Sections Created</h3>
+
+            <p>
+                Create your first section above.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+
+</html>
