@@ -425,6 +425,14 @@
           text-align: center;
         }
       }
+      .edit-btn {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.edit-btn:hover {
+    background: #e5e7eb;
+}
     </style>
   </head>
 
@@ -593,6 +601,14 @@
                 </td>
 
                 <td>
+                  <div class="actions">
+
+        <a
+            href="/admin/menu/edit/{{ item.id }}"
+            class="action-btn edit-btn"
+        >
+            Edit
+        </a>
                   <div class="actions">
                     <a
                       href="/admin/menu/toggle/{{ item.id }}"

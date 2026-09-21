@@ -883,7 +883,66 @@ def toggle_menu(item_id):
     db.session.commit()
 
     return redirect(url_for("menu"))
+@app.route("/admin/menu/edit/<int:item_id>", methods=["GET", "POST"])
+def edit_menu(item_id):
 
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    item = db.session.execute(
+        db.text("""
+            SELECT *
+            FROM menu_items
+            WHERE id = :item_id
+            AND restaurant_id = :restaurant_id
+        """),
+        {
+            "item_id": item_id,
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().first()
+
+    if not item:
+        return "Menu item not found", 404
+
+    if request.method == "POST":
+
+        name = request.form["name"]
+        category = request.form["category"]
+        description = request.form["description"]
+        price = request.form["price"]
+
+        db.session.execute(
+            db.text("""
+                UPDATE menu_items
+                SET
+                    name = :name,
+                    category = :category,
+                    description = :description,
+                    price = :price
+                WHERE id = :item_id
+                AND restaurant_id = :restaurant_id
+            """),
+            {
+                "name": name,
+                "category": category,
+                "description": description,
+                "price": price,
+                "item_id": item_id,
+                "restaurant_id": restaurant_id
+            }
+        )
+
+        db.session.commit()
+
+        return redirect(url_for("menu"))
+
+    return render_template(
+        "admin/edit_menu.html",
+        item=item
+    )
 # =========================
 # SECTION MANAGEMENT
 # =========================
