@@ -1882,17 +1882,20 @@ def admin_orders():
     orders = db.session.execute(
         db.text("""
             SELECT
-                o.id,
-                o.order_number,
-                o.status,
-                o.total_amount,
-                o.created_at,
-                ct.table_number
-            FROM orders o
-            JOIN cafe_tables ct
-                ON o.table_id = ct.id
-            WHERE o.restaurant_id = :restaurant_id
-            ORDER BY o.created_at DESC
+    o.id,
+    o.order_number,
+    o.status,
+    o.total_amount,
+    o.created_at,
+    ct.table_number,
+    s.name AS section_name
+FROM orders o
+JOIN cafe_tables ct
+    ON o.table_id = ct.id
+LEFT JOIN sections s
+    ON ct.section_id = s.id
+WHERE o.restaurant_id = :restaurant_id
+ORDER BY o.created_at DESC
         """),
         {
             "restaurant_id": restaurant_id
