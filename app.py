@@ -1156,62 +1156,6 @@ def add_table():
     return redirect(url_for("tables"))
 
 # =========================
-# ADD TABLE
-# =========================
-
-@app.route("/admin/tables/add", methods=["POST"])
-def add_table():
-
-    if not admin_required():
-        return redirect(url_for("login"))
-
-    restaurant_id = session["restaurant_id"]
-
-    table_number = request.form["table_number"]
-
-    existing_table = db.session.execute(
-        db.text("""
-            SELECT id
-            FROM cafe_tables
-            WHERE restaurant_id = :restaurant_id
-            AND table_number = :table_number
-        """),
-        {
-            "restaurant_id": restaurant_id,
-            "table_number": table_number
-        }
-    ).first()
-
-    if existing_table:
-        return redirect(url_for("tables"))
-
-    db.session.execute(
-        db.text("""
-            INSERT INTO cafe_tables
-            (
-                restaurant_id,
-                table_number,
-                status
-            )
-            VALUES
-            (
-                :restaurant_id,
-                :table_number,
-                'AVAILABLE'
-            )
-        """),
-        {
-            "restaurant_id": restaurant_id,
-            "table_number": table_number
-        }
-    )
-
-    db.session.commit()
-
-    return redirect(url_for("tables"))
-
-
-# =========================
 # DELETE TABLE
 # =========================
 
