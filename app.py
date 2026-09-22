@@ -1,3 +1,5 @@
+import cloudinary
+import cloudinary.uploader
 import qrcode
 import os
 import time
@@ -8,7 +10,15 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, timedelta
 from config import DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
 
-
+# =========================
+# CLOUDINARY CONFIG
+# =========================
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
 # =========================
 # FLASK APP
 # =========================
@@ -766,28 +776,15 @@ def add_menu():
 
     image = request.files.get("image")
 
-    image_filename = None
+    image_url = None
 
     if image and image.filename:
-        image_filename = image.filename
+        upload_result = cloudinary.uploader.upload(
+        image,
+        folder=f"restaurant_menu/{restaurant_id}"
+    )
 
-        upload_folder = os.path.join(
-            "static",
-            "images",
-            "menu"
-        )
-
-        os.makedirs(
-            upload_folder,
-            exist_ok=True
-        )
-
-        image_path = os.path.join(
-            upload_folder,
-            image_filename
-        )
-
-        image.save(image_path)
+    image_url = upload_result["secure_url"]
 
     db.session.execute(
         db.text("""
@@ -818,7 +815,7 @@ def add_menu():
             "category": category,
             "description": description,
             "price": price,
-            "image": image_filename
+            "image": image_url
         }
     )
 

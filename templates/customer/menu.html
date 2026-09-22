@@ -876,18 +876,22 @@
         >
           <div class="image-container">
             {% if item.image %}
-
-            <img
-              src="{{ url_for('static', filename='images/menu/' + item.image) }}"
-              alt="{{ item.name }}"
-              loading="lazy"
-            />
-
-            {% else %}
-
-            <div class="no-image">🍽️ No Image</div>
-
-            {% endif %}
+    {% if item.image.startswith('http') %}
+        <img
+          src="{{ item.image }}"
+          alt="{{ item.name }}"
+          loading="lazy"
+        />
+    {% else %}
+        <img
+          src="{{ url_for('static', filename='images/menu/' + item.image) }}"
+          alt="{{ item.name }}"
+          loading="lazy"
+        />
+    {% endif %}
+{% else %}
+    <div class="no-image">🍽️ No Image</div>
+{% endif %}a
           </div>
 
           <div class="content">

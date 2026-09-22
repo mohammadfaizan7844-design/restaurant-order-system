@@ -4,3 +4,4 @@ qrcode
 Pillow
 PyMySQL
 gunicorn
+cloudinary
