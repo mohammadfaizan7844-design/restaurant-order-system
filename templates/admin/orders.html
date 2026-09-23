@@ -301,21 +301,21 @@
         background: #e5e7eb;
       }
       .combine-btn {
-    background: #111827;
-    color: white;
-    border: none;
-    padding: 11px 18px;
-    border-radius: 9px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-}
+        background: #111827;
+        color: white;
+        border: none;
+        padding: 11px 18px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+      }
 
-.combine-btn:hover {
-    background: #000;
-    transform: translateY(-1px);
-}
+      .combine-btn:hover {
+        background: #000;
+        transform: translateY(-1px);
+      }
 
       /* EMPTY */
       .empty {
@@ -447,163 +447,164 @@
       </div>
 
       <!-- SEARCH + FILTER -->
-      <div class="toolbar">
-        <div class="search-box">
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="Search order number or table..."
-          />
+      <form method="POST" action="{{ url_for('combine_selected_orders') }}">
+        <div class="toolbar">
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search order number or table..."
+            />
+          </div>
+
+          <div class="filter-box">
+            <select id="statusFilter">
+              <option value="ALL">All Status</option>
+              <option value="NEW">New</option>
+              <option value="PREPARING">Preparing</option>
+              <option value="READY">Ready</option>
+              <option value="SERVED">Served</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            class="combine-btn"
+            onclick="return confirm('Combine selected orders?');"
+          >
+            🔗 Combine Selected
+          </button>
         </div>
 
-        <div class="filter-box">
-          <select id="statusFilter">
-            <option value="ALL">All Status</option>
-            <option value="NEW">New</option>
-            <option value="PREPARING">Preparing</option>
-            <option value="READY">Ready</option>
-            <option value="SERVED">Served</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="CANCELLED">Cancelled</option>
-          </select>
-        </div>
-      </div>
+        <!-- ORDERS -->
+        <div class="orders-card">
+          <div class="table-header">
+            <h2>Recent Orders</h2>
+          </div>
 
-      <!-- ORDERS -->
-       <form method="POST" action="{{ url_for('combine_selected_orders') }}">
-      <div class="orders-card">
-        <div class="table-header">
-          <h2>Recent Orders</h2>
-        </div>
+          <div class="table-wrapper">
+            <table id="ordersTable">
+              <thead>
+                <tr>
+                  <th>Select</th>
+                  <th>Order No.</th>
+                  <th>Table</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Date & Time</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
 
-        <div class="table-wrapper">
-          <table id="ordersTable">
-            <thead>
-              <tr>
-                <th>Select</th>
-                <th>Order No.</th>
-                <th>Table</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Date & Time</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+              <tbody>
+                {% for order in orders %}
 
-            <tbody>
-              {% for order in orders %}
+                <tr
+                  data-status="{{ order.status }}"
+                  data-search="{{ order.order_number }} Table {{ order.table_number }}"
+                >
+                  <td>
+                    {% if not order.combined_bill_id and order.status not in
+                    ['COMPLETED', 'CANCELLED'] and order.payment_status !=
+                    'PAID' %}
 
-              <tr
-                data-status="{{ order.status }}"
-                data-search="{{ order.order_number }} Table {{ order.table_number }}"
-              >
-                <td>
-                  {% if not order.combined_bill_id and order.status not in
-                  ['COMPLETED', 'CANCELLED'] and order.payment_status != 'PAID'
-                  %}
+                    <input
+                      type="checkbox"
+                      name="order_ids"
+                      value="{{ order.id }}"
+                      class="order-checkbox"
+                    />
 
-                  <input
-                    type="checkbox"
-                    name="order_ids"
-                    value="{{ order.id }}"
-                    class="order-checkbox"
-                  />
+                    {% else %}
 
-                  {% else %}
+                    <span style="color: #9ca3af">—</span>
 
-                  <span style="color: #9ca3af">—</span>
-
-                  {% endif %}
-                </td>
-
-                <td>
-                  <span class="order-number"> #{{ order.order_number }} </span>
-                </td>
-                <td>
-                  <div class="table-info">
-                    {% if order.section_name %}
-                    <div class="section-name">{{ order.section_name }}</div>
                     {% endif %}
+                  </td>
 
-                    <span class="table-badge">
-                      Table {{ order.table_number }}
+                  <td>
+                    <span class="order-number">
+                      #{{ order.order_number }}
                     </span>
-                  </div>
-                </td>
+                  </td>
 
-                <td>
-                  <span class="amount"> ₹{{ order.total_amount }} </span>
-                </td>
+                  <td>
+                    <div class="table-info">
+                      {% if order.section_name %}
+                      <div class="section-name">{{ order.section_name }}</div>
+                      {% endif %}
 
-                <td>
-                  {% if order.status == "NEW" %}
+                      <span class="table-badge">
+                        Table {{ order.table_number }}
+                      </span>
+                    </div>
+                  </td>
 
-                  <span class="status status-new"> ● NEW </span>
+                  <td>
+                    <span class="amount"> ₹{{ order.total_amount }} </span>
+                  </td>
 
-                  {% elif order.status == "PREPARING" %}
+                  <td>
+                    {% if order.status == "NEW" %}
 
-                  <span class="status status-preparing"> ● PREPARING </span>
+                    <span class="status status-new"> ● NEW </span>
 
-                  {% elif order.status == "READY" %}
+                    {% elif order.status == "PREPARING" %}
 
-                  <span class="status status-ready"> ● READY </span>
+                    <span class="status status-preparing"> ● PREPARING </span>
 
-                  {% elif order.status == "SERVED" %}
+                    {% elif order.status == "READY" %}
 
-                  <span class="status status-served"> ● SERVED </span>
+                    <span class="status status-ready"> ● READY </span>
 
-                  {% elif order.status == "COMPLETED" %}
+                    {% elif order.status == "SERVED" %}
 
-                  <span class="status status-completed"> ✓ COMPLETED </span>
+                    <span class="status status-served"> ● SERVED </span>
 
-                  {% elif order.status == "CANCELLED" %}
+                    {% elif order.status == "COMPLETED" %}
 
-                  <span class="status status-cancelled"> ✕ CANCELLED </span>
+                    <span class="status status-completed"> ✓ COMPLETED </span>
 
-                  {% else %}
+                    {% elif order.status == "CANCELLED" %}
 
-                  <span class="status"> {{ order.status }} </span>
+                    <span class="status status-cancelled"> ✕ CANCELLED </span>
 
-                  {% endif %}
-                </td>
+                    {% else %}
 
-                <td>{{ order.created_at }}</td>
+                    <span class="status"> {{ order.status }} </span>
 
-                <td>
-                  <div class="actions">
-                    <a
-                      href="{{ url_for('admin_order_detail', order_id=order.id) }}"
-                      class="action-btn view-btn"
-                    >
-                      View
-                    </a>
+                    {% endif %}
+                  </td>
 
-                    <a
-                      href="{{ url_for('generate_bill', order_id=order.id) }}"
-                      class="action-btn bill-btn"
-                    >
-                      Bill
-                    </a>
-                  </div>
-                </td>
-              </tr>
+                  <td>{{ order.created_at }}</td>
 
-              {% endfor %}
-            </tbody>
-          </table>
+                  <td>
+                    <div class="actions">
+                      <a
+                        href="{{ url_for('admin_order_detail', order_id=order.id) }}"
+                        class="action-btn view-btn"
+                      >
+                        View
+                      </a>
+
+                      <a
+                        href="{{ url_for('generate_bill', order_id=order.id) }}"
+                        class="action-btn bill-btn"
+                      >
+                        Bill
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-<div style="margin-top: 15px;">
-        <button
-          type="submit"
-          class="combine-btn"
-          onclick="return confirm('Combine selected orders?');"
-        >
-          Combine Selected
-        </button>
-      </div>
-
-</form>
+      </form>
       {% else %}
 
       <!-- EMPTY ORDERS -->

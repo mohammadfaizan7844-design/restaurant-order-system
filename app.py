@@ -780,11 +780,11 @@ def add_menu():
 
     if image and image.filename:
         upload_result = cloudinary.uploader.upload(
-        image,
-        folder=f"restaurant_menu/{restaurant_id}"
-    )
+            image,
+            folder=f"restaurant_menu/{restaurant_id}"
+        )
 
-    image_url = upload_result["secure_url"]
+        image_url = upload_result["secure_url"]
 
     db.session.execute(
         db.text("""
