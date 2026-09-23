@@ -1976,6 +1976,139 @@ def admin_orders():
         orders=orders
     )
 # =========================
+# DAILY REPORT
+# =========================
+
+@app.route("/admin/daily-report")
+def daily_report():
+
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    # Today's order + payment summary
+    summary = db.session.execute(
+        db.text("""
+            SELECT
+                COUNT(DISTINCT o.id) AS total_orders,
+
+                COALESCE(SUM(
+                    CASE
+                        WHEN p.status = 'PAID'
+                        THEN p.amount
+                        ELSE 0
+                    END
+                ), 0) AS total_sales,
+
+                COUNT(
+                    CASE
+                        WHEN p.payment_method = 'UPI'
+                        AND p.status = 'PAID'
+                        THEN 1
+                    END
+                ) AS upi_orders,
+
+                COALESCE(SUM(
+                    CASE
+                        WHEN p.payment_method = 'UPI'
+                        AND p.status = 'PAID'
+                        THEN p.amount
+                        ELSE 0
+                    END
+                ), 0) AS upi_amount,
+
+                COUNT(
+                    CASE
+                        WHEN p.payment_method = 'CASH'
+                        AND p.status = 'PAID'
+                        THEN 1
+                    END
+                ) AS cash_orders,
+
+                COALESCE(SUM(
+                    CASE
+                        WHEN p.payment_method = 'CASH'
+                        AND p.status = 'PAID'
+                        THEN p.amount
+                        ELSE 0
+                    END
+                ), 0) AS cash_amount,
+
+                COUNT(
+                    CASE
+                        WHEN p.payment_method = 'CARD'
+                        AND p.status = 'PAID'
+                        THEN 1
+                    END
+                ) AS card_orders,
+
+                COALESCE(SUM(
+                    CASE
+                        WHEN p.payment_method = 'CARD'
+                        AND p.status = 'PAID'
+                        THEN p.amount
+                        ELSE 0
+                    END
+                ), 0) AS card_amount
+
+            FROM orders o
+
+            LEFT JOIN payments p
+                ON p.order_id = o.id
+
+            WHERE o.restaurant_id = :restaurant_id
+            AND DATE(o.created_at) = CURDATE()
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().first()
+
+
+    # Today's order details
+    orders = db.session.execute(
+        db.text("""
+            SELECT
+                o.id,
+                o.order_number,
+                o.total_amount,
+                o.status,
+                o.created_at,
+                ct.table_number,
+                s.name AS section_name,
+                p.payment_method,
+                p.status AS payment_status,
+                p.amount AS payment_amount
+
+            FROM orders o
+
+            JOIN cafe_tables ct
+                ON o.table_id = ct.id
+
+            LEFT JOIN sections s
+                ON ct.section_id = s.id
+
+            LEFT JOIN payments p
+                ON p.order_id = o.id
+
+            WHERE o.restaurant_id = :restaurant_id
+            AND DATE(o.created_at) = CURDATE()
+
+            ORDER BY o.created_at DESC
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().all()
+
+
+    return render_template(
+        "admin/daily_report.html",
+        summary=summary,
+        orders=orders
+    )
+# =========================
 # COMBINE SELECTED ORDERS
 # =========================
 
