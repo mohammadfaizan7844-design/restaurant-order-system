@@ -1,501 +1,439 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Daily Report</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+      * {
+        box-sizing: border-box;
+      }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            color: #1f2937;
-        }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        color: #1f2937;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 25px;
-        }
+      .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 25px;
+      }
 
-        .header {
-            background: white;
-            padding: 22px;
-            border-radius: 14px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-        }
+      .header {
+        background: white;
+        padding: 22px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+      }
 
-        .header h1 {
-            margin: 0 0 6px;
-            font-size: 26px;
-        }
+      .header h1 {
+        margin: 0 0 6px;
+        font-size: 26px;
+      }
 
-        .header p {
-            margin: 0;
-            color: #6b7280;
-        }
-.date-form {
-    display: flex;
-    align-items: end;
-    gap: 10px;
-    margin-top: 18px;
-    flex-wrap: wrap;
-}
+      .header p {
+        margin: 0;
+        color: #6b7280;
+      }
+      .date-form {
+        display: flex;
+        align-items: end;
+        gap: 10px;
+        margin-top: 18px;
+        flex-wrap: wrap;
+      }
 
-.date-form label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #374151;
-}
+      .date-form label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+      }
 
-.date-form input {
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    background: white;
-}
+      .date-form input {
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+      }
 
-.date-form button {
-    border: none;
-    background: #111827;
-    color: white;
-    padding: 10px 17px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
+      .date-form button {
+        border: none;
+        background: #111827;
+        color: white;
+        padding: 10px 17px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
 
-.date-form button:hover {
-    background: #000;
-}
-        .back-btn {
-            display: inline-block;
-            margin-top: 15px;
-            text-decoration: none;
-            background: #111827;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
+      .date-form button:hover {
+        background: #000;
+      }
+      .back-btn {
+        display: inline-block;
+        margin-top: 15px;
+        text-decoration: none;
+        background: #111827;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
 
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .card-title {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .card-value {
+        font-size: 25px;
+        font-weight: 700;
+      }
+
+      .payment-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .payment-card {
+        background: white;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .payment-card h3 {
+        margin: 0 0 12px;
+        font-size: 17px;
+      }
+
+      .payment-count {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 6px;
+      }
+
+      .payment-amount {
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .report-table {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        overflow-x: auto;
+      }
+
+      .report-table h2 {
+        margin-top: 0;
+        margin-bottom: 18px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+      }
+
+      th {
+        background: #f3f4f6;
+        text-align: left;
+        padding: 13px;
+        font-size: 13px;
+        color: #374151;
+      }
+
+      td {
+        padding: 13px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 14px;
+      }
+
+      .status {
+        padding: 5px 9px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .paid {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .pending {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .cash {
+        color: #166534;
+        font-weight: 700;
+      }
+
+      .upi {
+        color: #2563eb;
+        font-weight: 700;
+      }
+
+      .card-payment {
+        color: #7c3aed;
+        font-weight: 700;
+      }
+
+      .empty {
+        text-align: center;
+        padding: 35px;
+        color: #6b7280;
+      }
+
+      @media (max-width: 900px) {
         .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 14px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-        }
-
-        .card-title {
-            color: #6b7280;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .card-value {
-            font-size: 25px;
-            font-weight: 700;
+          grid-template-columns: repeat(2, 1fr);
         }
 
         .payment-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 12px;
         }
 
-        .payment-card {
-            background: white;
-            padding: 20px;
-            border-radius: 14px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        .summary-grid {
+          grid-template-columns: 1fr;
         }
 
-        .payment-card h3 {
-            margin: 0 0 12px;
-            font-size: 17px;
+        .header h1 {
+          font-size: 22px;
         }
+      }
+      .print-btn {
+        margin-top: 15px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
 
-        .payment-count {
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 6px;
+      .print-btn:hover {
+        background: #1d4ed8;
+      }
+
+      @media print {
+        .date-form,
+        .print-btn,
+        .back-btn {
+          display: none !important;
         }
-
-        .payment-amount {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .report-table {
-            background: white;
-            border-radius: 14px;
-            padding: 20px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-            overflow-x: auto;
-        }
-
-        .report-table h2 {
-            margin-top: 0;
-            margin-bottom: 18px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-
-        th {
-            background: #f3f4f6;
-            text-align: left;
-            padding: 13px;
-            font-size: 13px;
-            color: #374151;
-        }
-
-        td {
-            padding: 13px;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 14px;
-        }
-
-        .status {
-            padding: 5px 9px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .paid {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .cash {
-            color: #166534;
-            font-weight: 700;
-        }
-
-        .upi {
-            color: #2563eb;
-            font-weight: 700;
-        }
-
-        .card-payment {
-            color: #7c3aed;
-            font-weight: 700;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 35px;
-            color: #6b7280;
-        }
-
-        @media (max-width: 900px) {
-
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .payment-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 600px) {
-
-            .container {
-                padding: 12px;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header h1 {
-                font-size: 22px;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
-<div class="container">
-
-    <div class="header">
-
+  <body>
+    <div class="container">
+      <div class="header">
         <h1>📊 Daily Report</h1>
 
-        <p>
-            Today's orders, sales and payment summary
-        </p>
-<form method="GET" action="{{ url_for('daily_report') }}" class="date-form">
+        <p>Today's orders, sales and payment summary</p>
+        <form
+          method="GET"
+          action="{{ url_for('daily_report') }}"
+          class="date-form"
+        >
+          <label for="report-date">Select Date</label>
 
-    <label for="report-date">Select Date</label>
+          <input
+            type="date"
+            id="report-date"
+            name="date"
+            value="{{ selected_date }}"
+            required
+          />
 
-    <input
-        type="date"
-        id="report-date"
-        name="date"
-        value="{{ selected_date }}"
-        required
-    >
-
-    <button type="submit">
-        📅 View Report
-    </button>
-
-</form>
+          <button type="submit">📅 View Report</button>
+        </form>
+        <button type="button" class="print-btn" onclick="window.print()">
+          🖨️ Print Report
+        </button>
         <a href="{{ url_for('dashboard') }}" class="back-btn">
-            ← Back to Dashboard
+          ← Back to Dashboard
         </a>
+      </div>
 
-    </div>
+      <!-- MAIN SUMMARY -->
 
-
-    <!-- MAIN SUMMARY -->
-
-    <div class="summary-grid">
-
+      <div class="summary-grid">
         <div class="card">
+          <div class="card-title">Total Orders</div>
 
-            <div class="card-title">
-                Total Orders
-            </div>
-
-            <div class="card-value">
-                {{ summary.total_orders or 0 }}
-            </div>
-
+          <div class="card-value">{{ summary.total_orders or 0 }}</div>
         </div>
 
-
         <div class="card">
+          <div class="card-title">Total Sales</div>
 
-            <div class="card-title">
-                Total Sales
-            </div>
-
-            <div class="card-value">
-                ₹{{ "%.2f"|format(summary.total_sales or 0) }}
-            </div>
-
+          <div class="card-value">
+            ₹{{ "%.2f"|format(summary.total_sales or 0) }}
+          </div>
         </div>
 
-
         <div class="card">
+          <div class="card-title">UPI Orders</div>
 
-            <div class="card-title">
-                UPI Orders
-            </div>
-
-            <div class="card-value">
-                {{ summary.upi_orders or 0 }}
-            </div>
-
+          <div class="card-value">{{ summary.upi_orders or 0 }}</div>
         </div>
 
-
         <div class="card">
+          <div class="card-title">Cash Orders</div>
 
-            <div class="card-title">
-                Cash Orders
-            </div>
-
-            <div class="card-value">
-                {{ summary.cash_orders or 0 }}
-            </div>
-
+          <div class="card-value">{{ summary.cash_orders or 0 }}</div>
         </div>
+      </div>
 
-    </div>
+      <!-- PAYMENT SUMMARY -->
 
+      <div class="payment-grid">
+        <div class="payment-card">
+          <h3>📱 UPI</h3>
 
-    <!-- PAYMENT SUMMARY -->
+          <div class="payment-count">{{ summary.upi_orders or 0 }} Orders</div>
 
-    <div class="payment-grid">
+          <div class="payment-amount upi">
+            ₹{{ "%.2f"|format(summary.upi_amount or 0) }}
+          </div>
+        </div>
 
         <div class="payment-card">
+          <h3>💵 Cash</h3>
 
-            <h3>📱 UPI</h3>
+          <div class="payment-count">{{ summary.cash_orders or 0 }} Orders</div>
 
-            <div class="payment-count">
-                {{ summary.upi_orders or 0 }} Orders
-            </div>
-
-            <div class="payment-amount upi">
-                ₹{{ "%.2f"|format(summary.upi_amount or 0) }}
-            </div>
-
+          <div class="payment-amount cash">
+            ₹{{ "%.2f"|format(summary.cash_amount or 0) }}
+          </div>
         </div>
-
 
         <div class="payment-card">
+          <h3>💳 Card</h3>
 
-            <h3>💵 Cash</h3>
+          <div class="payment-count">{{ summary.card_orders or 0 }} Orders</div>
 
-            <div class="payment-count">
-                {{ summary.cash_orders or 0 }} Orders
-            </div>
-
-            <div class="payment-amount cash">
-                ₹{{ "%.2f"|format(summary.cash_amount or 0) }}
-            </div>
-
+          <div class="payment-amount card-payment">
+            ₹{{ "%.2f"|format(summary.card_amount or 0) }}
+          </div>
         </div>
+      </div>
 
+      <!-- ORDER DETAILS -->
 
-        <div class="payment-card">
-
-            <h3>💳 Card</h3>
-
-            <div class="payment-count">
-                {{ summary.card_orders or 0 }} Orders
-            </div>
-
-            <div class="payment-amount card-payment">
-                ₹{{ "%.2f"|format(summary.card_amount or 0) }}
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ORDER DETAILS -->
-
-    <div class="report-table">
-
+      <div class="report-table">
         <h2>Today's Orders</h2>
 
         {% if orders %}
 
         <table>
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Table</th>
+              <th>Section</th>
+              <th>Amount</th>
+              <th>Payment</th>
+              <th>Payment Status</th>
+              <th>Time</th>
+            </tr>
+          </thead>
 
-            <thead>
+          <tbody>
+            {% for order in orders %}
 
-                <tr>
-                    <th>Order</th>
-                    <th>Table</th>
-                    <th>Section</th>
-                    <th>Amount</th>
-                    <th>Payment</th>
-                    <th>Payment Status</th>
-                    <th>Time</th>
-                </tr>
+            <tr>
+              <td>
+                <strong>#{{ order.order_number }}</strong>
+              </td>
 
-            </thead>
+              <td>Table {{ order.table_number }}</td>
 
-            <tbody>
+              <td>{{ order.section_name or '-' }}</td>
 
-                {% for order in orders %}
+              <td>₹{{ "%.2f"|format(order.total_amount or 0) }}</td>
 
-                <tr>
+              <td>
+                {% if order.payment_method == 'UPI' %}
 
-                    <td>
-                        <strong>#{{ order.order_number }}</strong>
-                    </td>
+                <span class="upi">UPI</span>
 
-                    <td>
-                        Table {{ order.table_number }}
-                    </td>
+                {% elif order.payment_method == 'CASH' %}
 
-                    <td>
-                        {{ order.section_name or '-' }}
-                    </td>
+                <span class="cash">Cash</span>
 
-                    <td>
-                        ₹{{ "%.2f"|format(order.total_amount or 0) }}
-                    </td>
+                {% elif order.payment_method == 'CARD' %}
 
-                    <td>
+                <span class="card-payment">Card</span>
 
-                        {% if order.payment_method == 'UPI' %}
+                {% else %} - {% endif %}
+              </td>
 
-                            <span class="upi">UPI</span>
+              <td>
+                {% if order.payment_status == 'PAID' %}
 
-                        {% elif order.payment_method == 'CASH' %}
+                <span class="status paid"> PAID </span>
 
-                            <span class="cash">Cash</span>
+                {% else %}
 
-                        {% elif order.payment_method == 'CARD' %}
+                <span class="status pending"> PENDING </span>
 
-                            <span class="card-payment">Card</span>
+                {% endif %}
+              </td>
 
-                        {% else %}
+              <td>{{ order.created_at.strftime('%I:%M %p') }}</td>
+            </tr>
 
-                            -
-
-                        {% endif %}
-
-                    </td>
-
-                    <td>
-
-                        {% if order.payment_status == 'PAID' %}
-
-                            <span class="status paid">
-                                PAID
-                            </span>
-
-                        {% else %}
-
-                            <span class="status pending">
-                                PENDING
-                            </span>
-
-                        {% endif %}
-
-                    </td>
-
-                    <td>
-                        {{ order.created_at.strftime('%I:%M %p') }}
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
+            {% endfor %}
+          </tbody>
         </table>
 
         {% else %}
 
-            <div class="empty">
-                No orders found for today.
-            </div>
+        <div class="empty">No orders found for today.</div>
 
         {% endif %}
-
+      </div>
     </div>
-
-</div>
-
-</body>
+  </body>
 </html>
