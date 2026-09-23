@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Combined Bill</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .bill-card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .restaurant-name {
+            font-size: 26px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .bill-title {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .bill-number {
+            text-align: right;
+        }
+
+        .bill-number strong {
+            display: block;
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .bill-number span {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-box {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .info-box span {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .info-box strong {
+            font-size: 15px;
+            color: #111827;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background: #f9fafb;
+            color: #6b7280;
+            text-align: left;
+            padding: 13px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px 13px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .amount {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .total-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding: 18px;
+            background: #111827;
+            color: white;
+            border-radius: 12px;
+        }
+
+        .total-box span {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .total-box strong {
+            font-size: 24px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .print-btn {
+            background: #111827;
+            color: white;
+        }
+
+        .back-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .print-btn:hover {
+            background: #000;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .bill-card {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .bill-number {
+                text-align: left;
+            }
+
+            .info {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                min-width: 550px;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
+                width: 100%;
+            }
+        }
+
+        @media print {
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .bill-card {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="bill-card">
+
+        <!-- HEADER -->
+        <div class="header">
+
+            <div>
+                <div class="restaurant-name">
+                    {{ combined_bill.restaurant_name }}
+                </div>
+
+                <div class="bill-title">
+                    Combined Bill
+                </div>
+            </div>
+
+            <div class="bill-number">
+                <strong>{{ combined_bill.bill_number }}</strong>
+                <span>
+                    {{ combined_bill.created_at }}
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- BILL INFORMATION -->
+        <div class="info">
+
+            <div class="info-box">
+                <span>Table</span>
+
+                <strong>
+                    Table {{ combined_bill.table_number }}
+                </strong>
+            </div>
+
+            <div class="info-box">
+                <span>Bill Status</span>
+
+                <strong>
+                    {{ combined_bill.status }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <!-- SELECTED ORDERS -->
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Order No.</th>
+                        <th>Status</th>
+                        <th style="text-align:right;">
+                            Amount
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for order in orders %}
+
+                    <tr>
+
+                        <td>
+                            #{{ order.order_number }}
+                        </td>
+
+                        <td>
+                            {{ order.status }}
+                        </td>
+
+                        <td class="amount">
+                            ₹{{ order.total_amount }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- TOTAL -->
+        <div class="total-box">
+
+            <span>
+                Combined Total
+            </span>
+
+            <strong>
+                ₹{{ combined_bill.total_amount }}
+            </strong>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+        <div class="actions no-print">
+
+            <a
+                href="{{ url_for('admin_orders') }}"
+                class="btn back-btn"
+            >
+                ← Back to Orders
+            </a>
+
+            <button
+                onclick="window.print()"
+                class="btn print-btn"
+            >
+                🖨 Print Bill
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

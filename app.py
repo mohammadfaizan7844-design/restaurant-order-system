@@ -1937,20 +1937,34 @@ def admin_orders():
     orders = db.session.execute(
         db.text("""
             SELECT
-    o.id,
-    o.order_number,
-    o.status,
-    o.total_amount,
-    o.created_at,
-    ct.table_number,
-    s.name AS section_name
-FROM orders o
-JOIN cafe_tables ct
-    ON o.table_id = ct.id
-LEFT JOIN sections s
-    ON ct.section_id = s.id
-WHERE o.restaurant_id = :restaurant_id
-ORDER BY o.created_at DESC
+                o.id,
+                o.order_number,
+                o.status,
+                o.total_amount,
+                o.created_at,
+                o.session_id,
+                o.table_id,
+                ct.table_number,
+                s.name AS section_name,
+                p.status AS payment_status,
+                cbo.combined_bill_id
+            FROM orders o
+
+            JOIN cafe_tables ct
+                ON o.table_id = ct.id
+
+            LEFT JOIN sections s
+                ON ct.section_id = s.id
+
+            LEFT JOIN payments p
+                ON p.order_id = o.id
+
+            LEFT JOIN combined_bill_orders cbo
+                ON cbo.order_id = o.id
+
+            WHERE o.restaurant_id = :restaurant_id
+
+            ORDER BY o.created_at DESC
         """),
         {
             "restaurant_id": restaurant_id
@@ -1961,8 +1975,271 @@ ORDER BY o.created_at DESC
         "admin/orders.html",
         orders=orders
     )
+# =========================
+# COMBINE SELECTED ORDERS
+# =========================
 
+@app.route(
+    "/admin/orders/combine",
+    methods=["POST"]
+)
+def combine_selected_orders():
 
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    selected_orders = request.form.getlist("order_ids")
+
+    if not selected_orders:
+        return "Please select at least one order.", 400
+
+    try:
+        selected_orders = [
+            int(order_id)
+            for order_id in selected_orders
+        ]
+    except ValueError:
+        return "Invalid order selection.", 400
+
+    # ---------------------------------
+    # Get selected orders
+    # ---------------------------------
+
+    placeholders = ", ".join(
+        [f":id_{i}" for i in range(len(selected_orders))]
+    )
+
+    params = {
+        f"id_{i}": order_id
+        for i, order_id in enumerate(selected_orders)
+    }
+
+    params["restaurant_id"] = restaurant_id
+
+    orders = db.session.execute(
+        db.text(f"""
+            SELECT
+                o.id,
+                o.session_id,
+                o.table_id,
+                o.order_number,
+                o.status,
+                o.total_amount,
+                p.status AS payment_status,
+                cbo.combined_bill_id
+            FROM orders o
+
+            LEFT JOIN payments p
+                ON p.order_id = o.id
+
+            LEFT JOIN combined_bill_orders cbo
+                ON cbo.order_id = o.id
+
+            WHERE o.restaurant_id = :restaurant_id
+            AND o.id IN ({placeholders})
+        """),
+        params
+    ).mappings().all()
+
+    # ---------------------------------
+    # Check all orders found
+    # ---------------------------------
+
+    if len(orders) != len(selected_orders):
+        return "Invalid order selection.", 400
+
+    first_order = orders[0]
+
+    # ---------------------------------
+    # All must belong to same session
+    # ---------------------------------
+
+    for order in orders:
+
+        if order["session_id"] != first_order["session_id"]:
+            return (
+                "You can combine orders only from "
+                "the same table session."
+            ), 400
+
+        if order["table_id"] != first_order["table_id"]:
+            return (
+                "You can combine orders only from "
+                "the same table."
+            ), 400
+
+        if order["status"] in ["COMPLETED", "CANCELLED"]:
+            return (
+                f"Order {order['order_number']} "
+                "cannot be combined."
+            ), 400
+
+        if order["payment_status"] == "PAID":
+            return (
+                f"Order {order['order_number']} "
+                "is already paid."
+            ), 400
+
+        if order["combined_bill_id"] is not None:
+            return (
+                f"Order {order['order_number']} "
+                "is already part of another combined bill."
+            ), 400
+
+    # ---------------------------------
+    # Calculate combined total
+    # ---------------------------------
+
+    total_amount = sum(
+        float(order["total_amount"])
+        for order in orders
+    )
+
+    # ---------------------------------
+    # Create bill number
+    # ---------------------------------
+
+    bill_number = "CB-" + str(int(time.time()))
+
+    # ---------------------------------
+    # Create combined bill
+    # ---------------------------------
+
+    db.session.execute(
+        db.text("""
+            INSERT INTO combined_bills
+            (
+                restaurant_id,
+                session_id,
+                table_id,
+                bill_number,
+                total_amount,
+                status
+            )
+            VALUES
+            (
+                :restaurant_id,
+                :session_id,
+                :table_id,
+                :bill_number,
+                :total_amount,
+                'OPEN'
+            )
+        """),
+        {
+            "restaurant_id": restaurant_id,
+            "session_id": first_order["session_id"],
+            "table_id": first_order["table_id"],
+            "bill_number": bill_number,
+            "total_amount": total_amount
+        }
+    )
+
+    combined_bill_id = db.session.execute(
+        db.text("SELECT LAST_INSERT_ID()")
+    ).scalar()
+
+    # ---------------------------------
+    # Link selected orders
+    # ---------------------------------
+
+    for order in orders:
+
+        db.session.execute(
+            db.text("""
+                INSERT INTO combined_bill_orders
+                (
+                    combined_bill_id,
+                    order_id
+                )
+                VALUES
+                (
+                    :combined_bill_id,
+                    :order_id
+                )
+            """),
+            {
+                "combined_bill_id": combined_bill_id,
+                "order_id": order["id"]
+            }
+        )
+
+    db.session.commit()
+
+    return redirect(
+        url_for(
+            "combined_bill",
+            combined_bill_id=combined_bill_id
+        )
+    )
+    # =========================
+# COMBINED BILL
+# =========================
+
+@app.route(
+    "/admin/combined-bill/<int:combined_bill_id>"
+)
+def combined_bill(combined_bill_id):
+
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    combined_bill = db.session.execute(
+        db.text("""
+            SELECT
+                cb.*,
+                ct.table_number,
+                r.name AS restaurant_name
+            FROM combined_bills cb
+
+            JOIN cafe_tables ct
+                ON cb.table_id = ct.id
+
+            JOIN restaurants r
+                ON cb.restaurant_id = r.id
+
+            WHERE cb.id = :combined_bill_id
+            AND cb.restaurant_id = :restaurant_id
+        """),
+        {
+            "combined_bill_id": combined_bill_id,
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().first()
+
+    if not combined_bill:
+        return "Combined bill not found", 404
+
+    orders = db.session.execute(
+        db.text("""
+            SELECT
+                o.id,
+                o.order_number,
+                o.total_amount,
+                o.status
+            FROM combined_bill_orders cbo
+
+            JOIN orders o
+                ON cbo.order_id = o.id
+
+            WHERE cbo.combined_bill_id = :combined_bill_id
+
+            ORDER BY o.id
+        """),
+        {
+            "combined_bill_id": combined_bill_id
+        }
+    ).mappings().all()
+
+    return render_template(
+        "admin/combined_bill.html",
+        combined_bill=combined_bill,
+        orders=orders
+    )
 # =========================
 # ADMIN ORDER DETAIL
 # =========================

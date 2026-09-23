@@ -300,6 +300,22 @@
       .bill-btn:hover {
         background: #e5e7eb;
       }
+      .combine-btn {
+    background: #111827;
+    color: white;
+    border: none;
+    padding: 11px 18px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.combine-btn:hover {
+    background: #000;
+    transform: translateY(-1px);
+}
 
       /* EMPTY */
       .empty {
@@ -374,20 +390,20 @@
         }
       }
       .table-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
 
-.section-name {
-    font-size: 12px;
-    font-weight: 700;
-    color: #374151;
-}
+      .section-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: #374151;
+      }
 
-.table-badge {
-    width: fit-content;
-}
+      .table-badge {
+        width: fit-content;
+      }
     </style>
   </head>
 
@@ -454,6 +470,7 @@
       </div>
 
       <!-- ORDERS -->
+       <form method="POST" action="{{ url_for('combine_selected_orders') }}">
       <div class="orders-card">
         <div class="table-header">
           <h2>Recent Orders</h2>
@@ -463,6 +480,7 @@
           <table id="ordersTable">
             <thead>
               <tr>
+                <th>Select</th>
                 <th>Order No.</th>
                 <th>Table</th>
                 <th>Total</th>
@@ -479,6 +497,25 @@
                 data-status="{{ order.status }}"
                 data-search="{{ order.order_number }} Table {{ order.table_number }}"
               >
+                <td>
+                  {% if not order.combined_bill_id and order.status not in
+                  ['COMPLETED', 'CANCELLED'] and order.payment_status != 'PAID'
+                  %}
+
+                  <input
+                    type="checkbox"
+                    name="order_ids"
+                    value="{{ order.id }}"
+                    class="order-checkbox"
+                  />
+
+                  {% else %}
+
+                  <span style="color: #9ca3af">—</span>
+
+                  {% endif %}
+                </td>
+
                 <td>
                   <span class="order-number"> #{{ order.order_number }} </span>
                 </td>
@@ -556,7 +593,17 @@
           </table>
         </div>
       </div>
+<div style="margin-top: 15px;">
+        <button
+          type="submit"
+          class="combine-btn"
+          onclick="return confirm('Combine selected orders?');"
+        >
+          Combine Selected
+        </button>
+      </div>
 
+</form>
       {% else %}
 
       <!-- EMPTY ORDERS -->
