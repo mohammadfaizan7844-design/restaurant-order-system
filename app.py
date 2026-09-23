@@ -1987,7 +1987,18 @@ def daily_report():
 
     restaurant_id = session["restaurant_id"]
 
-    # Today's order + payment summary
+    # Selected date
+    selected_date = request.args.get("date")
+
+    # If no date selected, use today's date
+    if not selected_date:
+        selected_date = datetime.now().strftime("%Y-%m-%d")
+
+
+    # =========================
+    # ORDER + PAYMENT SUMMARY
+    # =========================
+
     summary = db.session.execute(
         db.text("""
             SELECT
@@ -2058,15 +2069,19 @@ def daily_report():
                 ON p.order_id = o.id
 
             WHERE o.restaurant_id = :restaurant_id
-            AND DATE(o.created_at) = CURDATE()
+            AND DATE(o.created_at) = :selected_date
         """),
         {
-            "restaurant_id": restaurant_id
+            "restaurant_id": restaurant_id,
+            "selected_date": selected_date
         }
     ).mappings().first()
 
 
-    # Today's order details
+    # =========================
+    # SELECTED DATE ORDERS
+    # =========================
+
     orders = db.session.execute(
         db.text("""
             SELECT
@@ -2093,12 +2108,13 @@ def daily_report():
                 ON p.order_id = o.id
 
             WHERE o.restaurant_id = :restaurant_id
-            AND DATE(o.created_at) = CURDATE()
+            AND DATE(o.created_at) = :selected_date
 
             ORDER BY o.created_at DESC
         """),
         {
-            "restaurant_id": restaurant_id
+            "restaurant_id": restaurant_id,
+            "selected_date": selected_date
         }
     ).mappings().all()
 
@@ -2106,7 +2122,8 @@ def daily_report():
     return render_template(
         "admin/daily_report.html",
         summary=summary,
-        orders=orders
+        orders=orders,
+        selected_date=selected_date
     )
 # =========================
 # COMBINE SELECTED ORDERS
