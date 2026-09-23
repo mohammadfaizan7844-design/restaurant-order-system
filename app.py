@@ -2391,6 +2391,217 @@ def combined_bill(combined_bill_id):
         orders=orders
     )
 # =========================
+# COMBINED BILL PAYMENT
+# =========================
+
+@app.route(
+    "/admin/combined-bill/<int:combined_bill_id>/payment",
+    methods=["POST"]
+)
+def update_combined_payment(combined_bill_id):
+
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    payment_method = request.form["payment_method"]
+
+    if payment_method not in ["CASH", "UPI", "CARD"]:
+        return "Invalid payment method", 400
+
+    # =========================
+    # GET COMBINED BILL
+    # =========================
+
+    combined_bill = db.session.execute(
+        db.text("""
+            SELECT *
+            FROM combined_bills
+            WHERE id = :combined_bill_id
+            AND restaurant_id = :restaurant_id
+        """),
+        {
+            "combined_bill_id": combined_bill_id,
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().first()
+
+    if not combined_bill:
+        return "Combined bill not found", 404
+
+    if combined_bill["status"] == "PAID":
+        return "This combined bill is already paid.", 400
+
+    # =========================
+    # GET SELECTED ORDERS
+    # =========================
+
+    selected_orders = db.session.execute(
+        db.text("""
+            SELECT
+                o.id,
+                o.total_amount
+            FROM combined_bill_orders cbo
+
+            JOIN orders o
+                ON cbo.order_id = o.id
+
+            WHERE cbo.combined_bill_id = :combined_bill_id
+            AND o.restaurant_id = :restaurant_id
+        """),
+        {
+            "combined_bill_id": combined_bill_id,
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().all()
+
+    if not selected_orders:
+        return "No orders found in this combined bill.", 400
+
+    # =========================
+    # MARK COMBINED BILL PAID
+    # =========================
+
+    db.session.execute(
+        db.text("""
+            UPDATE combined_bills
+            SET
+                payment_method = :payment_method,
+                status = 'PAID',
+                paid_at = CURRENT_TIMESTAMP
+            WHERE id = :combined_bill_id
+            AND restaurant_id = :restaurant_id
+        """),
+        {
+            "payment_method": payment_method,
+            "combined_bill_id": combined_bill_id,
+            "restaurant_id": restaurant_id
+        }
+    )
+
+    # =========================
+    # MARK SELECTED ORDERS PAID
+    # =========================
+
+    for order in selected_orders:
+
+        db.session.execute(
+            db.text("""
+                UPDATE payments
+                SET
+                    payment_method = :payment_method,
+                    status = 'PAID',
+                    amount = :amount,
+                    paid_at = CURRENT_TIMESTAMP
+                WHERE order_id = :order_id
+            """),
+            {
+                "payment_method": payment_method,
+                "amount": order["total_amount"],
+                "order_id": order["id"]
+            }
+        )
+
+    # =========================
+    # COMPLETE SELECTED ORDERS
+    # =========================
+
+    for order in selected_orders:
+
+        db.session.execute(
+            db.text("""
+                UPDATE orders
+                SET status = 'COMPLETED'
+                WHERE id = :order_id
+                AND restaurant_id = :restaurant_id
+            """),
+            {
+                "order_id": order["id"],
+                "restaurant_id": restaurant_id
+            }
+        )
+
+    # =========================
+    # CHECK OTHER ORDERS
+    # =========================
+
+    pending_orders = db.session.execute(
+        db.text("""
+            SELECT COUNT(*) AS total
+            FROM orders
+            WHERE session_id = :session_id
+            AND restaurant_id = :restaurant_id
+            AND status NOT IN ('COMPLETED', 'CANCELLED')
+        """),
+        {
+            "session_id": combined_bill["session_id"],
+            "restaurant_id": restaurant_id
+        }
+    ).scalar()
+
+    # =========================
+    # OTHER ORDERS STILL PENDING
+    # KEEP TABLE OCCUPIED
+    # =========================
+
+    if pending_orders > 0:
+
+        db.session.commit()
+
+        return redirect(
+            url_for(
+                "combined_bill",
+                combined_bill_id=combined_bill_id
+            )
+        )
+
+    # =========================
+    # NO OTHER ORDERS
+    # CLOSE SESSION
+    # =========================
+
+    db.session.execute(
+        db.text("""
+            UPDATE sessions
+            SET
+                status = 'CLOSED',
+                closed_at = CURRENT_TIMESTAMP
+            WHERE id = :session_id
+            AND restaurant_id = :restaurant_id
+        """),
+        {
+            "session_id": combined_bill["session_id"],
+            "restaurant_id": restaurant_id
+        }
+    )
+
+    # =========================
+    # MAKE TABLE AVAILABLE
+    # =========================
+
+    db.session.execute(
+        db.text("""
+            UPDATE cafe_tables
+            SET status = 'AVAILABLE'
+            WHERE id = :table_id
+            AND restaurant_id = :restaurant_id
+        """),
+        {
+            "table_id": combined_bill["table_id"],
+            "restaurant_id": restaurant_id
+        }
+    )
+
+    db.session.commit()
+
+    return redirect(
+        url_for(
+            "combined_bill",
+            combined_bill_id=combined_bill_id
+        )
+    )
+# =========================
 # ADMIN ORDER DETAIL
 # =========================
 

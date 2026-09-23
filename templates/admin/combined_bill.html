@@ -138,7 +138,58 @@
         .total-box strong {
             font-size: 24px;
         }
+.payment-box {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
 
+.payment-box h3 {
+    font-size: 17px;
+    margin-bottom: 15px;
+    color: #111827;
+}
+
+.payment-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.payment-form select {
+    padding: 11px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+}
+
+.paid-btn {
+    background: #15803d;
+    color: white;
+}
+
+.paid-btn:hover {
+    background: #166534;
+}
+
+.paid-message {
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: #dcfce7;
+    color: #15803d;
+    font-weight: 800;
+}
+
+.payment-info {
+    margin-top: 10px;
+    color: #374151;
+    font-size: 14px;
+}
         .actions {
             display: flex;
             gap: 10px;
@@ -341,7 +392,71 @@
 
         </div>
 
+<!-- PAYMENT -->
+<div class="payment-box">
 
+    <h3>Payment</h3>
+
+    {% if combined_bill.status == 'PAID' %}
+
+        <div class="paid-message">
+            ✓ PAID
+        </div>
+
+        <div class="payment-info">
+            Payment Method:
+            <strong>{{ combined_bill.payment_method }}</strong>
+        </div>
+
+        <div class="payment-info">
+            Paid At:
+            <strong>{{ combined_bill.paid_at }}</strong>
+        </div>
+
+    {% else %}
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'update_combined_payment',
+                combined_bill_id=combined_bill.id
+            ) }}"
+            class="payment-form"
+        >
+
+            <select name="payment_method" required>
+
+                <option value="">
+                    Select Payment Method
+                </option>
+
+                <option value="CASH">
+                    Cash
+                </option>
+
+                <option value="UPI">
+                    UPI
+                </option>
+
+                <option value="CARD">
+                    Card
+                </option>
+
+            </select>
+
+            <button
+                type="submit"
+                class="btn paid-btn"
+                onclick="return confirm('Mark this combined bill as paid?');"
+            >
+                ✓ Mark as Paid
+            </button>
+
+        </form>
+
+    {% endif %}
+
+</div>
         <!-- ACTIONS -->
         <div class="actions no-print">
 
