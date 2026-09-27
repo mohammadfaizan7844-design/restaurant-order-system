@@ -966,6 +966,52 @@ def edit_menu(item_id):
         "admin/edit_menu.html",
         item=item
     )
+
+# =========================
+# MANAGE SECTIONS
+# =========================
+
+@app.route("/admin/sections")
+def sections():
+
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    sections = db.session.execute(
+        db.text("""
+            SELECT
+                s.id,
+                s.name,
+                s.created_at,
+                COUNT(ct.id) AS table_count
+            FROM sections s
+
+            LEFT JOIN cafe_tables ct
+                ON ct.section_id = s.id
+
+            WHERE s.restaurant_id = :restaurant_id
+
+            GROUP BY
+                s.id,
+                s.name,
+                s.created_at
+
+            ORDER BY s.id DESC
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().all()
+
+    return render_template(
+        "admin/sections.html",
+        sections=sections
+    )
+
+
+
 # =========================
 # ADD SECTION
 # =========================
