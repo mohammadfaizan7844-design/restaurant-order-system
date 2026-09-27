@@ -879,6 +879,10 @@ def toggle_menu(item_id):
     db.session.commit()
 
     return redirect(url_for("menu"))
+# =========================
+# EDIT MENU ITEM
+# =========================
+
 @app.route("/admin/menu/edit/<int:item_id>", methods=["GET", "POST"])
 def edit_menu(item_id):
 
@@ -910,6 +914,27 @@ def edit_menu(item_id):
         description = request.form["description"]
         price = request.form["price"]
 
+        # =========================
+        # IMAGE UPLOAD
+        # =========================
+
+        image = request.files.get("image")
+
+        image_url = item["image"]
+
+        if image and image.filename:
+
+            upload_result = cloudinary.uploader.upload(
+                image,
+                folder=f"restaurant_menu/{restaurant_id}"
+            )
+
+            image_url = upload_result["secure_url"]
+
+        # =========================
+        # UPDATE MENU ITEM
+        # =========================
+
         db.session.execute(
             db.text("""
                 UPDATE menu_items
@@ -917,7 +942,8 @@ def edit_menu(item_id):
                     name = :name,
                     category = :category,
                     description = :description,
-                    price = :price
+                    price = :price,
+                    image = :image
                 WHERE id = :item_id
                 AND restaurant_id = :restaurant_id
             """),
@@ -926,6 +952,7 @@ def edit_menu(item_id):
                 "category": category,
                 "description": description,
                 "price": price,
+                "image": image_url,
                 "item_id": item_id,
                 "restaurant_id": restaurant_id
             }
@@ -939,46 +966,6 @@ def edit_menu(item_id):
         "admin/edit_menu.html",
         item=item
     )
-# =========================
-# SECTION MANAGEMENT
-# =========================
-
-@app.route("/admin/sections")
-def sections():
-
-    if not admin_required():
-        return redirect(url_for("login"))
-
-    restaurant_id = session["restaurant_id"]
-
-    sections = db.session.execute(
-        db.text("""
-            SELECT
-                s.id,
-                s.name,
-                s.created_at,
-                COUNT(ct.id) AS table_count
-            FROM sections s
-            LEFT JOIN cafe_tables ct
-                ON ct.section_id = s.id
-            WHERE s.restaurant_id = :restaurant_id
-            GROUP BY
-                s.id,
-                s.name,
-                s.created_at
-            ORDER BY s.id DESC
-        """),
-        {
-            "restaurant_id": restaurant_id
-        }
-    ).mappings().all()
-
-    return render_template(
-        "admin/sections.html",
-        sections=sections
-    )
-
-
 # =========================
 # ADD SECTION
 # =========================

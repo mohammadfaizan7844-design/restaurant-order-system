@@ -241,8 +241,7 @@
         </div>
 
 
-        <form method="POST">
-
+<form method="POST" enctype="multipart/form-data">
             <div class="form-group">
 
                 <label for="name">
@@ -322,7 +321,50 @@
                 >{{ item.description or '' }}</textarea>
 
             </div>
+<!-- IMAGE -->
+<div class="form-group">
 
+    <label>Food Image</label>
+
+    {% if item.image %}
+        <div style="margin-bottom: 12px;">
+            <img
+                src="{{ item.image }}"
+                alt="{{ item.name }}"
+                style="
+                    width: 150px;
+                    height: 110px;
+                    object-fit: cover;
+                    border-radius: 10px;
+                    border: 1px solid #e5e7eb;
+                "
+            >
+        </div>
+
+        <div style="
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        ">
+            Current image
+        </div>
+    {% endif %}
+
+    <input
+        type="file"
+        name="image"
+        accept="image/*"
+    >
+
+    <div style="
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 7px;
+    ">
+        Upload a new image to replace the current image.
+    </div>
+
+</div>
 
             <div class="buttons">
 
