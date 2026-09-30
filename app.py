@@ -1002,6 +1002,10 @@ def edit_menu(item_id):
 
     restaurant_id = session["restaurant_id"]
 
+    # =========================
+    # GET MENU ITEM
+    # =========================
+
     item = db.session.execute(
         db.text("""
             SELECT *
@@ -1018,12 +1022,33 @@ def edit_menu(item_id):
     if not item:
         return "Menu item not found", 404
 
+    # =========================
+    # GET RESTAURANT
+    # =========================
+
+    restaurant = db.session.execute(
+        db.text("""
+            SELECT *
+            FROM restaurants
+            WHERE id = :restaurant_id
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().first()
+
+    # =========================
+    # UPDATE MENU ITEM
+    # =========================
+
     if request.method == "POST":
 
         name = request.form["name"]
         category = request.form["category"]
         description = request.form["description"]
         price = request.form["price"]
+
+        # SPECIAL ITEM
         is_special = request.form.get("is_special") == "on"
 
         # =========================
@@ -1066,7 +1091,7 @@ def edit_menu(item_id):
                 "description": description,
                 "price": price,
                 "image": image_url,
-                 "is_special": is_special,
+                "is_special": is_special,
                 "item_id": item_id,
                 "restaurant_id": restaurant_id
             }
@@ -1075,21 +1100,16 @@ def edit_menu(item_id):
         db.session.commit()
 
         return redirect(url_for("menu"))
-        restaurant = db.session.execute(
-    db.text("""
-        SELECT *
-        FROM restaurants
-        WHERE id = :restaurant_id
-    """),
-    {
-        "restaurant_id": restaurant_id
-    }
-).mappings().first()
+
+    # =========================
+    # EDIT PAGE
+    # =========================
+
     return render_template(
-    "admin/edit_menu.html",
-    item=item,
-    restaurant=restaurant
-)
+        "admin/edit_menu.html",
+        item=item,
+        restaurant=restaurant
+    )
 # =========================
 # MANAGE SECTIONS
 # =========================
