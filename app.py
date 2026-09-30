@@ -619,7 +619,7 @@ def settings():
                     address = :address,
                     phone = :phone,
                     email = :email,
-                    gst_number = :gst_number
+                    gst_number = :gst_number,
                      special_section_name = :special_section_name
                 WHERE id = :restaurant_id
             """),
@@ -630,7 +630,6 @@ def settings():
                 "email": email,
                 "gst_number": gst_number,
                 "special_section_name": special_section_name,
-
                 "restaurant_id": restaurant_id
             }
         )
