@@ -744,7 +744,11 @@ def menu():
             SELECT *
             FROM menu_items
             WHERE restaurant_id = :restaurant_id
-            ORDER BY id DESC
+
+            ORDER BY
+                available DESC,
+                category ASC,
+                name ASC
         """),
         {
             "restaurant_id": restaurant_id
@@ -755,8 +759,6 @@ def menu():
         "admin/menu.html",
         menu_items=menu_items
     )
-
-
 # =========================
 # ADD MENU ITEM
 # =========================
@@ -875,6 +877,94 @@ def toggle_menu(item_id):
             "restaurant_id": restaurant_id
         }
     )
+
+    db.session.commit()
+
+    return redirect(url_for("menu"))
+
+    # =========================
+# BULK MENU ACTION
+# =========================
+
+@app.route("/admin/menu/bulk-action", methods=["POST"])
+def bulk_menu_action():
+
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    restaurant_id = session["restaurant_id"]
+
+    selected_items = request.form.getlist("item_ids")
+    action = request.form.get("action")
+
+    if not selected_items:
+        return redirect(url_for("menu"))
+
+    try:
+        selected_items = [int(item_id) for item_id in selected_items]
+    except ValueError:
+        return "Invalid menu item selection.", 400
+
+    if action not in ["available", "unavailable", "delete"]:
+        return "Invalid action.", 400
+
+    placeholders = ", ".join(
+        [f":item_{i}" for i in range(len(selected_items))]
+    )
+
+    params = {
+        f"item_{i}": item_id
+        for i, item_id in enumerate(selected_items)
+    }
+
+    params["restaurant_id"] = restaurant_id
+
+    # =========================
+    # MAKE AVAILABLE
+    # =========================
+
+    if action == "available":
+
+        db.session.execute(
+            db.text(f"""
+                UPDATE menu_items
+                SET available = TRUE
+                WHERE restaurant_id = :restaurant_id
+                AND id IN ({placeholders})
+            """),
+            params
+        )
+
+    # =========================
+    # MAKE UNAVAILABLE
+    # =========================
+
+    elif action == "unavailable":
+
+        db.session.execute(
+            db.text(f"""
+                UPDATE menu_items
+                SET available = FALSE
+                WHERE restaurant_id = :restaurant_id
+                AND id IN ({placeholders})
+            """),
+            params
+        )
+
+    # =========================
+    # DELETE
+    # =========================
+
+    elif action == "delete":
+
+        db.session.execute(
+            db.text(f"""
+                DELETE FROM menu_items
+                WHERE restaurant_id = :restaurant_id
+                AND id IN ({placeholders})
+            """),
+            params
+        )
 
     db.session.commit()
 

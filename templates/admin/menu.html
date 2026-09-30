@@ -433,6 +433,221 @@
 .edit-btn:hover {
     background: #e5e7eb;
 }
+/* =========================================================
+   BULK MENU ACTIONS
+   ========================================================= */
+
+.bulk-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 18px;
+    margin-bottom: 15px;
+
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    flex-wrap: wrap;
+}
+
+
+/* LEFT SIDE */
+
+.bulk-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+
+.select-all-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+
+    cursor: pointer;
+}
+
+
+.select-all-label input,
+.item-checkbox {
+    width: 17px;
+    height: 17px;
+
+    cursor: pointer;
+
+    accent-color: #173f36;
+}
+
+
+.selected-count {
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #6b7280;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+}
+
+
+/* RIGHT SIDE */
+
+.bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+
+/* COMMON BUTTON */
+
+.bulk-btn {
+    border: none;
+
+    padding: 9px 13px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+
+/* AVAILABLE */
+
+.available-bulk {
+    background: #ecfdf5;
+    color: #047857;
+
+    border: 1px solid #a7f3d0;
+}
+
+.available-bulk:hover {
+    background: #d1fae5;
+}
+
+
+/* UNAVAILABLE */
+
+.unavailable-bulk {
+    background: #fff7ed;
+    color: #c2410c;
+
+    border: 1px solid #fed7aa;
+}
+
+.unavailable-bulk:hover {
+    background: #ffedd5;
+}
+
+
+/* DELETE */
+
+.delete-bulk {
+    background: #fef2f2;
+    color: #dc2626;
+
+    border: 1px solid #fecaca;
+}
+
+.delete-bulk:hover {
+    background: #fee2e2;
+}
+
+
+/* =========================================================
+   SELECT COLUMN
+   ========================================================= */
+
+.select-column {
+    width: 70px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   CHECKBOX
+   ========================================================= */
+
+.item-checkbox {
+    display: block;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   SELECTED ROW
+   ========================================================= */
+
+#menuTable tbody tr:has(.item-checkbox:checked) {
+    background: #f0fdf4;
+}
+
+
+/* =========================================================
+   MOBILE RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .bulk-toolbar {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        padding: 14px;
+    }
+
+
+    .bulk-left {
+        width: 100%;
+
+        justify-content: space-between;
+    }
+
+
+    .bulk-actions {
+        width: 100%;
+    }
+
+
+    .bulk-btn {
+        flex: 1;
+
+        min-width: 120px;
+    }
+
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+
+    #menuTable {
+        min-width: 750px;
+    }
+
+}
     </style>
   </head>
 
@@ -537,116 +752,308 @@
         </form>
       </div>
 
-      <!-- MENU LIST -->
+    <!-- MENU LIST -->
 
-      <div class="box">
-        <div class="menu-header">
-          <div>
+<div class="box">
+
+    <div class="menu-header">
+
+        <div>
+
             <h2>Menu Items</h2>
 
-            <p>View and manage all restaurant menu items</p>
-          </div>
+            <p>
+                View and manage all restaurant menu items
+            </p>
 
-          <div class="search-box">
+        </div>
+
+
+        <div class="search-box">
+
             <input
-              type="text"
-              id="searchInput"
-              placeholder="Search menu item..."
+                type="text"
+                id="searchInput"
+                placeholder="Search menu item..."
             />
-          </div>
+
         </div>
 
-        {% if menu_items %}
-
-        <div class="table-wrapper">
-          <table id="menuTable">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {% for item in menu_items %}
-
-              <tr>
-                <td>
-                  <span class="item-name"> {{ item.name }} </span>
-                </td>
-
-                <td>
-                  <span class="category">
-                    {{ item.category or 'General' }}
-                  </span>
-                </td>
-
-                <td>
-                  <span class="price"> ₹{{ item.price }} </span>
-                </td>
-
-                <td>
-                  {% if item.available %}
-
-                  <span class="status available"> ● AVAILABLE </span>
-
-                  {% else %}
-
-                  <span class="status unavailable"> ● UNAVAILABLE </span>
-
-                  {% endif %}
-                </td>
-
-                <td>
-                  <div class="actions">
-
-        <a
-            href="/admin/menu/edit/{{ item.id }}"
-            class="action-btn edit-btn"
-        >
-            Edit
-        </a>
-                  <div class="actions">
-                    <a
-                      href="/admin/menu/toggle/{{ item.id }}"
-                      class="action-btn toggle-btn"
-                    >
-                      Toggle
-                    </a>
-
-                    <a
-                      href="/admin/menu/delete/{{ item.id }}"
-                      class="action-btn delete-btn"
-                      onclick="return confirm('Delete this item?');"
-                    >
-                      Delete
-                    </a>
-                  </div>
-                </td>
-              </tr>
-
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-
-        {% else %}
-
-        <div class="empty">
-          <div class="empty-icon">🍽️</div>
-
-          <h3>No Menu Items</h3>
-
-          <p>Add your first menu item using the form above.</p>
-        </div>
-
-        {% endif %}
-      </div>
     </div>
 
+
+    {% if menu_items %}
+
+
+    <!-- BULK MENU ACTIONS -->
+
+    <form
+        method="POST"
+        action="{{ url_for('bulk_menu_action') }}"
+        id="bulkMenuForm"
+    >
+
+        <div class="bulk-toolbar">
+
+
+            <div class="bulk-left">
+
+                <label class="select-all-label">
+
+                    <input
+                        type="checkbox"
+                        id="selectAll"
+                    >
+
+                    <span>Select All</span>
+
+                </label>
+
+
+                <span
+                    id="selectedCount"
+                    class="selected-count"
+                >
+                    0 selected
+                </span>
+
+            </div>
+
+
+            <div class="bulk-actions">
+
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="available"
+                    class="bulk-btn available-bulk"
+                    onclick="return confirmBulkAction('available')"
+                >
+                    ✓ Make Available
+                </button>
+
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="unavailable"
+                    class="bulk-btn unavailable-bulk"
+                    onclick="return confirmBulkAction('unavailable')"
+                >
+                    ✕ Make Unavailable
+                </button>
+
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="delete"
+                    class="bulk-btn delete-bulk"
+                    onclick="return confirmBulkAction('delete')"
+                >
+                    🗑 Delete Selected
+                </button>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- MENU TABLE -->
+
+        <div class="table-wrapper">
+
+            <table id="menuTable">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th class="select-column">
+                            Select
+                        </th>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in menu_items %}
+
+
+                    <tr>
+
+
+                        <!-- SELECT -->
+
+                        <td class="select-column">
+
+                            <input
+                                type="checkbox"
+                                name="item_ids"
+                                value="{{ item.id }}"
+                                class="item-checkbox"
+                            >
+
+                        </td>
+
+
+                        <!-- NAME -->
+
+                        <td>
+
+                            <span class="item-name">
+                                {{ item.name }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- CATEGORY -->
+
+                        <td>
+
+                            <span class="category">
+                                {{ item.category or 'General' }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- PRICE -->
+
+                        <td>
+
+                            <span class="price">
+                                ₹{{ item.price }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if item.available %}
+
+                            <span class="status available">
+                                ● AVAILABLE
+                            </span>
+
+                            {% else %}
+
+                            <span class="status unavailable">
+                                ● UNAVAILABLE
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            <div class="actions">
+
+
+                                <a
+                                    href="/admin/menu/edit/{{ item.id }}"
+                                    class="action-btn edit-btn"
+                                >
+                                    Edit
+                                </a>
+
+
+                                <a
+                                    href="/admin/menu/toggle/{{ item.id }}"
+                                    class="action-btn toggle-btn"
+                                >
+                                    Toggle
+                                </a>
+
+
+                                <a
+                                    href="/admin/menu/delete/{{ item.id }}"
+                                    class="action-btn delete-btn"
+                                    onclick="return confirm('Delete this item?');"
+                                >
+                                    Delete
+                                </a>
+
+
+                            </div>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+                </tbody>
+
+
+            </table>
+
+        </div>
+
+
+    </form>
+
+
+    {% else %}
+
+
+    <div class="empty">
+
+        <div class="empty-icon">
+            🍽️
+        </div>
+
+        <h3>
+            No Menu Items
+        </h3>
+
+        <p>
+            Add your first menu item using the form above.
+        </p>
+
+    </div>
+
+
+    {% endif %}
+
+
+</div>
     <script>
       /* SUMMARY COUNT */
 
@@ -693,6 +1100,146 @@
           });
         });
       }
+      /* =========================================================
+   BULK MENU SELECTION
+   ========================================================= */
+
+const selectAll = document.getElementById("selectAll");
+const itemCheckboxes = document.querySelectorAll(".item-checkbox");
+const selectedCount = document.getElementById("selectedCount");
+
+
+/* UPDATE SELECTED COUNT */
+
+function updateSelectedCount() {
+
+    const selected = document.querySelectorAll(
+        ".item-checkbox:checked"
+    ).length;
+
+    if (selectedCount) {
+        selectedCount.textContent = selected + " selected";
+    }
+
+}
+
+
+/* SELECT ALL */
+
+if (selectAll) {
+
+    selectAll.addEventListener("change", function () {
+
+        itemCheckboxes.forEach(function (checkbox) {
+
+            checkbox.checked = selectAll.checked;
+
+        });
+
+        updateSelectedCount();
+
+    });
+
+}
+
+
+/* INDIVIDUAL CHECKBOX */
+
+itemCheckboxes.forEach(function (checkbox) {
+
+    checkbox.addEventListener("change", function () {
+
+        const checkedCount = document.querySelectorAll(
+            ".item-checkbox:checked"
+        ).length;
+
+        if (selectAll) {
+
+            selectAll.checked =
+                checkedCount === itemCheckboxes.length;
+
+            selectAll.indeterminate =
+                checkedCount > 0 &&
+                checkedCount < itemCheckboxes.length;
+
+        }
+
+        updateSelectedCount();
+
+    });
+
+});
+
+
+/* =========================================================
+   BULK ACTION CONFIRMATION
+   ========================================================= */
+
+function confirmBulkAction(action) {
+
+    const selected = document.querySelectorAll(
+        ".item-checkbox:checked"
+    ).length;
+
+
+    /* NOTHING SELECTED */
+
+    if (selected === 0) {
+
+        alert("Please select at least one menu item.");
+
+        return false;
+
+    }
+
+
+    /* MAKE AVAILABLE */
+
+    if (action === "available") {
+
+        return confirm(
+            "Make " +
+            selected +
+            " selected item(s) available?"
+        );
+
+    }
+
+
+    /* MAKE UNAVAILABLE */
+
+    if (action === "unavailable") {
+
+        return confirm(
+            "Make " +
+            selected +
+            " selected item(s) unavailable?"
+        );
+
+    }
+
+
+    /* DELETE */
+
+    if (action === "delete") {
+
+        return confirm(
+            "Delete " +
+            selected +
+            " selected item(s)? This cannot be undone."
+        );
+
+    }
+
+
+    return true;
+
+}
+
+
+/* INITIAL COUNT */
+
+updateSelectedCount();
     </script>
   </body>
 </html>
