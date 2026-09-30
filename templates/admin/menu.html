@@ -716,7 +716,43 @@
 
               <input type="text" name="category" placeholder="e.g. Snacks" />
             </div>
+<!-- SPECIAL SECTION -->
 
+{% if restaurant.special_section_name %}
+
+<div class="form-group">
+
+    <label>
+        Special Section
+    </label>
+
+    <label
+        style="
+            display:flex;
+            align-items:center;
+            gap:8px;
+            font-weight:600;
+            cursor:pointer;
+        "
+    >
+
+        <input
+            type="checkbox"
+            name="is_special"
+            style="
+                width:18px;
+                height:18px;
+                cursor:pointer;
+            "
+        >
+
+        Show in {{ restaurant.special_section_name }}
+
+    </label>
+
+</div>
+
+{% endif %}
             <div class="form-group">
               <label>Price</label>
 

@@ -742,6 +742,7 @@ def menu():
 
     restaurant_id = session["restaurant_id"]
 
+    # MENU ITEMS
     menu_items = db.session.execute(
         db.text("""
             SELECT *
@@ -758,9 +759,22 @@ def menu():
         }
     ).mappings().all()
 
+    # RESTAURANT SETTINGS
+    restaurant = db.session.execute(
+        db.text("""
+            SELECT *
+            FROM restaurants
+            WHERE id = :restaurant_id
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().first()
+
     return render_template(
         "admin/menu.html",
-        menu_items=menu_items
+        menu_items=menu_items,
+        restaurant=restaurant
     )
 # =========================
 # ADD MENU ITEM
@@ -778,6 +792,7 @@ def add_menu():
     category = request.form["category"]
     description = request.form["description"]
     price = request.form["price"]
+    is_special = request.form.get("is_special") == "on"
 
     image = request.files.get("image")
 
@@ -801,7 +816,8 @@ def add_menu():
                 description,
                 price,
                 image,
-                available
+                available,
+                is_special
             )
             VALUES
             (
@@ -811,7 +827,8 @@ def add_menu():
                 :description,
                 :price,
                 :image,
-                TRUE
+                TRUE,
+                :is_special
             )
         """),
         {
@@ -820,7 +837,8 @@ def add_menu():
             "category": category,
             "description": description,
             "price": price,
-            "image": image_url
+            "image": image_url,
+             "is_special": is_special
         }
     )
 
