@@ -541,6 +541,7 @@ def settings():
         phone = request.form["phone"]
         email = request.form["email"]
         gst_number = request.form["gst_number"]
+        special_section_name = request.form.get("special_section_name", "").strip()
 
         # -------------------------
         # RESTAURANT LOGO
@@ -619,6 +620,7 @@ def settings():
                     phone = :phone,
                     email = :email,
                     gst_number = :gst_number
+                     special_section_name = :special_section_name
                 WHERE id = :restaurant_id
             """),
             {
@@ -627,6 +629,8 @@ def settings():
                 "phone": phone,
                 "email": email,
                 "gst_number": gst_number,
+                "special_section_name": special_section_name,
+
                 "restaurant_id": restaurant_id
             }
         )
