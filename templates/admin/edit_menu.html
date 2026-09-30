@@ -321,6 +321,42 @@
                 >{{ item.description or '' }}</textarea>
 
             </div>
+            <!-- SPECIAL SECTION -->
+{% if restaurant.special_section_name %}
+<div class="form-group">
+
+    <label>
+        Special Section
+    </label>
+
+    <label
+        style="
+            display:flex;
+            align-items:center;
+            gap:8px;
+            font-weight:500;
+            cursor:pointer;
+        "
+    >
+
+        <input
+            type="checkbox"
+            name="is_special"
+            {% if item.is_special %}checked{% endif %}
+            style="
+                width:17px;
+                height:17px;
+                cursor:pointer;
+                accent-color:#173f36;
+            "
+        >
+
+        Show in {{ restaurant.special_section_name }}
+
+    </label>
+
+</div>
+{% endif %}
 <!-- IMAGE -->
 <div class="form-group">
 

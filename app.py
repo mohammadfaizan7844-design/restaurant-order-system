@@ -1024,6 +1024,7 @@ def edit_menu(item_id):
         category = request.form["category"]
         description = request.form["description"]
         price = request.form["price"]
+        is_special = request.form.get("is_special") == "on"
 
         # =========================
         # IMAGE UPLOAD
@@ -1054,7 +1055,8 @@ def edit_menu(item_id):
                     category = :category,
                     description = :description,
                     price = :price,
-                    image = :image
+                    image = :image,
+                    is_special = :is_special
                 WHERE id = :item_id
                 AND restaurant_id = :restaurant_id
             """),
@@ -1064,6 +1066,7 @@ def edit_menu(item_id):
                 "description": description,
                 "price": price,
                 "image": image_url,
+                 "is_special": is_special,
                 "item_id": item_id,
                 "restaurant_id": restaurant_id
             }
@@ -1072,12 +1075,21 @@ def edit_menu(item_id):
         db.session.commit()
 
         return redirect(url_for("menu"))
-
+        restaurant = db.session.execute(
+    db.text("""
+        SELECT *
+        FROM restaurants
+        WHERE id = :restaurant_id
+    """),
+    {
+        "restaurant_id": restaurant_id
+    }
+).mappings().first()
     return render_template(
-        "admin/edit_menu.html",
-        item=item
-    )
-
+    "admin/edit_menu.html",
+    item=item,
+    restaurant=restaurant
+)
 # =========================
 # MANAGE SECTIONS
 # =========================
