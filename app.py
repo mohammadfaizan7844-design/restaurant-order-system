@@ -1505,7 +1505,23 @@ def customer_menu():
             "restaurant_id": restaurant_id
         }
     ).mappings().first()
+    # ==========================================
+    # GET SPECIAL MENU ITEMS
+    # ==========================================
 
+    special_items = db.session.execute(
+        db.text("""
+            SELECT *
+            FROM menu_items
+            WHERE restaurant_id = :restaurant_id
+            AND available = TRUE
+            AND is_special = TRUE
+            ORDER BY category, name
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().all()
     if not restaurant:
         return "Restaurant not found", 404
 
@@ -1609,7 +1625,9 @@ def customer_menu():
         "customer/menu.html",
         restaurant=restaurant,
         table=table,
-        menu_items=menu_items
+        menu_items=menu_items,
+        special_items=special_items
+
     )
 
 # =========================

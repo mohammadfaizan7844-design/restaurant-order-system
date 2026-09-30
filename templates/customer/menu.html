@@ -836,7 +836,6 @@
       <!-- =========================
          CATEGORY BUTTONS
     ========================= -->
-
       <div class="categories" id="categoryButtons">
         <button
           class="category-btn active"
@@ -847,7 +846,16 @@
           All
         </button>
 
-        {% set categories = [] %} {% for item in menu_items %} {% if
+        {% if restaurant.special_section_name %}
+        <button
+          class="category-btn"
+          type="button"
+          data-category="SPECIAL"
+          onclick="filterCategory('SPECIAL', this)"
+        >
+          {{ restaurant.special_section_name }}
+        </button>
+        {% endif %} {% set categories = [] %} {% for item in menu_items %} {% if
         item.category and item.category not in categories %} {% set _ =
         categories.append(item.category) %}
 
@@ -855,13 +863,13 @@
           class="category-btn"
           type="button"
           data-category="{{ item.category }}"
+          onclick="filterCategory('{{ item.category }}', this)"
         >
           {{ item.category }}
         </button>
 
         {% endif %} {% endfor %}
       </div>
-
       <!-- =========================
          MENU
     ========================= -->
@@ -873,25 +881,20 @@
           class="card menu-item"
           data-name="{{ item.name|lower }}"
           data-category="{{ item.category|lower if item.category else '' }}"
+          data-special="{{ 'true' if item.is_special else 'false' }}"
         >
           <div class="image-container">
-            {% if item.image %}
-    {% if item.image.startswith('http') %}
-        <img
-          src="{{ item.image }}"
-          alt="{{ item.name }}"
-          loading="lazy"
-        />
-    {% else %}
-        <img
-          src="{{ url_for('static', filename='images/menu/' + item.image) }}"
-          alt="{{ item.name }}"
-          loading="lazy"
-        />
-    {% endif %}
-{% else %}
-    <div class="no-image">🍽️ No Image</div>
-{% endif %}a
+            {% if item.image %} {% if item.image.startswith('http') %}
+            <img src="{{ item.image }}" alt="{{ item.name }}" loading="lazy" />
+            {% else %}
+            <img
+              src="{{ url_for('static', filename='images/menu/' + item.image) }}"
+              alt="{{ item.name }}"
+              loading="lazy"
+            />
+            {% endif %} {% else %}
+            <div class="no-image">🍽️ No Image</div>
+            {% endif %}a
           </div>
 
           <div class="content">
@@ -1021,8 +1024,11 @@
 
           const matchesSearch = name.includes(searchText);
 
+          const isSpecial = item.dataset.special === "true";
+
           const matchesCategory =
             selectedCategory === "ALL" ||
+            (selectedCategory === "SPECIAL" && isSpecial) ||
             category === selectedCategory.toLowerCase();
 
           if (matchesSearch && matchesCategory) {
