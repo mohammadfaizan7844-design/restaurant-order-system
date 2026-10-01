@@ -7,7 +7,7 @@ import time
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from config import DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
 
 # =========================
@@ -35,7 +35,30 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
+# =========================
+# INDIA DATE & TIME FORMAT
+# =========================
 
+@app.template_filter("india_time")
+def india_time(value):
+
+    if not value:
+        return ""
+
+    # Database timestamp is stored as UTC
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+
+    # Convert UTC → India Standard Time
+    india_timezone = timezone(
+        timedelta(hours=5, minutes=30)
+    )
+
+    value = value.astimezone(india_timezone)
+
+    return value.strftime(
+        "%d-%m-%Y %I:%M:%S %p"
+    )
 # =========================
 # ADMIN REQUIRED FUNCTION
 # =========================
