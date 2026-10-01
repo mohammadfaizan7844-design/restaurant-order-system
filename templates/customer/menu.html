@@ -1191,7 +1191,6 @@
       }
 
       updateGreeting();
-
 /* =========================
    CUSTOMER ORDER STATUS SLIDER
 ========================= */
@@ -1250,7 +1249,7 @@ function renderOrderStatus() {
   }
 
 
-  /* NO ORDER */
+  /* NO ACTIVE ORDER */
 
   if (customerOrders.length === 0) {
 
@@ -1260,6 +1259,8 @@ function renderOrderStatus() {
     return;
   }
 
+
+  /* SAFETY */
 
   if (
     currentOrderStatusIndex >=
@@ -1273,10 +1274,11 @@ function renderOrderStatus() {
   const currentOrder =
     customerOrders[currentOrderStatusIndex];
 
-
   const status =
     currentOrder.status;
 
+
+  /* SHOW CARD */
 
   notification.className =
     "order-status-notification show";
@@ -1374,7 +1376,7 @@ function renderOrderStatus() {
 
 
 /* =========================
-   CHECK ORDER STATUS
+   CHECK ALL ORDERS
 ========================= */
 
 async function checkOrderStatus() {
@@ -1417,37 +1419,59 @@ async function checkOrderStatus() {
     }
 
 
-    /*
-      YOUR CURRENT API RETURNS:
+    /* Remember current order */
 
-      {
-        has_order: true,
-        order_number: "...",
-        status: "NEW",
-        success: true
-      }
-    */
+    const oldCurrentOrderId =
+      customerOrders[currentOrderStatusIndex]?.order_id;
 
 
-    if (
-      data.has_order === true
-    ) {
+    /* GET ALL ACTIVE ORDERS */
 
-      customerOrders = [
-        {
-          order_id: data.order_number,
-          order_number: data.order_number,
-          status: data.status
-        }
-      ];
+    customerOrders =
+      data.orders || [];
 
-    } else {
 
-      customerOrders = [];
+    /* NO ACTIVE ORDERS */
+
+    if (customerOrders.length === 0) {
+
+      currentOrderStatusIndex = 0;
+
+      renderOrderStatus();
+
+      return;
     }
 
 
-    currentOrderStatusIndex = 0;
+    /* Keep same order after 5 sec refresh */
+
+    const sameOrderIndex =
+      customerOrders.findIndex(
+        function (item) {
+
+          return (
+            item.order_id ===
+            oldCurrentOrderId
+          );
+
+        }
+      );
+
+
+    if (sameOrderIndex >= 0) {
+
+      currentOrderStatusIndex =
+        sameOrderIndex;
+
+    }
+
+    else if (
+      currentOrderStatusIndex >=
+      customerOrders.length
+    ) {
+
+      currentOrderStatusIndex = 0;
+    }
 
 
     renderOrderStatus();
@@ -1479,7 +1503,6 @@ setInterval(
   checkOrderStatus,
   5000
 );
-
       /* =========================
        CATEGORY FILTER
     ========================= */
