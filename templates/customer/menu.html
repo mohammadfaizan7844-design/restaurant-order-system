@@ -802,6 +802,102 @@
           animation-delay: 0.1s;
         }
       }
+      /* =========================
+   ORDER STATUS SLIDER
+========================= */
+
+.order-status-notification {
+  display: none;
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: white;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+  animation: statusSlide 0.3s ease;
+}
+
+.order-status-notification.show {
+  display: block;
+}
+
+.order-status-notification:active {
+  transform: scale(0.985);
+}
+
+.order-status-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.order-status-message {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.45;
+}
+
+.order-status-order {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #888;
+  font-weight: 600;
+}
+
+.order-status-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 11px;
+}
+
+.order-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d1d5db;
+  transition: 0.2s ease;
+}
+
+.order-status-dot.active {
+  width: 18px;
+  border-radius: 10px;
+  background: #173f36;
+}
+
+.order-status-notification.new {
+  border-left: 5px solid #3b82f6;
+}
+
+.order-status-notification.preparing {
+  border-left: 5px solid #f59e0b;
+}
+
+.order-status-notification.ready {
+  border-left: 5px solid #16a34a;
+}
+
+.order-status-notification.served {
+  border-left: 5px solid #8b5cf6;
+}
+
+@keyframes statusSlide {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
     </style>
   </head>
 
@@ -870,30 +966,18 @@
   ========================= -->
 
     <main class="container">
-      <!-- =========================
-   ORDER STATUS NOTIFICATION
-========================= -->
+      
 
-<div
-  class="order-status-notification"
-  id="orderStatusNotification"
->
-  <div class="order-status-title" id="orderStatusTitle">
-    🆕 Order Received
-  </div>
-
+  <!-- ORDER STATUS SLIDER -->
   <div
-    class="order-status-message"
-    id="orderStatusMessage"
+    class="order-status-notification"
+    id="orderStatusNotification"
+    onclick="showNextOrderStatus()"
   >
-    Your order has been received by the restaurant.
+    ...
   </div>
 
-  <div
-    class="order-status-order"
-    id="orderStatusOrder"
-  ></div>
-</div>
+  <div class="menu-intro">
       <div class="menu-intro">
         <div class="menu-intro-small">Explore & Enjoy</div>
 
@@ -1088,165 +1172,287 @@
       }
 
       updateGreeting();
+
 /* =========================
-   CUSTOMER ORDER STATUS
+   CUSTOMER ORDER STATUS SLIDER
 ========================= */
 
-let orderStatusInterval = null;
+let customerOrders = [];
+let currentOrderStatusIndex = 0;
+
+
+/* NEXT ORDER */
+
+function showNextOrderStatus() {
+
+  if (customerOrders.length <= 1) {
+    return;
+  }
+
+  currentOrderStatusIndex =
+    (currentOrderStatusIndex + 1) % customerOrders.length;
+
+  renderOrderStatus();
+}
+
+
+/* SHOW CURRENT ORDER */
+
+function renderOrderStatus() {
+
+  const notification =
+    document.getElementById("orderStatusNotification");
+
+  const title =
+    document.getElementById("orderStatusTitle");
+
+  const message =
+    document.getElementById("orderStatusMessage");
+
+  const order =
+    document.getElementById("orderStatusOrder");
+
+  const dots =
+    document.getElementById("orderStatusDots");
+
+
+  if (
+    !notification ||
+    !title ||
+    !message ||
+    !order ||
+    !dots
+  ) {
+    return;
+  }
+
+
+  /* NO ORDERS */
+
+  if (customerOrders.length === 0) {
+
+    notification.className =
+      "order-status-notification";
+
+    return;
+  }
+
+
+  /* INDEX SAFETY */
+
+  if (
+    currentOrderStatusIndex >=
+    customerOrders.length
+  ) {
+
+    currentOrderStatusIndex = 0;
+  }
+
+
+  const currentOrder =
+    customerOrders[currentOrderStatusIndex];
+
+  const status =
+    currentOrder.status;
+
+
+  notification.className =
+    "order-status-notification show";
+
+
+  /* NEW */
+
+  if (status === "NEW") {
+
+    notification.classList.add("new");
+
+    title.innerHTML =
+      "🆕 Order Received";
+
+    message.innerHTML =
+      "Your order has been received by the restaurant.";
+  }
+
+
+  /* PREPARING */
+
+  else if (status === "PREPARING") {
+
+    notification.classList.add("preparing");
+
+    title.innerHTML =
+      "🔥 Your Order is Preparing";
+
+    message.innerHTML =
+      "The restaurant is currently preparing your order.";
+  }
+
+
+  /* READY */
+
+  else if (status === "READY") {
+
+    notification.classList.add("ready");
+
+    title.innerHTML =
+      "✅ Your Order is Ready";
+
+    message.innerHTML =
+      "Your order is ready to be served.";
+  }
+
+
+  /* SERVED */
+
+  else if (status === "SERVED") {
+
+    notification.classList.add("served");
+
+    title.innerHTML =
+      "🍽️ Order Served";
+
+    message.innerHTML =
+      "Your order has been served.";
+  }
+
+
+  order.innerHTML =
+    "Order #" + currentOrder.order_number;
+
+
+  /* DOTS */
+
+  dots.innerHTML =
+    customerOrders
+      .map(function (_, index) {
+
+        return (
+          '<span class="order-status-dot ' +
+          (
+            index === currentOrderStatusIndex
+              ? "active"
+              : ""
+          ) +
+          '"></span>'
+        );
+
+      })
+      .join("");
+}
+
+
+/* CHECK ALL ORDERS */
 
 async function checkOrderStatus() {
 
   try {
 
-    const response = await fetch(
-      "/customer/order-status",
-      {
-        method: "GET",
-        cache: "no-store"
-      }
-    );
+    const response =
+      await fetch(
+        "/customer/order-status",
+        {
+          method: "GET",
+          cache: "no-store"
+        }
+      );
 
-    if (response.status === 403) {
+
+    if (
+      response.status === 403 ||
+      !response.ok
+    ) {
       return;
     }
 
-    if (!response.ok) {
+
+    const data =
+      await response.json();
+
+
+    if (!data.success) {
       return;
     }
 
-    const data = await response.json();
 
-    if (!data.success || !data.has_order) {
+    /* Remember currently displayed order */
+
+    const oldCurrentOrderId =
+      customerOrders[
+        currentOrderStatusIndex
+      ]?.order_id;
+
+
+    /* Get all active orders */
+
+    customerOrders =
+      data.orders || [];
+
+
+    /* No active orders */
+
+    if (customerOrders.length === 0) {
+
+      currentOrderStatusIndex = 0;
+
+      renderOrderStatus();
+
       return;
     }
 
-    const notification =
-      document.getElementById("orderStatusNotification");
 
-    const title =
-      document.getElementById("orderStatusTitle");
+    /* Keep same order selected after update */
 
-    const message =
-      document.getElementById("orderStatusMessage");
+    const sameOrderIndex =
+      customerOrders.findIndex(
+        function (item) {
 
-    const order =
-      document.getElementById("orderStatusOrder");
+          return (
+            item.order_id ===
+            oldCurrentOrderId
+          );
 
-    if (!notification || !title || !message || !order) {
-      return;
+        }
+      );
+
+
+    if (sameOrderIndex >= 0) {
+
+      currentOrderStatusIndex =
+        sameOrderIndex;
+
     }
-
-    const status = data.status;
-
-    /* =========================
-       NEW
-    ========================= */
-
-    if (status === "NEW") {
-
-      notification.className =
-        "order-status-notification show new";
-
-      title.innerHTML =
-        "🆕 Order Received";
-
-      message.innerHTML =
-        "Your order has been received by the restaurant.";
-
-      order.innerHTML =
-        "Order #" + data.order_number;
-    }
-
-    /* =========================
-       PREPARING
-    ========================= */
-
-    else if (status === "PREPARING") {
-
-      notification.className =
-        "order-status-notification show preparing";
-
-      title.innerHTML =
-        "🔥 Your Order is Preparing";
-
-      message.innerHTML =
-        "The restaurant is currently preparing your order.";
-
-      order.innerHTML =
-        "Order #" + data.order_number;
-    }
-
-    /* =========================
-       READY
-    ========================= */
-
-    else if (status === "READY") {
-
-      notification.className =
-        "order-status-notification show ready";
-
-      title.innerHTML =
-        "✅ Your Order is Ready";
-
-      message.innerHTML =
-        "Your order is ready to be served.";
-
-      order.innerHTML =
-        "Order #" + data.order_number;
-    }
-
-    /* =========================
-       SERVED
-    ========================= */
-
-    else if (status === "SERVED") {
-
-      notification.className =
-        "order-status-notification show ready";
-
-      title.innerHTML =
-        "🍽️ Order Served";
-
-      message.innerHTML =
-        "Your order has been served.";
-
-      order.innerHTML =
-        "Order #" + data.order_number;
-    }
-
-    /* =========================
-       COMPLETED / CANCELLED
-    ========================= */
 
     else if (
-      status === "COMPLETED" ||
-      status === "CANCELLED"
+      currentOrderStatusIndex >=
+      customerOrders.length
     ) {
 
-      notification.className =
-        "order-status-notification";
-
-      if (orderStatusInterval) {
-        clearInterval(orderStatusInterval);
-        orderStatusInterval = null;
-      }
+      currentOrderStatusIndex = 0;
     }
 
-  } catch (error) {
+
+    renderOrderStatus();
+
+  }
+
+  catch (error) {
 
     console.error(
       "Order status error:",
       error
     );
-
   }
 }
 
-/* Check immediately */
+
+/* FIRST CHECK */
+
 checkOrderStatus();
 
-/* Check every 5 seconds */
-orderStatusInterval = setInterval(
+
+/* CHECK EVERY 5 SECONDS */
+
+setInterval(
   checkOrderStatus,
   5000
 );
