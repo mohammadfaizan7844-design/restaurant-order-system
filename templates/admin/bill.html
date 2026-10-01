@@ -517,125 +517,223 @@
             }
         }
 
-     /* ================= COMPACT PRINT ================= */
+    /* =====================================================
+   COMPACT RECEIPT PRINT
+   ADMIN PAGE REMAINS SAME
+===================================================== */
 
 @media print {
 
     @page {
-        size: auto;
-        margin: 8mm;
+        size: 58mm auto;
+        margin: 3mm;
     }
 
     html,
     body {
         margin: 0 !important;
         padding: 0 !important;
-        background: white !important;
+        width: 58mm !important;
+        background: #ffffff !important;
     }
 
     body {
-        font-family: Arial, Helvetica, sans-serif;
-        color: #111827;
+        font-family: Arial, Helvetica, sans-serif !important;
+        color: #111 !important;
     }
 
-    /* Hide everything first */
+
+    /* =================================================
+       HIDE COMPLETE ADMIN PAGE
+    ================================================= */
 
     body * {
-        visibility: hidden;
+        visibility: hidden !important;
     }
-
-    /* Show only bill */
 
     .bill,
     .bill * {
-        visibility: visible;
+        visibility: visible !important;
     }
 
     .bill {
-        position: absolute;
-        left: 0;
-        top: 0;
+        position: absolute !important;
 
-        width: 100% !important;
-        max-width: 80mm;
+        left: 0 !important;
+        top: 0 !important;
 
-        margin: 0 auto !important;
+        width: 52mm !important;
+        max-width: 52mm !important;
 
-        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
 
+        background: #ffffff !important;
+
+        border: none !important;
         border-radius: 0 !important;
         box-shadow: none !important;
 
         overflow: visible !important;
     }
 
-    /* Compact header */
+
+    /* =================================================
+       HEADER
+       LOGO + NAME + ADDRESS + PHONE
+    ================================================= */
 
     .invoice-header {
-        padding: 0 0 10px 0 !important;
+        padding: 0 0 7px 0 !important;
 
-        background: white !important;
-        color: #111827 !important;
+        margin: 0 !important;
 
-        border-bottom: 1px dashed #777;
+        background: #ffffff !important;
+        color: #111 !important;
+
+        border: none !important;
+        border-bottom: 1px dashed #777 !important;
+
+        box-shadow: none !important;
 
         overflow: visible !important;
     }
 
+    .invoice-header::before,
     .invoice-header::after {
         display: none !important;
     }
 
     .header-content {
         display: block !important;
+
+        width: 100% !important;
+
+        text-align: center !important;
     }
 
+
+    /* =================================================
+       LOGO
+    ================================================= */
+
+    .bill-logo {
+        display: block !important;
+
+        width: 15mm !important;
+        height: 15mm !important;
+
+        object-fit: contain !important;
+
+        margin: 0 auto 3px auto !important;
+
+        border-radius: 0 !important;
+
+        box-shadow: none !important;
+    }
+
+
+    /* =================================================
+       RESTAURANT
+    ================================================= */
+
     .restaurant {
-        text-align: center;
+        width: 100% !important;
+
+        text-align: center !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     .restaurant h1 {
-        font-size: 20px !important;
-        margin: 0 0 5px 0 !important;
-        color: #111827 !important;
-        text-transform: uppercase;
+        font-size: 15px !important;
+
+        line-height: 1.15 !important;
+
+        margin: 0 0 3px 0 !important;
+
+        color: #111 !important;
+
+        font-weight: 800 !important;
+
+        text-transform: uppercase !important;
     }
 
     .restaurant p {
-        color: #374151 !important;
-        font-size: 11px !important;
-        line-height: 1.4 !important;
-        margin: 2px 0 !important;
+        font-size: 8px !important;
+
+        line-height: 1.25 !important;
+
+        margin: 1px 0 !important;
+
+        color: #444 !important;
     }
+
+    /* EMAIL + GST HIDE */
+
+    .restaurant p:has(+ p) {
+        /* normal text remains */
+    }
+
+
+    /* =================================================
+       HIDE INVOICE TITLE
+    ================================================= */
 
     .invoice-title {
         display: none !important;
     }
 
-    /* Body */
+
+    /* =================================================
+       BODY
+    ================================================= */
 
     .invoice-body {
-        padding: 10px 0 !important;
+        padding: 7px 0 !important;
+
+        margin: 0 !important;
+
+        background: #ffffff !important;
     }
 
-    /* Order information */
+
+    /* =================================================
+       ORDER INFORMATION
+    ================================================= */
 
     .order-info {
         display: block !important;
-        margin-bottom: 10px !important;
+
+        margin: 0 0 6px 0 !important;
+
+        padding: 0 0 6px 0 !important;
+
+        border: none !important;
+        border-bottom: 1px dashed #777 !important;
+
+        background: #ffffff !important;
     }
 
     .info-box {
         display: flex !important;
+
         justify-content: space-between !important;
+
         align-items: center !important;
 
-        padding: 3px 0 !important;
+        width: 100% !important;
 
-        background: white !important;
+        padding: 2px 0 !important;
+
+        margin: 0 !important;
+
+        background: #ffffff !important;
 
         border: none !important;
         border-radius: 0 !important;
+        box-shadow: none !important;
     }
 
     .info-box::before {
@@ -643,187 +741,382 @@
     }
 
     .info-label {
-        font-size: 10px !important;
+        font-size: 7px !important;
+
+        line-height: 1.2 !important;
+
+        color: #666 !important;
+
         margin: 0 !important;
-        color: #555 !important;
+
+        text-transform: uppercase !important;
     }
 
     .info-value {
-        font-size: 10px !important;
+        font-size: 8px !important;
+
+        line-height: 1.2 !important;
+
         color: #111 !important;
+
+        font-weight: 700 !important;
+
+        text-align: right !important;
     }
 
-    /* Section heading */
+
+    /* =================================================
+       ORDER ITEMS HEADING
+    ================================================= */
 
     .section-heading {
-        margin: 8px 0 5px 0 !important;
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        align-items: center !important;
+
+        margin: 5px 0 4px 0 !important;
+
+        padding: 0 !important;
     }
 
     .section-heading h3 {
-        font-size: 12px !important;
+        font-size: 9px !important;
+
+        margin: 0 !important;
+
+        color: #111 !important;
     }
 
     .section-heading span {
-        font-size: 9px !important;
+        font-size: 7px !important;
+
+        color: #444 !important;
     }
 
-    /* Table */
+
+    /* =================================================
+       TABLE
+    ================================================= */
 
     .table-wrapper {
+        width: 100% !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
         border: none !important;
         border-radius: 0 !important;
+
         overflow: visible !important;
     }
 
     table {
         width: 100% !important;
+
         min-width: 0 !important;
+
         border-collapse: collapse !important;
+
+        table-layout: fixed !important;
     }
 
     thead {
-        background: white !important;
-        border-top: 1px dashed #777;
-        border-bottom: 1px dashed #777;
+        background: #ffffff !important;
+
+        border-top: 1px dashed #777 !important;
+        border-bottom: 1px dashed #777 !important;
     }
 
     th {
-        padding: 5px 2px !important;
-        font-size: 9px !important;
+        padding: 4px 1px !important;
+
+        font-size: 7px !important;
+
         color: #333 !important;
+
+        font-weight: 700 !important;
+
+        background: #ffffff !important;
     }
 
     td {
-        padding: 5px 2px !important;
-        border-top: 1px solid #eee !important;
-        font-size: 10px !important;
+        padding: 4px 1px !important;
+
+        font-size: 8px !important;
+
         color: #111 !important;
+
+        background: #ffffff !important;
+
+        border-top: none !important;
+
+        line-height: 1.2 !important;
     }
 
     .item-name {
         font-weight: 600 !important;
     }
 
-    /* Total */
+
+    /* =================================================
+       ITEMS SUMMARY
+    ================================================= */
+
+    .items-summary {
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        align-items: center !important;
+
+        padding: 4px 0 !important;
+
+        margin: 0 !important;
+
+        border-bottom: 1px dashed #777 !important;
+
+        font-size: 7px !important;
+    }
+
+
+    /* =================================================
+       TOTAL
+    ================================================= */
 
     .total-section {
-        margin-top: 10px !important;
         display: block !important;
+
+        margin: 0 !important;
+
+        padding: 6px 0 !important;
+
+        border: none !important;
+
+        background: #ffffff !important;
     }
 
     .total-box {
         width: 100% !important;
 
-        padding: 8px 0 !important;
+        padding: 0 !important;
 
-        background: white !important;
+        margin: 0 !important;
+
+        background: #ffffff !important;
 
         border: none !important;
+
+        border-radius: 0 !important;
+
+        box-shadow: none !important;
+    }
+
+    .summary-row {
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        align-items: center !important;
+
+        font-size: 8px !important;
+
+        margin: 0 0 3px 0 !important;
+    }
+
+    .grand-total {
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        align-items: center !important;
+
+        margin: 4px 0 0 0 !important;
+
+        padding: 6px 0 0 0 !important;
+
+        border-top: 1px solid #222 !important;
+    }
+
+    .grand-total span:first-child {
+        font-size: 10px !important;
+
+        font-weight: 700 !important;
+    }
+
+    .grand-total span:last-child {
+        font-size: 15px !important;
+
+        font-weight: 800 !important;
+    }
+
+
+    /* =================================================
+       PAYMENT
+       SIMPLE — NO BOX
+    ================================================= */
+
+    .payment {
+        margin: 0 !important;
+
+        padding: 6px 0 !important;
+
+        background: #ffffff !important;
+
+        border: none !important;
+
         border-top: 1px dashed #777 !important;
+
         border-bottom: 1px dashed #777 !important;
 
         border-radius: 0 !important;
     }
 
-    .summary-row {
-        font-size: 10px !important;
-        margin-bottom: 4px !important;
-    }
-
-    .grand-total {
-        margin-top: 5px !important;
-        padding-top: 6px !important;
-        border-top: 1px solid #222 !important;
-    }
-
-    .grand-total span:first-child {
-        font-size: 12px !important;
-    }
-
-    .grand-total span:last-child {
-        font-size: 16px !important;
-    }
-
-    /* Payment */
-
-    .payment {
-        margin-top: 10px !important;
-        padding: 7px 0 !important;
-
-        border: none !important;
-        border-radius: 0 !important;
-
-        background: white !important;
-    }
-
     .payment-header {
-        margin-bottom: 5px !important;
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        align-items: center !important;
+
+        margin: 0 0 4px 0 !important;
     }
 
     .payment-header h3 {
-        font-size: 12px !important;
+        font-size: 9px !important;
+
+        margin: 0 !important;
     }
 
     .payment-status {
-        padding: 3px 6px !important;
-        font-size: 8px !important;
+        padding: 0 !important;
+
+        background: transparent !important;
+
+        border: none !important;
+
+        font-size: 7px !important;
+
+        color: #168a38 !important;
     }
 
+
+    /* =================================================
+       PAYMENT DETAILS
+       NO BOX
+    ================================================= */
+
     .paid-details {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 5px !important;
+        display: block !important;
+
+        margin: 0 !important;
+
+        padding: 0 !important;
     }
 
     .paid-item {
-        padding: 5px !important;
+        display: flex !important;
 
-        background: white !important;
+        justify-content: space-between !important;
 
-        border: 1px solid #ddd !important;
-        border-radius: 4px !important;
+        align-items: center !important;
+
+        padding: 2px 0 !important;
+
+        margin: 0 !important;
+
+        background: #ffffff !important;
+
+        border: none !important;
+
+        border-radius: 0 !important;
     }
 
     .paid-item span {
-        font-size: 8px !important;
-        margin-bottom: 2px !important;
+        font-size: 7px !important;
+
+        margin: 0 !important;
+
+        color: #666 !important;
     }
 
     .paid-item strong {
-        font-size: 10px !important;
+        font-size: 8px !important;
+
+        color: #111 !important;
     }
 
-    /* Hide payment form while printing */
+
+    /* =================================================
+       PAYMENT FORM HIDE
+    ================================================= */
 
     .payment-form {
         display: none !important;
     }
 
-    /* Hide buttons */
+
+    /* =================================================
+       ALL ADMIN BUTTONS HIDE
+    ================================================= */
 
     .actions,
-    .no-print {
+    .no-print,
+    button,
+    .btn {
         display: none !important;
     }
 
-    /* Footer */
+
+    /* =================================================
+       FOOTER
+    ================================================= */
 
     .invoice-footer {
-        padding: 10px 0 0 0 !important;
+        margin: 0 !important;
 
-        border-top: 1px dashed #777;
+        padding: 7px 0 0 0 !important;
 
-        background: white !important;
+        background: #ffffff !important;
+
+        border: none !important;
+
+        border-top: none !important;
+
+        text-align: center !important;
 
         color: #555 !important;
 
-        font-size: 9px !important;
-        line-height: 1.5 !important;
+        font-size: 7px !important;
+
+        line-height: 1.35 !important;
+    }
+
+    .invoice-footer p {
+        margin: 1px 0 !important;
     }
 
     .invoice-footer strong {
         color: #111 !important;
     }
+
+
+    /* =================================================
+       REMOVE EXTRA ADMIN STYLING
+    ================================================= */
+
+    .card,
+    .box,
+    .container,
+    .content,
+    .page,
+    .main,
+    .sidebar,
+    .navbar {
+        box-shadow: none !important;
+    }
+
 }
     </style>
 </head>
@@ -838,7 +1131,13 @@
     <div class="invoice-header">
 
         <div class="header-content">
-
+{% if order.logo %}
+<img
+    src="{{ url_for('static', filename='images/' + order.logo) }}"
+    class="bill-logo"
+    alt="{{ order.restaurant_name }}"
+>
+{% endif %}
             <div class="restaurant">
 
                 <h1>{{ order.restaurant_name }}</h1>

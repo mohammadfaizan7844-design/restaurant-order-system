@@ -3002,8 +3002,7 @@ def generate_bill(order_id):
                 r.name AS restaurant_name,
                 r.address,
                 r.phone,
-                r.email,
-                r.gst_number
+                r.logo
             FROM orders o
             JOIN cafe_tables ct
                 ON o.table_id = ct.id
