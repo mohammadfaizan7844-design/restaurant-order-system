@@ -1200,7 +1200,9 @@ let customerOrders = [];
 let currentOrderStatusIndex = 0;
 
 
-/* NEXT ORDER */
+/* =========================
+   NEXT ORDER
+========================= */
 
 function showNextOrderStatus() {
 
@@ -1215,7 +1217,9 @@ function showNextOrderStatus() {
 }
 
 
-/* SHOW CURRENT ORDER */
+/* =========================
+   SHOW CURRENT ORDER
+========================= */
 
 function renderOrderStatus() {
 
@@ -1246,7 +1250,7 @@ function renderOrderStatus() {
   }
 
 
-  /* NO ORDERS */
+  /* NO ORDER */
 
   if (customerOrders.length === 0) {
 
@@ -1256,8 +1260,6 @@ function renderOrderStatus() {
     return;
   }
 
-
-  /* INDEX SAFETY */
 
   if (
     currentOrderStatusIndex >=
@@ -1271,6 +1273,7 @@ function renderOrderStatus() {
   const currentOrder =
     customerOrders[currentOrderStatusIndex];
 
+
   const status =
     currentOrder.status;
 
@@ -1279,7 +1282,9 @@ function renderOrderStatus() {
     "order-status-notification show";
 
 
-  /* NEW */
+  /* =========================
+     NEW
+  ========================= */
 
   if (status === "NEW") {
 
@@ -1293,7 +1298,9 @@ function renderOrderStatus() {
   }
 
 
-  /* PREPARING */
+  /* =========================
+     PREPARING
+  ========================= */
 
   else if (status === "PREPARING") {
 
@@ -1307,7 +1314,9 @@ function renderOrderStatus() {
   }
 
 
-  /* READY */
+  /* =========================
+     READY
+  ========================= */
 
   else if (status === "READY") {
 
@@ -1321,7 +1330,9 @@ function renderOrderStatus() {
   }
 
 
-  /* SERVED */
+  /* =========================
+     SERVED
+  ========================= */
 
   else if (status === "SERVED") {
 
@@ -1334,6 +1345,8 @@ function renderOrderStatus() {
       "Your order has been served.";
   }
 
+
+  /* ORDER NUMBER */
 
   order.innerHTML =
     "Order #" + currentOrder.order_number;
@@ -1360,7 +1373,9 @@ function renderOrderStatus() {
 }
 
 
-/* CHECK ALL ORDERS */
+/* =========================
+   CHECK ORDER STATUS
+========================= */
 
 async function checkOrderStatus() {
 
@@ -1376,10 +1391,13 @@ async function checkOrderStatus() {
       );
 
 
-    if (
-      response.status === 403 ||
-      !response.ok
-    ) {
+    if (!response.ok) {
+
+      console.error(
+        "Order status API failed:",
+        response.status
+      );
+
       return;
     }
 
@@ -1388,66 +1406,48 @@ async function checkOrderStatus() {
       await response.json();
 
 
+    console.log(
+      "Order Status:",
+      data
+    );
+
+
     if (!data.success) {
       return;
     }
 
 
-    /* Remember currently displayed order */
+    /*
+      YOUR CURRENT API RETURNS:
 
-    const oldCurrentOrderId =
-      customerOrders[
-        currentOrderStatusIndex
-      ]?.order_id;
-
-
-    /* Get all active orders */
-
-    customerOrders =
-      data.orders || [];
+      {
+        has_order: true,
+        order_number: "...",
+        status: "NEW",
+        success: true
+      }
+    */
 
 
-    /* No active orders */
-
-    if (customerOrders.length === 0) {
-
-      currentOrderStatusIndex = 0;
-
-      renderOrderStatus();
-
-      return;
-    }
-
-
-    /* Keep same order selected after update */
-
-    const sameOrderIndex =
-      customerOrders.findIndex(
-        function (item) {
-
-          return (
-            item.order_id ===
-            oldCurrentOrderId
-          );
-
-        }
-      );
-
-
-    if (sameOrderIndex >= 0) {
-
-      currentOrderStatusIndex =
-        sameOrderIndex;
-
-    }
-
-    else if (
-      currentOrderStatusIndex >=
-      customerOrders.length
+    if (
+      data.has_order === true
     ) {
 
-      currentOrderStatusIndex = 0;
+      customerOrders = [
+        {
+          order_id: data.order_number,
+          order_number: data.order_number,
+          status: data.status
+        }
+      ];
+
+    } else {
+
+      customerOrders = [];
     }
+
+
+    currentOrderStatusIndex = 0;
 
 
     renderOrderStatus();
@@ -1464,17 +1464,22 @@ async function checkOrderStatus() {
 }
 
 
-/* FIRST CHECK */
+/* =========================
+   FIRST CHECK
+========================= */
 
 checkOrderStatus();
 
 
-/* CHECK EVERY 5 SECONDS */
+/* =========================
+   CHECK EVERY 5 SECONDS
+========================= */
 
 setInterval(
   checkOrderStatus,
   5000
 );
+
       /* =========================
        CATEGORY FILTER
     ========================= */
