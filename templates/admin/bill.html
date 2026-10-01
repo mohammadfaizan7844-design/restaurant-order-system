@@ -516,17 +516,10 @@
                 text-align: center;
             }
         }
-       .bill-logo {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto 8px auto;
-}
-    /* =====================================================
-   COMPACT RECEIPT PRINT
-   ADMIN PAGE REMAINS SAME
-===================================================== */
+      
+/* =========================
+   COMPACT PRINT INVOICE
+========================= */
 
 @media print {
 
@@ -548,15 +541,12 @@
         color: #111 !important;
     }
 
-
-    /* =================================================
-       HIDE COMPLETE ADMIN PAGE
-    ================================================= */
-
+    /* Hide complete admin page first */
     body * {
         visibility: hidden !important;
     }
 
+    /* Show only invoice */
     .bill,
     .bill * {
         visibility: visible !important;
@@ -584,10 +574,40 @@
     }
 
 
-    /* =================================================
+    /* =========================
+       PRINT ONLY LOGO
+    ========================= */
+
+    .print-only-logo {
+        display: block !important;
+
+        width: 100% !important;
+
+        text-align: center !important;
+
+        margin: 0 0 2px 0 !important;
+        padding: 0 !important;
+    }
+
+    .bill-logo {
+        display: block !important;
+
+        width: 9mm !important;
+        height: 9mm !important;
+
+        object-fit: contain !important;
+
+        margin: 0 auto 2px auto !important;
+
+        border-radius: 0 !important;
+
+        box-shadow: none !important;
+    }
+
+
+    /* =========================
        HEADER
-       LOGO + NAME + ADDRESS + PHONE
-    ================================================= */
+    ========================= */
 
     .invoice-header {
         padding: 0 0 7px 0 !important;
@@ -595,9 +615,11 @@
         margin: 0 !important;
 
         background: #ffffff !important;
+
         color: #111 !important;
 
         border: none !important;
+
         border-bottom: 1px dashed #777 !important;
 
         box-shadow: none !important;
@@ -616,32 +638,10 @@
         width: 100% !important;
 
         text-align: center !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
     }
-
-
-    /* =================================================
-       LOGO
-    ================================================= */
-
-    .bill-logo {
-        display: block !important;
-
-        width: 15mm !important;
-        height: 15mm !important;
-
-        object-fit: contain !important;
-
-        margin: 0 auto 3px auto !important;
-
-        border-radius: 0 !important;
-
-        box-shadow: none !important;
-    }
-
-
-    /* =================================================
-       RESTAURANT
-    ================================================= */
 
     .restaurant {
         width: 100% !important;
@@ -676,25 +676,20 @@
         color: #444 !important;
     }
 
-    /* EMAIL + GST HIDE */
-
-    .restaurant p:has(+ p) {
-        /* normal text remains */
-    }
-
-
-    /* =================================================
-       HIDE INVOICE TITLE
-    ================================================= */
-
+    /* Hide invoice title */
     .invoice-title {
         display: none !important;
     }
 
+    /* Hide email and GST only while printing */
+    .print-hide {
+        display: none !important;
+    }
 
-    /* =================================================
-       BODY
-    ================================================= */
+
+    /* =========================
+       INVOICE BODY
+    ========================= */
 
     .invoice-body {
         padding: 7px 0 !important;
@@ -705,9 +700,9 @@
     }
 
 
-    /* =================================================
+    /* =========================
        ORDER INFORMATION
-    ================================================= */
+    ========================= */
 
     .order-info {
         display: block !important;
@@ -717,6 +712,7 @@
         padding: 0 0 6px 0 !important;
 
         border: none !important;
+
         border-bottom: 1px dashed #777 !important;
 
         background: #ffffff !important;
@@ -738,7 +734,9 @@
         background: #ffffff !important;
 
         border: none !important;
+
         border-radius: 0 !important;
+
         box-shadow: none !important;
     }
 
@@ -771,9 +769,9 @@
     }
 
 
-    /* =================================================
+    /* =========================
        ORDER ITEMS HEADING
-    ================================================= */
+    ========================= */
 
     .section-heading {
         display: flex !important;
@@ -802,17 +800,19 @@
     }
 
 
-    /* =================================================
-       TABLE
-    ================================================= */
+    /* =========================
+       ITEMS TABLE
+    ========================= */
 
     .table-wrapper {
         width: 100% !important;
 
         margin: 0 !important;
+
         padding: 0 !important;
 
         border: none !important;
+
         border-radius: 0 !important;
 
         overflow: visible !important;
@@ -832,6 +832,7 @@
         background: #ffffff !important;
 
         border-top: 1px dashed #777 !important;
+
         border-bottom: 1px dashed #777 !important;
     }
 
@@ -866,9 +867,9 @@
     }
 
 
-    /* =================================================
+    /* =========================
        ITEMS SUMMARY
-    ================================================= */
+    ========================= */
 
     .items-summary {
         display: flex !important;
@@ -887,9 +888,9 @@
     }
 
 
-    /* =================================================
+    /* =========================
        TOTAL
-    ================================================= */
+    ========================= */
 
     .total-section {
         display: block !important;
@@ -958,10 +959,9 @@
     }
 
 
-    /* =================================================
+    /* =========================
        PAYMENT
-       SIMPLE — NO BOX
-    ================================================= */
+    ========================= */
 
     .payment {
         margin: 0 !important;
@@ -1007,12 +1007,6 @@
         color: #168a38 !important;
     }
 
-
-    /* =================================================
-       PAYMENT DETAILS
-       NO BOX
-    ================================================= */
-
     .paid-details {
         display: block !important;
 
@@ -1054,18 +1048,13 @@
     }
 
 
-    /* =================================================
-       PAYMENT FORM HIDE
-    ================================================= */
+    /* =========================
+       HIDE ADMIN CONTROLS
+    ========================= */
 
     .payment-form {
         display: none !important;
     }
-
-
-    /* =================================================
-       ALL ADMIN BUTTONS HIDE
-    ================================================= */
 
     .actions,
     .no-print,
@@ -1075,9 +1064,9 @@
     }
 
 
-    /* =================================================
+    /* =========================
        FOOTER
-    ================================================= */
+    ========================= */
 
     .invoice-footer {
         margin: 0 !important;
@@ -1107,22 +1096,6 @@
         color: #111 !important;
     }
 
-
-    /* =================================================
-       REMOVE EXTRA ADMIN STYLING
-    ================================================= */
-
-    .card,
-    .box,
-    .container,
-    .content,
-    .page,
-    .main,
-    .sidebar,
-    .navbar {
-        box-shadow: none !important;
-    }
-
 }
     </style>
 </head>
@@ -1132,59 +1105,75 @@
 
 <div class="bill">
 
-    <!-- ================= HEADER ================= -->
+  <!-- ================= HEADER ================= -->
 
-    <div class="invoice-header">
+<div class="invoice-header">
 
-        <div class="header-content">
-{% if order.logo %}
-<img
-    src="{{ url_for('static', filename='images/' + order.logo) }}"
-    class="bill-logo"
-    alt="{{ order.restaurant_name }}"
->
-{% endif %}
-            <div class="restaurant">
+    <div class="header-content">
 
-                <h1>{{ order.restaurant_name }}</h1>
+        <!-- LOGO: PRINT ONLY -->
+        <div class="print-only-logo">
 
-                <p>{{ order.address }}</p>
+            {% if order.logo %}
 
-                <p>
-                    Phone: {{ order.phone }}
-                </p>
+            <img
+                src="{{ url_for('static', filename='images/' + order.logo) }}"
+                class="bill-logo"
+                alt="{{ order.restaurant_name }}"
+            >
 
-                {% if order.email %}
-                <p>
-                    Email: {{ order.email }}
-                </p>
-                {% endif %}
+            {% endif %}
 
-                {% if order.gst_number %}
-                <p>
-                    GST No: {{ order.gst_number }}
-                </p>
-                {% endif %}
-
-            </div>
+        </div>
 
 
-            <div class="invoice-title">
+        <div class="restaurant">
 
-                <h2>INVOICE</h2>
+            <h1>{{ order.restaurant_name }}</h1>
 
-                <p>
-                    Order #{{ order.order_number }}
-                </p>
+            <p>{{ order.address }}</p>
 
-            </div>
+            <p>
+                Phone: {{ order.phone }}
+            </p>
+
+
+            {% if order.email %}
+
+            <p class="print-hide">
+                Email: {{ order.email }}
+            </p>
+
+            {% endif %}
+
+
+            {% if order.gst_number %}
+
+            <p class="print-hide">
+                GST No: {{ order.gst_number }}
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="invoice-title">
+
+            <h2>INVOICE</h2>
+
+            <p>
+                Order #{{ order.order_number }}
+            </p>
 
         </div>
 
     </div>
 
+</div>
 
-    <!-- ================= BODY ================= -->
+
+<!-- ================= BODY ================= -->
 
     <div class="invoice-body">
 
