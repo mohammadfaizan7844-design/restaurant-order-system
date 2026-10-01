@@ -2103,6 +2103,8 @@ def place_order():
 
     # Clear cart
     session.pop("cart", None)
+    # Remember latest order for customer status notification
+    session["last_order_id"] = order_id
 
     # =========================
     # ORDER SUCCESS
@@ -2110,12 +2112,66 @@ def place_order():
 
     return render_template(
         "customer/order_success.html",
+        order_id=order_id,
         order_number=order_number,
         total=total_amount,
         table_number=table_number,
         restaurant_id=restaurant_id
     )
 
+# =========================
+# CUSTOMER ORDER STATUS
+# =========================
+
+@app.route("/customer/order-status")
+def customer_order_status():
+
+    customer_session_id = session.get("customer_session_id")
+    last_order_id = session.get("last_order_id")
+
+    # Customer session check
+    if not customer_session_id:
+        return {
+            "success": False,
+            "message": "Session expired"
+        }, 403
+
+    # No order yet
+    if not last_order_id:
+        return {
+            "success": True,
+            "has_order": False
+        }
+
+    # Get latest customer order
+    order = db.session.execute(
+        db.text("""
+            SELECT
+                order_number,
+                status
+            FROM orders
+            WHERE id = :order_id
+            AND session_id = :session_id
+            LIMIT 1
+        """),
+        {
+            "order_id": last_order_id,
+            "session_id": customer_session_id
+        }
+    ).mappings().first()
+
+    if not order:
+        return {
+            "success": True,
+            "has_order": False
+        }
+
+    return {
+        "success": True,
+        "has_order": True,
+        "order_number": order["order_number"],
+        "status": order["status"]
+    }
 # =========================
 # ADMIN ORDERS
 # =========================
