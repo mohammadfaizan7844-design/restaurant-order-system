@@ -1219,43 +1219,53 @@ function playStatusSound() {
 
     const audioContext = new AudioContext();
 
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
 
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(
-      800,
-      audioContext.currentTime
-    );
+    function ding(startTime, frequency) {
 
-    oscillator.frequency.exponentialRampToValueAtTime(
-      1200,
-      audioContext.currentTime + 0.12
-    );
+      const oscillator =
+        audioContext.createOscillator();
 
-    gainNode.gain.setValueAtTime(
-      0.0001,
-      audioContext.currentTime
-    );
+      const gainNode =
+        audioContext.createGain();
 
-    gainNode.gain.exponentialRampToValueAtTime(
-      0.25,
-      audioContext.currentTime + 0.02
-    );
+      oscillator.type = "sine";
 
-    gainNode.gain.exponentialRampToValueAtTime(
-      0.0001,
-      audioContext.currentTime + 0.35
-    );
+      oscillator.frequency.setValueAtTime(
+        frequency,
+        startTime
+      );
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+      gainNode.gain.setValueAtTime(
+        0.0001,
+        startTime
+      );
 
-    oscillator.start();
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.22,
+        startTime + 0.02
+      );
 
-    oscillator.stop(
-      audioContext.currentTime + 0.35
-    );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.0001,
+        startTime + 0.32
+      );
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.start(startTime);
+
+      oscillator.stop(startTime + 0.32);
+    }
+
+    const now = audioContext.currentTime;
+
+    // Premium double notification
+    ding(now, 880);
+    ding(now + 0.16, 1175);
 
   } catch (error) {
 
@@ -1266,7 +1276,6 @@ function playStatusSound() {
 
   }
 }
-
 /* =========================
    NEXT ORDER
 ========================= */
