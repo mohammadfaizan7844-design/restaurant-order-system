@@ -1198,6 +1198,74 @@
 let customerOrders = [];
 let currentOrderStatusIndex = 0;
 
+/* =========================
+   ORDER STATUS SOUND
+========================= */
+
+let previousOrderStatuses = {};
+let firstStatusCheck = true;
+
+function playStatusSound() {
+
+  try {
+
+    const AudioContext =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+    if (!AudioContext) {
+      return;
+    }
+
+    const audioContext = new AudioContext();
+
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(
+      800,
+      audioContext.currentTime
+    );
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+      1200,
+      audioContext.currentTime + 0.12
+    );
+
+    gainNode.gain.setValueAtTime(
+      0.0001,
+      audioContext.currentTime
+    );
+
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.25,
+      audioContext.currentTime + 0.02
+    );
+
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.0001,
+      audioContext.currentTime + 0.35
+    );
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.start();
+
+    oscillator.stop(
+      audioContext.currentTime + 0.35
+    );
+
+  } catch (error) {
+
+    console.log(
+      "Notification sound blocked:",
+      error
+    );
+
+  }
+}
 
 /* =========================
    NEXT ORDER
@@ -1424,12 +1492,57 @@ async function checkOrderStatus() {
     const oldCurrentOrderId =
       customerOrders[currentOrderStatusIndex]?.order_id;
 
+/* =========================
+   DETECT STATUS CHANGE
+========================= */
 
+const newOrders = data.orders || [];
+
+if (!firstStatusCheck) {
+
+  newOrders.forEach(function (newOrder) {
+
+    const oldStatus =
+      previousOrderStatuses[newOrder.order_id];
+
+    const newStatus =
+      newOrder.status;
+
+    if (
+      oldStatus &&
+      oldStatus !== newStatus
+    ) {
+
+      console.log(
+        "Order status changed:",
+        newOrder.order_number,
+        oldStatus,
+        "→",
+        newStatus
+      );
+
+      playStatusSound();
+
+    }
+
+  });
+
+}
+
+
+/* SAVE CURRENT STATUSES */
+
+newOrders.forEach(function (newOrder) {
+
+  previousOrderStatuses[newOrder.order_id] =
+    newOrder.status;
+
+});
+
+firstStatusCheck = false;
     /* GET ALL ACTIVE ORDERS */
 
-    customerOrders =
-      data.orders || [];
-
+   customerOrders = newOrders;
 
     /* NO ACTIVE ORDERS */
 
