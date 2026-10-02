@@ -1205,7 +1205,7 @@ let currentOrderStatusIndex = 0;
 let previousOrderStatuses = {};
 let firstStatusCheck = true;
 
-function playStatusSound() {
+function playStatusSound(status) {
 
   try {
 
@@ -1223,7 +1223,13 @@ function playStatusSound() {
       audioContext.resume();
     }
 
-    function ding(startTime, frequency) {
+    function tone(
+      frequency,
+      startTime,
+      duration,
+      volume,
+      type = "sine"
+    ) {
 
       const oscillator =
         audioContext.createOscillator();
@@ -1231,7 +1237,7 @@ function playStatusSound() {
       const gainNode =
         audioContext.createGain();
 
-      oscillator.type = "sine";
+      oscillator.type = type;
 
       oscillator.frequency.setValueAtTime(
         frequency,
@@ -1244,28 +1250,124 @@ function playStatusSound() {
       );
 
       gainNode.gain.exponentialRampToValueAtTime(
-        0.22,
+        volume,
         startTime + 0.02
       );
 
       gainNode.gain.exponentialRampToValueAtTime(
         0.0001,
-        startTime + 0.32
+        startTime + duration
       );
 
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
 
       oscillator.start(startTime);
-
-      oscillator.stop(startTime + 0.32);
+      oscillator.stop(startTime + duration);
     }
 
-    const now = audioContext.currentTime;
 
-    // Premium double notification
-    ding(now, 880);
-    ding(now + 0.16, 1175);
+    const now =
+      audioContext.currentTime;
+
+
+    /* =========================
+       🔥 PREPARING
+    ========================= */
+
+    if (status === "PREPARING") {
+
+      tone(520, now, 0.18, 0.18, "sine");
+
+      tone(
+        760,
+        now + 0.16,
+        0.22,
+        0.20,
+        "sine"
+      );
+
+    }
+
+
+    /* =========================
+       ✅ READY
+    ========================= */
+
+    else if (status === "READY") {
+
+      tone(880, now, 0.20, 0.20, "sine");
+
+      tone(
+        1320,
+        now + 0.18,
+        0.28,
+        0.22,
+        "sine"
+      );
+
+    }
+
+
+    /* =========================
+       🍽️ SERVED
+    ========================= */
+
+    else if (status === "SERVED") {
+
+      tone(740, now, 0.20, 0.16, "sine");
+
+      tone(
+        988,
+        now + 0.20,
+        0.35,
+        0.18,
+        "sine"
+      );
+
+    }
+
+
+    /* =========================
+       ❌ CANCELLED
+    ========================= */
+
+    else if (status === "CANCELLED") {
+
+      tone(
+        420,
+        now,
+        0.25,
+        0.20,
+        "triangle"
+      );
+
+      tone(
+        300,
+        now + 0.22,
+        0.40,
+        0.18,
+        "triangle"
+      );
+
+    }
+
+
+    /* =========================
+       🆕 NEW
+    ========================= */
+
+    else if (status === "NEW") {
+
+      tone(
+        660,
+        now,
+        0.18,
+        0.15,
+        "sine"
+      );
+
+    }
 
   } catch (error) {
 
@@ -1275,6 +1377,7 @@ function playStatusSound() {
     );
 
   }
+
 }
 /* =========================
    NEXT ORDER
@@ -1530,7 +1633,7 @@ if (!firstStatusCheck) {
         newStatus
       );
 
-      playStatusSound();
+     playStatusSound(newStatus);
 
     }
 
