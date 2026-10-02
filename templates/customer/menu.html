@@ -1205,7 +1205,7 @@ let currentOrderStatusIndex = 0;
 let previousOrderStatuses = {};
 let firstStatusCheck = true;
 
-function playStatusSound(status) {
+function playStatusSound() {
 
   try {
 
@@ -1223,13 +1223,9 @@ function playStatusSound(status) {
       audioContext.resume();
     }
 
-    function tone(
-      frequency,
-      startTime,
-      duration,
-      volume,
-      type = "sine"
-    ) {
+    const now = audioContext.currentTime;
+
+    function beep(frequency, startTime, duration) {
 
       const oscillator =
         audioContext.createOscillator();
@@ -1237,7 +1233,7 @@ function playStatusSound(status) {
       const gainNode =
         audioContext.createGain();
 
-      oscillator.type = type;
+      oscillator.type = "sine";
 
       oscillator.frequency.setValueAtTime(
         frequency,
@@ -1250,7 +1246,7 @@ function playStatusSound(status) {
       );
 
       gainNode.gain.exponentialRampToValueAtTime(
-        volume,
+        0.65,
         startTime + 0.02
       );
 
@@ -1266,118 +1262,19 @@ function playStatusSound(status) {
       oscillator.stop(startTime + duration);
     }
 
+    /* Notification sound */
 
-    const now =
-      audioContext.currentTime;
-
-
-    /* =========================
-       🔥 PREPARING
-    ========================= */
-
-    if (status === "PREPARING") {
-
-      tone(520, now, 0.18, 0.18, "sine");
-
-      tone(
-        760,
-        now + 0.16,
-        0.22,
-        0.20,
-        "sine"
-      );
-
-    }
-
-
-    /* =========================
-       ✅ READY
-    ========================= */
-
-    else if (status === "READY") {
-
-      tone(880, now, 0.20, 0.20, "sine");
-
-      tone(
-        1320,
-        now + 0.18,
-        0.28,
-        0.22,
-        "sine"
-      );
-
-    }
-
-
-    /* =========================
-       🍽️ SERVED
-    ========================= */
-
-    else if (status === "SERVED") {
-
-      tone(740, now, 0.20, 0.16, "sine");
-
-      tone(
-        988,
-        now + 0.20,
-        0.35,
-        0.18,
-        "sine"
-      );
-
-    }
-
-
-    /* =========================
-       ❌ CANCELLED
-    ========================= */
-
-    else if (status === "CANCELLED") {
-
-      tone(
-        420,
-        now,
-        0.25,
-        0.20,
-        "triangle"
-      );
-
-      tone(
-        300,
-        now + 0.22,
-        0.40,
-        0.18,
-        "triangle"
-      );
-
-    }
-
-
-    /* =========================
-       🆕 NEW
-    ========================= */
-
-    else if (status === "NEW") {
-
-      tone(
-        660,
-        now,
-        0.18,
-        0.15,
-        "sine"
-      );
-
-    }
+    beep(880, now, 0.18);
+    beep(1175, now + 0.16, 0.22);
 
   } catch (error) {
 
     console.log(
-      "Notification sound blocked:",
+      "Notification sound error:",
       error
     );
 
   }
-
 }
 /* =========================
    NEXT ORDER
@@ -1633,7 +1530,7 @@ if (!firstStatusCheck) {
         newStatus
       );
 
-     playStatusSound(newStatus);
+      playStatusSound();
 
     }
 
