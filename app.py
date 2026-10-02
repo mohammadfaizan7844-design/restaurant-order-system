@@ -2606,7 +2606,8 @@ def combined_bill(combined_bill_id):
             SELECT
                 cb.*,
                 ct.table_number,
-                r.name AS restaurant_name
+                r.name AS restaurant_name,
+                 r.logo
             FROM combined_bills cb
 
             JOIN cafe_tables ct
