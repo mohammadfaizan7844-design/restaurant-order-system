@@ -361,7 +361,85 @@
                   Optional. Leave blank if you don't want a special section.
                 </small>
               </div>
+<!-- AUTOMATIC BILL PRINTING -->
+<div class="form-group">
+  <label>Automatic Bill Printing</label>
 
+  <div
+    style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 14px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: #f9fafb;
+    "
+  >
+
+    <div>
+      <div
+        style="
+          font-size: 14px;
+          font-weight: 600;
+          color: #111827;
+        "
+      >
+        🖨️ Print new orders automatically
+      </div>
+
+      <small
+        style="
+          display: block;
+          margin-top: 5px;
+          color: #6b7280;
+          font-size: 12px;
+        "
+      >
+        When ON, new customer orders can be sent to the thermal printer automatically.
+      </small>
+    </div>
+
+    <label
+      style="
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 28px;
+        margin: 0;
+        flex-shrink: 0;
+      "
+    >
+
+      <input
+        type="checkbox"
+        name="auto_print"
+        value="1"
+        {% if restaurant.auto_print == 1 %}checked{% endif %}
+        style="
+          opacity: 0;
+          width: 0;
+          height: 0;
+          position: absolute;
+        "
+      />
+
+      <span
+        style="
+          position: absolute;
+          cursor: pointer;
+          inset: 0;
+          background: #d1d5db;
+          border-radius: 30px;
+          transition: 0.25s;
+        "
+      ></span>
+
+    </label>
+
+  </div>
+</div>
               <!-- ADDRESS -->
               <div class="form-group full">
                 <label>Restaurant Address</label>

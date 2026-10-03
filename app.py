@@ -313,7 +313,8 @@ def edit_restaurant(restaurant_id):
                     address = :address,
                     phone = :phone,
                     email = :email,
-                    gst_number = :gst_number
+                    gst_number = :gst_number,
+                    auto_print = :auto_print
                 WHERE id = :restaurant_id
             """),
             {
@@ -322,6 +323,7 @@ def edit_restaurant(restaurant_id):
                 "phone": phone,
                 "email": email,
                 "gst_number": gst_number,
+                "auto_print": auto_print,
                 "restaurant_id": restaurant_id
             }
         )
@@ -564,6 +566,7 @@ def settings():
         phone = request.form["phone"]
         email = request.form["email"]
         gst_number = request.form["gst_number"]
+        auto_print = 1 if request.form.get("auto_print") == "1" else 0
         special_section_name = request.form.get("special_section_name", "").strip()
 
         # -------------------------
@@ -643,7 +646,9 @@ def settings():
                     phone = :phone,
                     email = :email,
                     gst_number = :gst_number,
-                     special_section_name = :special_section_name
+                    special_section_name = :special_section_name,
+                    auto_print = :auto_print
+
                 WHERE id = :restaurant_id
             """),
             {
@@ -653,6 +658,7 @@ def settings():
                 "email": email,
                 "gst_number": gst_number,
                 "special_section_name": special_section_name,
+                "auto_print": auto_print,
                 "restaurant_id": restaurant_id
             }
         )
