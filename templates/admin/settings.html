@@ -412,30 +412,31 @@
       "
     >
 
-      <input
-        type="checkbox"
-        name="auto_print"
-        value="1"
-        {% if restaurant.auto_print == 1 %}checked{% endif %}
-        style="
-          opacity: 0;
-          width: 0;
-          height: 0;
-          position: absolute;
-        "
-      />
+     <input
+  type="checkbox"
+  name="auto_print"
+  value="1"
+  {% if restaurant.auto_print == 1 %}checked{% endif %}
+  id="autoPrintToggle"
+  style="
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  "
+>
 
-      <span
-        style="
-          position: absolute;
-          cursor: pointer;
-          inset: 0;
-          background: #d1d5db;
-          border-radius: 30px;
-          transition: 0.25s;
-        "
-      ></span>
-
+<span
+  id="autoPrintSlider"
+  style="
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #d1d5db;
+    border-radius: 30px;
+    transition: 0.25s;
+  "
+></span>
     </label>
 
   </div>
@@ -479,5 +480,46 @@
         </div>
       </div>
     </div>
+    <script>
+
+const autoPrintToggle =
+    document.getElementById("autoPrintToggle");
+
+const autoPrintSlider =
+    document.getElementById("autoPrintSlider");
+
+
+function updateAutoPrintSwitch() {
+
+    if (autoPrintToggle.checked) {
+
+        autoPrintSlider.style.background =
+            "#173f36";
+
+        autoPrintSlider.innerHTML =
+            '<span style="position:absolute;width:22px;height:22px;background:white;border-radius:50%;top:3px;right:3px;"></span>';
+
+    } else {
+
+        autoPrintSlider.style.background =
+            "#d1d5db";
+
+        autoPrintSlider.innerHTML =
+            '<span style="position:absolute;width:22px;height:22px;background:white;border-radius:50%;top:3px;left:3px;"></span>';
+
+    }
+
+}
+
+
+autoPrintToggle.addEventListener(
+    "change",
+    updateAutoPrintSwitch
+);
+
+
+updateAutoPrintSwitch();
+
+</script>
   </body>
 </html>
