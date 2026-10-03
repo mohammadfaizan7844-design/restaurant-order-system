@@ -2123,7 +2123,44 @@ def place_order():
             "restaurant_id": restaurant_id
         }
     )
+# =========================
+# AUTOMATIC PRINT JOB
+# =========================
 
+restaurant_settings = db.session.execute(
+    db.text("""
+        SELECT auto_print
+        FROM restaurants
+        WHERE id = :restaurant_id
+    """),
+    {
+        "restaurant_id": restaurant_id
+    }
+).mappings().first()
+
+
+if restaurant_settings and restaurant_settings["auto_print"] == 1:
+
+    db.session.execute(
+        db.text("""
+            INSERT INTO print_jobs
+            (
+                restaurant_id,
+                order_id,
+                status
+            )
+            VALUES
+            (
+                :restaurant_id,
+                :order_id,
+                'PENDING'
+            )
+        """),
+        {
+            "restaurant_id": restaurant_id,
+            "order_id": order_id
+        }
+    )
     # =========================
     # SAVE EVERYTHING
     # =========================
