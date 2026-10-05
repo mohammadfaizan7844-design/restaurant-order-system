@@ -2204,8 +2204,12 @@ def get_print_jobs():
     if not restaurant_id or not print_token:
         return {
             "success": False,
-            "message": "Missing restaurant ID or token"
+            "message": "Missing print service credentials"
         }, 400
+
+    # =========================
+    # VERIFY RESTAURANT
+    # =========================
 
     restaurant = db.session.execute(
         db.text("""
@@ -2229,15 +2233,22 @@ def get_print_jobs():
             "message": "Invalid print service credentials"
         }, 401
 
+    # =========================
+    # GET PENDING PRINT JOBS
+    # =========================
+
     jobs = db.session.execute(
         db.text("""
             SELECT
                 pj.id AS print_job_id,
                 pj.order_id,
+
                 o.order_number,
                 o.total_amount,
-                o.table_id,
+                o.created_at,
+
                 ct.table_number
+
             FROM print_jobs pj
 
             JOIN orders o
@@ -2256,18 +2267,71 @@ def get_print_jobs():
         }
     ).mappings().all()
 
+    # =========================
+    # GET ORDER ITEMS
+    # =========================
+
+    result = []
+
+    for job in jobs:
+
+        items = db.session.execute(
+            db.text("""
+                SELECT
+                    mi.name,
+                    oi.quantity
+                FROM order_items oi
+
+                JOIN menu_items mi
+                    ON oi.menu_item_id = mi.id
+
+                WHERE oi.order_id = :order_id
+
+                ORDER BY oi.id ASC
+            """),
+            {
+                "order_id": job["order_id"]
+            }
+        ).mappings().all()
+
+        result.append({
+
+            "print_job_id":
+                job["print_job_id"],
+
+            "order_id":
+                job["order_id"],
+
+            "restaurant_name":
+                restaurant["name"],
+
+            "order_number":
+                job["order_number"],
+
+            "table_number":
+                job["table_number"],
+
+            "created_at":
+                job["created_at"].isoformat()
+                if job["created_at"]
+                else None,
+
+            "total_amount":
+                float(job["total_amount"]),
+
+            "items": [
+                {
+                    "name": item["name"],
+                    "quantity": item["quantity"]
+                }
+                for item in items
+            ]
+
+        })
+
     return {
         "success": True,
-        "jobs": [
-            {
-                "print_job_id": job["print_job_id"],
-                "order_id": job["order_id"],
-                "order_number": job["order_number"],
-                "total_amount": float(job["total_amount"]),
-                "table_number": job["table_number"]
-            }
-            for job in jobs
-        ]
+        "jobs": result
     }
 # =========================
 # PRINT SERVICE - COMPLETE
