@@ -1,3 +1,4 @@
+import secrets
 import cloudinary
 import cloudinary.uploader
 import qrcode
@@ -2190,7 +2191,147 @@ def place_order():
         table_number=table_number,
         restaurant_id=restaurant_id
     )
+# =========================
+# PRINT SERVICE - GET JOBS
+# =========================
 
+@app.route("/api/print-jobs", methods=["GET"])
+def get_print_jobs():
+
+    restaurant_id = request.args.get("restaurant_id")
+    print_token = request.args.get("token")
+
+    if not restaurant_id or not print_token:
+        return {
+            "success": False,
+            "message": "Missing restaurant ID or token"
+        }, 400
+
+    restaurant = db.session.execute(
+        db.text("""
+            SELECT
+                id,
+                name,
+                print_token
+            FROM restaurants
+            WHERE id = :restaurant_id
+            AND print_token = :print_token
+        """),
+        {
+            "restaurant_id": restaurant_id,
+            "print_token": print_token
+        }
+    ).mappings().first()
+
+    if not restaurant:
+        return {
+            "success": False,
+            "message": "Invalid print service credentials"
+        }, 401
+
+    jobs = db.session.execute(
+        db.text("""
+            SELECT
+                pj.id AS print_job_id,
+                pj.order_id,
+                o.order_number,
+                o.total_amount,
+                o.table_id,
+                ct.table_number
+            FROM print_jobs pj
+
+            JOIN orders o
+                ON pj.order_id = o.id
+
+            JOIN cafe_tables ct
+                ON o.table_id = ct.id
+
+            WHERE pj.restaurant_id = :restaurant_id
+            AND pj.status = 'PENDING'
+
+            ORDER BY pj.id ASC
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().all()
+
+    return {
+        "success": True,
+        "jobs": [
+            {
+                "print_job_id": job["print_job_id"],
+                "order_id": job["order_id"],
+                "order_number": job["order_number"],
+                "total_amount": float(job["total_amount"]),
+                "table_number": job["table_number"]
+            }
+            for job in jobs
+        ]
+    }
+# =========================
+# PRINT SERVICE - COMPLETE
+# =========================
+
+@app.route("/api/print-jobs/<int:print_job_id>/complete", methods=["POST"])
+def complete_print_job(print_job_id):
+
+    restaurant_id = request.args.get("restaurant_id")
+    print_token = request.args.get("token")
+
+    if not restaurant_id or not print_token:
+        return {
+            "success": False,
+            "message": "Missing credentials"
+        }, 400
+
+    restaurant = db.session.execute(
+        db.text("""
+            SELECT id
+            FROM restaurants
+            WHERE id = :restaurant_id
+            AND print_token = :print_token
+        """),
+        {
+            "restaurant_id": restaurant_id,
+            "print_token": print_token
+        }
+    ).mappings().first()
+
+    if not restaurant:
+        return {
+            "success": False,
+            "message": "Invalid print service credentials"
+        }, 401
+
+    result = db.session.execute(
+        db.text("""
+            UPDATE print_jobs
+            SET
+                status = 'PRINTED',
+                printed_at = CURRENT_TIMESTAMP
+            WHERE id = :print_job_id
+            AND restaurant_id = :restaurant_id
+            AND status = 'PENDING'
+        """),
+        {
+            "print_job_id": print_job_id,
+            "restaurant_id": restaurant_id
+        }
+    )
+
+    db.session.commit()
+
+    if result.rowcount == 0:
+        return {
+            "success": False,
+            "message": "Print job not found or already completed"
+        }, 404
+
+    return {
+        "success": True,
+        "message": "Print job marked as printed"
+    }
 # =========================
 # CUSTOMER ORDER STATUS
 # =========================
