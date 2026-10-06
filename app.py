@@ -2524,63 +2524,7 @@ def admin_orders():
         selected_date=selected_date
 
     )
-@app.route("/admin/orders/live")
-def admin_orders_live():
 
-    if not admin_required():
-        return {
-            "success": False,
-            "message": "Unauthorized"
-        }, 403
-
-    restaurant_id = session["restaurant_id"]
-
-    orders = db.session.execute(
-        db.text("""
-            SELECT
-                o.id,
-                o.order_number,
-                o.status,
-                o.total_amount,
-                o.created_at,
-                o.payment_status,
-                o.combined_bill_id,
-                ct.table_number,
-                s.name AS section_name
-            FROM orders o
-
-            JOIN cafe_tables ct
-                ON o.table_id = ct.id
-
-            LEFT JOIN sections s
-                ON ct.section_id = s.id
-
-            WHERE o.restaurant_id = :restaurant_id
-
-            ORDER BY o.id DESC
-        """),
-        {
-            "restaurant_id": restaurant_id
-        }
-    ).mappings().all()
-
-    return {
-        "success": True,
-        "orders": [
-            {
-                "id": order["id"],
-                "order_number": order["order_number"],
-                "status": order["status"],
-                "total_amount": float(order["total_amount"]),
-                "created_at": str(order["created_at"]),
-                "payment_status": order["payment_status"],
-                "combined_bill_id": order["combined_bill_id"],
-                "table_number": order["table_number"],
-                "section_name": order["section_name"]
-            }
-            for order in orders
-        ]
-    }
 # =========================
 # DAILY REPORT
 # =========================
