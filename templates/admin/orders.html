@@ -421,9 +421,54 @@
         </a>
       </div>
 
-      {% if orders %}
+<!-- DATE FILTER -->
+<form
+  method="GET"
+  action="{{ url_for('admin_orders') }}"
+  style="
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:20px 0;
+    flex-wrap:wrap;
+  "
+>
 
-      <!-- SUMMARY -->
+  <input
+    type="date"
+    name="date"
+    value="{{ selected_date }}"
+    style="
+      height:42px;
+      padding:0 14px;
+      border:1px solid #d1d5db;
+      border-radius:8px;
+      font-size:14px;
+    "
+  >
+
+  <button
+    type="submit"
+    style="
+      height:42px;
+      padding:0 18px;
+      border:none;
+      border-radius:8px;
+      background:#111827;
+      color:white;
+      font-weight:600;
+      cursor:pointer;
+    "
+  >
+    📅 View Orders
+  </button>
+
+</form>
+
+{% if orders %}
+
+<!-- SUMMARY -->
+<div class="summary">
       <div class="summary">
         <div class="summary-card new">
           <span>New Orders</span>

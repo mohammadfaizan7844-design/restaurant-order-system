@@ -2452,7 +2452,27 @@ def admin_orders():
 
     restaurant_id = session["restaurant_id"]
 
+    # =========================
+    # SELECTED DATE
+    # =========================
+
+    selected_date = request.args.get("date")
+
+    # If no date selected,
+    # show today's orders
+
+    if not selected_date:
+
+        selected_date = datetime.now().strftime(
+            "%Y-%m-%d"
+        )
+
+    # =========================
+    # GET ORDERS FOR SELECTED DATE
+    # =========================
+
     orders = db.session.execute(
+
         db.text("""
             SELECT
                 o.id,
@@ -2466,6 +2486,7 @@ def admin_orders():
                 s.name AS section_name,
                 p.status AS payment_status,
                 cbo.combined_bill_id
+
             FROM orders o
 
             JOIN cafe_tables ct
@@ -2482,16 +2503,26 @@ def admin_orders():
 
             WHERE o.restaurant_id = :restaurant_id
 
+            AND DATE(o.created_at) = :selected_date
+
             ORDER BY o.created_at DESC
         """),
+
         {
-            "restaurant_id": restaurant_id
+            "restaurant_id": restaurant_id,
+            "selected_date": selected_date
         }
+
     ).mappings().all()
 
     return render_template(
+
         "admin/orders.html",
-        orders=orders
+
+        orders=orders,
+
+        selected_date=selected_date
+
     )
 # =========================
 # DAILY REPORT
