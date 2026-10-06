@@ -111,42 +111,66 @@
 
       /* TOOLBAR */
       .toolbar {
-        background: white;
-        padding: 18px;
-        border-radius: 15px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
-      }
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: nowrap;
+}
 
-      .search-box {
-        flex: 1;
-      }
+.date-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
 
-      .search-box input {
-        width: 100%;
-        padding: 12px 15px;
-        border: 1px solid #d1d5db;
-        border-radius: 9px;
-        outline: none;
-        font-size: 14px;
-      }
+.date-filter input {
+    height: 42px;
+    width: 145px;
+    padding: 0 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    background: white;
+    font-size: 13px;
+}
 
-      .search-box input:focus {
-        border-color: #111827;
-      }
+.date-filter button {
+    height: 42px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 9px;
+    background: #111827;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
 
-      .filter-box select {
-        padding: 12px 15px;
-        border: 1px solid #d1d5db;
-        border-radius: 9px;
-        background: white;
-        outline: none;
-        min-width: 170px;
-      }
+.search-box {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-box input {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.filter-box {
+    flex-shrink: 0;
+}
+
+.filter-box select {
+    height: 42px;
+    width: 170px;
+}
+
+.combine-btn {
+    height: 42px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
 
       /* TABLE CARD */
       .orders-card {
@@ -419,51 +443,8 @@
         <a href="{{ url_for('dashboard') }}" class="dashboard-btn">
           ← Dashboard
         </a>
-      </div>
+   </div>
 
-<!-- DATE FILTER -->
-<form
-  method="GET"
-  action="{{ url_for('admin_orders') }}"
-  style="
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin:20px 0;
-    flex-wrap:wrap;
-  "
->
-
-  <input
-    type="date"
-    name="date"
-    value="{{ selected_date }}"
-    style="
-      height:42px;
-      padding:0 14px;
-      border:1px solid #d1d5db;
-      border-radius:8px;
-      font-size:14px;
-    "
-  >
-
-  <button
-    type="submit"
-    style="
-      height:42px;
-      padding:0 18px;
-      border:none;
-      border-radius:8px;
-      background:#111827;
-      color:white;
-      font-weight:600;
-      cursor:pointer;
-    "
-  >
-    📅 View Orders
-  </button>
-
-</form>
 
 {% if orders %}
 
@@ -494,6 +475,25 @@
       <!-- SEARCH + FILTER -->
       <form method="POST" action="{{ url_for('combine_selected_orders') }}">
         <div class="toolbar">
+            <!-- DATE -->
+    <form
+        method="GET"
+        action="{{ url_for('admin_orders') }}"
+        class="date-filter"
+    >
+
+        <input
+            type="date"
+            name="date"
+            value="{{ selected_date }}"
+        >
+
+        <button type="submit">
+            📅 View Orders
+        </button>
+
+    </form>
+
           <div class="search-box">
             <input
               type="text"
