@@ -25,7 +25,10 @@
         margin: auto;
       }
 
-      /* HEADER */
+      /* =========================
+         HEADER
+      ========================= */
+
       .top-header {
         display: flex;
         justify-content: space-between;
@@ -45,7 +48,10 @@
         font-size: 14px;
       }
 
-      /* DASHBOARD BUTTON */
+      /* =========================
+         DASHBOARD BUTTON
+      ========================= */
+
       .dashboard-btn {
         text-decoration: none;
         background: #111827;
@@ -65,7 +71,10 @@
         transform: translateY(-2px);
       }
 
-      /* SUMMARY CARDS */
+      /* =========================
+         SUMMARY CARDS
+      ========================= */
+
       .summary {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -109,28 +118,96 @@
         border-left: 5px solid #16a34a;
       }
 
-      /* TOOLBAR */
+      /* =========================
+         TOOLBAR
+      ========================= */
+
       .toolbar {
         background: white;
         padding: 18px;
         border-radius: 15px;
         margin-bottom: 20px;
+
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        gap: 15px;
+        gap: 14px;
+
         box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
       }
 
+      /* =========================
+         DATE FILTER
+      ========================= */
+
+      .date-filter {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .date-filter input {
+        width: 145px;
+        height: 42px;
+
+        padding: 0 10px;
+
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+
+        background: white;
+
+        font-size: 13px;
+        color: #111827;
+
+        outline: none;
+      }
+
+      .date-filter input:focus {
+        border-color: #111827;
+      }
+
+      .date-filter button {
+        height: 42px;
+
+        padding: 0 15px;
+
+        border: none;
+        border-radius: 9px;
+
+        background: #111827;
+        color: white;
+
+        font-size: 13px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        white-space: nowrap;
+      }
+
+      .date-filter button:hover {
+        background: #000;
+      }
+
+      /* =========================
+         SEARCH
+      ========================= */
+
       .search-box {
         flex: 1;
+        min-width: 200px;
       }
 
       .search-box input {
         width: 100%;
-        padding: 12px 15px;
+        height: 42px;
+
+        padding: 0 15px;
+
         border: 1px solid #d1d5db;
         border-radius: 9px;
+
         outline: none;
         font-size: 14px;
       }
@@ -139,21 +216,73 @@
         border-color: #111827;
       }
 
-      .filter-box select {
-        padding: 12px 15px;
-        border: 1px solid #d1d5db;
-        border-radius: 9px;
-        background: white;
-        outline: none;
-        min-width: 170px;
+      /* =========================
+         STATUS FILTER
+      ========================= */
+
+      .filter-box {
+        flex-shrink: 0;
       }
 
-      /* TABLE CARD */
+      .filter-box select {
+        width: 170px;
+        height: 42px;
+
+        padding: 0 12px;
+
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+
+        background: white;
+        outline: none;
+
+        font-size: 14px;
+      }
+
+      /* =========================
+         COMBINE BUTTON
+      ========================= */
+
+      .combine-btn {
+        height: 42px;
+
+        background: #111827;
+        color: white;
+
+        border: none;
+
+        padding: 0 18px;
+
+        border-radius: 9px;
+
+        font-size: 13px;
+        font-weight: 700;
+
+        cursor: pointer;
+
+        transition: 0.2s;
+
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .combine-btn:hover {
+        background: #000;
+        transform: translateY(-1px);
+      }
+
+      /* =========================
+         TABLE CARD
+      ========================= */
+
       .orders-card {
         background: white;
         border-radius: 16px;
+
         box-shadow: 0 5px 22px rgba(0, 0, 0, 0.06);
+
         overflow: hidden;
+
         border: 1px solid #e5e7eb;
       }
 
@@ -179,17 +308,25 @@
 
       th {
         text-align: left;
+
         padding: 15px 20px;
+
         background: #f9fafb;
+
         color: #6b7280;
+
         font-size: 12px;
+
         text-transform: uppercase;
+
         letter-spacing: 0.5px;
       }
 
       td {
         padding: 17px 20px;
+
         border-top: 1px solid #f0f0f0;
+
         font-size: 14px;
       }
 
@@ -201,38 +338,77 @@
         background: #fafafa;
       }
 
-      /* ORDER NUMBER */
+      /* =========================
+         ORDER NUMBER
+      ========================= */
+
       .order-number {
         font-weight: 700;
         color: #111827;
       }
 
-      /* TABLE NUMBER */
+      /* =========================
+         TABLE NUMBER
+      ========================= */
+
+      .table-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .section-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: #374151;
+      }
+
       .table-badge {
         display: inline-block;
+
+        width: fit-content;
+
         background: #f3f4f6;
+
         color: #374151;
+
         padding: 6px 10px;
+
         border-radius: 7px;
+
         font-weight: 600;
+
         font-size: 12px;
       }
 
-      /* PRICE */
+      /* =========================
+         PRICE
+      ========================= */
+
       .amount {
         font-weight: 700;
         color: #111827;
       }
 
-      /* STATUS */
+      /* =========================
+         STATUS
+      ========================= */
+
       .status {
         display: inline-flex;
+
         align-items: center;
+
         gap: 6px;
+
         padding: 7px 11px;
+
         border-radius: 20px;
+
         font-size: 11px;
+
         font-weight: 700;
+
         letter-spacing: 0.3px;
       }
 
@@ -266,7 +442,10 @@
         color: #dc2626;
       }
 
-      /* ACTION BUTTONS */
+      /* =========================
+         ACTION BUTTONS
+      ========================= */
+
       .actions {
         display: flex;
         gap: 8px;
@@ -275,11 +454,17 @@
 
       .action-btn {
         text-decoration: none;
+
         padding: 8px 12px;
+
         border-radius: 8px;
+
         font-size: 12px;
+
         font-weight: 600;
+
         transition: 0.2s;
+
         white-space: nowrap;
       }
 
@@ -300,24 +485,11 @@
       .bill-btn:hover {
         background: #e5e7eb;
       }
-      .combine-btn {
-        background: #111827;
-        color: white;
-        border: none;
-        padding: 11px 18px;
-        border-radius: 9px;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.2s;
-      }
 
-      .combine-btn:hover {
-        background: #000;
-        transform: translateY(-1px);
-      }
+      /* =========================
+         EMPTY
+      ========================= */
 
-      /* EMPTY */
       .empty {
         text-align: center;
         padding: 60px 20px;
@@ -338,8 +510,24 @@
         font-size: 14px;
       }
 
-      /* RESPONSIVE */
+      /* =========================
+         RESPONSIVE
+      ========================= */
+
+      @media (max-width: 1100px) {
+
+        .toolbar {
+          flex-wrap: wrap;
+        }
+
+        .search-box {
+          min-width: 250px;
+        }
+
+      }
+
       @media (max-width: 900px) {
+
         body {
           padding: 18px;
         }
@@ -351,9 +539,50 @@
         .top-header {
           align-items: flex-start;
         }
+
+      }
+
+      @media (max-width: 700px) {
+
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .date-filter {
+          width: 100%;
+        }
+
+        .date-filter input {
+          flex: 1;
+          width: auto;
+        }
+
+        .date-filter button {
+          flex-shrink: 0;
+        }
+
+        .search-box {
+          width: 100%;
+          min-width: 0;
+        }
+
+        .filter-box {
+          width: 100%;
+        }
+
+        .filter-box select {
+          width: 100%;
+        }
+
+        .combine-btn {
+          width: 100%;
+        }
+
       }
 
       @media (max-width: 600px) {
+
         .top-header {
           flex-direction: column;
         }
@@ -376,101 +605,196 @@
           font-size: 22px;
         }
 
-        .toolbar {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .filter-box select {
-          width: 100%;
-        }
-
         .page-title h1 {
           font-size: 25px;
         }
-      }
-      .table-info {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-      }
 
-      .section-name {
-        font-size: 12px;
-        font-weight: 700;
-        color: #374151;
-      }
-
-      .table-badge {
-        width: fit-content;
       }
     </style>
   </head>
 
   <body>
+
     <div class="container">
-      <!-- HEADER -->
+
+      <!-- =========================
+           HEADER
+      ========================= -->
+
       <div class="top-header">
+
         <div class="page-title">
+
           <h1>Manage Orders</h1>
-          <p>View and manage all customer orders</p>
+
+          <p>
+            View and manage all customer orders
+          </p>
+
         </div>
 
-        <a href="{{ url_for('dashboard') }}" class="dashboard-btn">
+        <a
+          href="{{ url_for('dashboard') }}"
+          class="dashboard-btn"
+        >
           ← Dashboard
         </a>
-   </div>
 
-
-{% if orders %}
-
-<!-- SUMMARY -->
-<div class="summary">
-      <div class="summary">
-        <div class="summary-card new">
-          <span>New Orders</span>
-          <strong id="newCount">0</strong>
-        </div>
-
-        <div class="summary-card preparing">
-          <span>Preparing</span>
-          <strong id="preparingCount">0</strong>
-        </div>
-
-        <div class="summary-card ready">
-          <span>Ready</span>
-          <strong id="readyCount">0</strong>
-        </div>
-
-        <div class="summary-card completed">
-          <span>Completed</span>
-          <strong id="completedCount">0</strong>
-        </div>
       </div>
 
-      <!-- SEARCH + FILTER -->
-      <form method="POST" action="{{ url_for('combine_selected_orders') }}">
+
+      {% if orders %}
+
+
+      <!-- =========================
+           SUMMARY
+      ========================= -->
+
+      <div class="summary">
+
+        <div class="summary-card new">
+
+          <span>
+            New Orders
+          </span>
+
+          <strong id="newCount">
+            0
+          </strong>
+
+        </div>
+
+
+        <div class="summary-card preparing">
+
+          <span>
+            Preparing
+          </span>
+
+          <strong id="preparingCount">
+            0
+          </strong>
+
+        </div>
+
+
+        <div class="summary-card ready">
+
+          <span>
+            Ready
+          </span>
+
+          <strong id="readyCount">
+            0
+          </strong>
+
+        </div>
+
+
+        <div class="summary-card completed">
+
+          <span>
+            Completed
+          </span>
+
+          <strong id="completedCount">
+            0
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           COMBINE FORM
+      ========================= -->
+
+      <form
+        method="POST"
+        action="{{ url_for('combine_selected_orders') }}"
+      >
+
+        <!-- =========================
+             TOOLBAR
+        ========================= -->
+
         <div class="toolbar">
-          
+
+
+          <!-- DATE -->
+
+          <div class="date-filter">
+
+            <input
+              type="date"
+              id="orderDate"
+              value="{{ selected_date }}"
+            >
+
+            <button
+              type="button"
+              onclick="viewSelectedDate()"
+            >
+              📅 View Orders
+            </button>
+
+          </div>
+
+
+          <!-- SEARCH -->
+
           <div class="search-box">
+
             <input
               type="text"
               id="searchInput"
               placeholder="Search order number or table..."
             />
+
           </div>
 
+
+          <!-- STATUS -->
+
           <div class="filter-box">
+
             <select id="statusFilter">
-              <option value="ALL">All Status</option>
-              <option value="NEW">New</option>
-              <option value="PREPARING">Preparing</option>
-              <option value="READY">Ready</option>
-              <option value="SERVED">Served</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CANCELLED">Cancelled</option>
+
+              <option value="ALL">
+                All Status
+              </option>
+
+              <option value="NEW">
+                New
+              </option>
+
+              <option value="PREPARING">
+                Preparing
+              </option>
+
+              <option value="READY">
+                Ready
+              </option>
+
+              <option value="SERVED">
+                Served
+              </option>
+
+              <option value="COMPLETED">
+                Completed
+              </option>
+
+              <option value="CANCELLED">
+                Cancelled
+              </option>
+
             </select>
+
           </div>
+
+
+          <!-- COMBINE SELECTED -->
 
           <button
             type="submit"
@@ -479,39 +803,83 @@
           >
             🔗 Combine Selected
           </button>
+
+
         </div>
 
-        <!-- ORDERS -->
+
+        <!-- =========================
+             ORDERS
+        ========================= -->
+
         <div class="orders-card">
+
           <div class="table-header">
-            <h2>Recent Orders</h2>
+
+            <h2>
+              Recent Orders
+            </h2>
+
           </div>
 
+
           <div class="table-wrapper">
+
             <table id="ordersTable">
+
               <thead>
+
                 <tr>
-                  <th>Select</th>
-                  <th>Order No.</th>
-                  <th>Table</th>
-                  <th>Total</th>
-                  <th>Status</th>
-                  <th>Date & Time</th>
-                  <th>Actions</th>
+
+                  <th>
+                    Select
+                  </th>
+
+                  <th>
+                    Order No.
+                  </th>
+
+                  <th>
+                    Table
+                  </th>
+
+                  <th>
+                    Total
+                  </th>
+
+                  <th>
+                    Status
+                  </th>
+
+                  <th>
+                    Date & Time
+                  </th>
+
+                  <th>
+                    Actions
+                  </th>
+
                 </tr>
+
               </thead>
 
+
               <tbody>
+
                 {% for order in orders %}
 
                 <tr
                   data-status="{{ order.status }}"
                   data-search="{{ order.order_number }} Table {{ order.table_number }}"
                 >
+
+                  <!-- SELECT -->
+
                   <td>
-                    {% if not order.combined_bill_id and order.status not in
-                    ['COMPLETED', 'CANCELLED'] and order.payment_status !=
-                    'PAID' %}
+
+                    {% if not order.combined_bill_id
+                    and order.status not in ['COMPLETED', 'CANCELLED']
+                    and order.payment_status != 'PAID' %}
 
                     <input
                       type="checkbox"
@@ -522,69 +890,135 @@
 
                     {% else %}
 
-                    <span style="color: #9ca3af">—</span>
+                    <span style="color: #9ca3af">
+                      —
+                    </span>
 
                     {% endif %}
+
                   </td>
 
+
+                  <!-- ORDER NUMBER -->
+
                   <td>
+
                     <span class="order-number">
+
                       #{{ order.order_number }}
+
                     </span>
+
                   </td>
 
+
+                  <!-- TABLE -->
+
                   <td>
+
                     <div class="table-info">
+
                       {% if order.section_name %}
-                      <div class="section-name">{{ order.section_name }}</div>
+
+                      <div class="section-name">
+
+                        {{ order.section_name }}
+
+                      </div>
+
                       {% endif %}
 
+
                       <span class="table-badge">
+
                         Table {{ order.table_number }}
+
                       </span>
+
                     </div>
+
                   </td>
 
-                  <td>
-                    <span class="amount"> ₹{{ order.total_amount }} </span>
-                  </td>
+
+                  <!-- TOTAL -->
 
                   <td>
+
+                    <span class="amount">
+
+                      ₹{{ order.total_amount }}
+
+                    </span>
+
+                  </td>
+
+
+                  <!-- STATUS -->
+
+                  <td>
+
                     {% if order.status == "NEW" %}
 
-                    <span class="status status-new"> ● NEW </span>
+                    <span class="status status-new">
+                      ● NEW
+                    </span>
 
                     {% elif order.status == "PREPARING" %}
 
-                    <span class="status status-preparing"> ● PREPARING </span>
+                    <span class="status status-preparing">
+                      ● PREPARING
+                    </span>
 
                     {% elif order.status == "READY" %}
 
-                    <span class="status status-ready"> ● READY </span>
+                    <span class="status status-ready">
+                      ● READY
+                    </span>
 
                     {% elif order.status == "SERVED" %}
 
-                    <span class="status status-served"> ● SERVED </span>
+                    <span class="status status-served">
+                      ● SERVED
+                    </span>
 
                     {% elif order.status == "COMPLETED" %}
 
-                    <span class="status status-completed"> ✓ COMPLETED </span>
+                    <span class="status status-completed">
+                      ✓ COMPLETED
+                    </span>
 
                     {% elif order.status == "CANCELLED" %}
 
-                    <span class="status status-cancelled"> ✕ CANCELLED </span>
+                    <span class="status status-cancelled">
+                      ✕ CANCELLED
+                    </span>
 
                     {% else %}
 
-                    <span class="status"> {{ order.status }} </span>
+                    <span class="status">
+                      {{ order.status }}
+                    </span>
 
                     {% endif %}
+
                   </td>
 
-                  <td>{{ order.created_at|india_time }}</td>
+
+                  <!-- DATE TIME -->
 
                   <td>
+
+                    {{ order.created_at|india_time }}
+
+                  </td>
+
+
+                  <!-- ACTIONS -->
+
+                  <td>
+
                     <div class="actions">
+
                       <a
                         href="{{ url_for('admin_order_detail', order_id=order.id) }}"
                         class="action-btn view-btn"
@@ -592,103 +1026,260 @@
                         View
                       </a>
 
+
                       <a
                         href="{{ url_for('generate_bill', order_id=order.id) }}"
                         class="action-btn bill-btn"
                       >
                         Bill
                       </a>
+
                     </div>
+
                   </td>
+
                 </tr>
 
                 {% endfor %}
+
               </tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </form>
+
+
       {% else %}
 
-      <!-- EMPTY ORDERS -->
+
+      <!-- =========================
+           EMPTY ORDERS
+      ========================= -->
+
       <div class="orders-card">
+
         <div class="empty">
-          <div class="empty-icon">📋</div>
 
-          <h3>No Orders Found</h3>
+          <div class="empty-icon">
+            📋
+          </div>
 
-          <p>Customer orders will appear here when they place an order.</p>
+          <h3>
+            No Orders Found
+          </h3>
+
+          <p>
+            Customer orders will appear here when they place an order.
+          </p>
+
         </div>
+
       </div>
 
+
       {% endif %}
+
     </div>
 
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
     <script>
-      const rows = document.querySelectorAll("#ordersTable tbody tr");
 
-      const searchInput = document.getElementById("searchInput");
-      const statusFilter = document.getElementById("statusFilter");
+      /* =========================
+         DATE FILTER
+      ========================= */
 
-      function filterOrders() {
-        const search = searchInput.value.toLowerCase();
-        const status = statusFilter.value;
+      function viewSelectedDate() {
 
-        rows.forEach((row) => {
-          const rowText = row.getAttribute("data-search").toLowerCase();
+        const dateInput =
+          document.getElementById("orderDate");
 
-          const rowStatus = row.getAttribute("data-status");
+        const selectedDate =
+          dateInput.value;
 
-          const matchesSearch = rowText.includes(search);
+        if (!selectedDate) {
 
-          const matchesStatus = status === "ALL" || rowStatus === status;
+          alert("Please select a date.");
 
-          if (matchesSearch && matchesStatus) {
-            row.style.display = "";
-          } else {
-            row.style.display = "none";
-          }
-        });
+          return;
+
+        }
+
+        window.location.href =
+          "{{ url_for('admin_orders') }}" +
+          "?date=" +
+          encodeURIComponent(selectedDate);
+
       }
 
-      searchInput.addEventListener("input", filterOrders);
 
-      statusFilter.addEventListener("change", filterOrders);
+      /* =========================
+         TABLE ROWS
+      ========================= */
 
-      /* SUMMARY COUNTS */
+      const rows =
+        document.querySelectorAll(
+          "#ordersTable tbody tr"
+        );
+
+
+      const searchInput =
+        document.getElementById(
+          "searchInput"
+        );
+
+
+      const statusFilter =
+        document.getElementById(
+          "statusFilter"
+        );
+
+
+      /* =========================
+         SEARCH + STATUS FILTER
+      ========================= */
+
+      function filterOrders() {
+
+        const search =
+          searchInput.value.toLowerCase();
+
+
+        const status =
+          statusFilter.value;
+
+
+        rows.forEach(function(row) {
+
+          const rowText =
+            row
+              .getAttribute("data-search")
+              .toLowerCase();
+
+
+          const rowStatus =
+            row.getAttribute(
+              "data-status"
+            );
+
+
+          const matchesSearch =
+            rowText.includes(search);
+
+
+          const matchesStatus =
+            status === "ALL" ||
+            rowStatus === status;
+
+
+          if (
+            matchesSearch &&
+            matchesStatus
+          ) {
+
+            row.style.display = "";
+
+          } else {
+
+            row.style.display = "none";
+
+          }
+
+        });
+
+      }
+
+
+      searchInput.addEventListener(
+        "input",
+        filterOrders
+      );
+
+
+      statusFilter.addEventListener(
+        "change",
+        filterOrders
+      );
+
+
+      /* =========================
+         SUMMARY COUNTS
+      ========================= */
 
       let newCount = 0;
+
       let preparingCount = 0;
+
       let readyCount = 0;
+
       let completedCount = 0;
 
-      rows.forEach((row) => {
-        const status = row.getAttribute("data-status");
+
+      rows.forEach(function(row) {
+
+        const status =
+          row.getAttribute(
+            "data-status"
+          );
+
 
         if (status === "NEW") {
+
           newCount++;
+
         }
+
 
         if (status === "PREPARING") {
+
           preparingCount++;
+
         }
+
 
         if (status === "READY") {
+
           readyCount++;
+
         }
+
 
         if (status === "COMPLETED") {
+
           completedCount++;
+
         }
+
       });
 
-      document.getElementById("newCount").textContent = newCount;
 
-      document.getElementById("preparingCount").textContent = preparingCount;
+      document.getElementById(
+        "newCount"
+      ).textContent = newCount;
 
-      document.getElementById("readyCount").textContent = readyCount;
 
-      document.getElementById("completedCount").textContent = completedCount;
+      document.getElementById(
+        "preparingCount"
+      ).textContent = preparingCount;
+
+
+      document.getElementById(
+        "readyCount"
+      ).textContent = readyCount;
+
+
+      document.getElementById(
+        "completedCount"
+      ).textContent = completedCount;
+
     </script>
+
   </body>
 </html>
