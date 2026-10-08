@@ -86,7 +86,7 @@ def send_admin_push_notification(
 
 
    
-    if not private_key_B64:
+    if not private_key_b64:
         print(
             "VAPID private key not configured."
         )
