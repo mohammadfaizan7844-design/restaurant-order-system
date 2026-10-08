@@ -5,6 +5,7 @@ import qrcode
 import os
 import time
 import json
+import base64
 from pywebpush import webpush, WebPushException
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
