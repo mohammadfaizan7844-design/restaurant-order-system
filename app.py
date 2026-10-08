@@ -84,6 +84,12 @@ def send_admin_push_notification(
         "VAPID_PRIVATE_KEY"
     )
 
+
+    if private_key:
+        private_key = private_key.replace(
+           "\\n",
+          "\n"
+         ).strip()
     if not private_key:
         print(
             "VAPID private key not configured."
