@@ -5,3 +5,4 @@ Pillow
 PyMySQL
 gunicorn
 cloudinary
+pywebpush
