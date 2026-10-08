@@ -4,7 +4,8 @@ import cloudinary.uploader
 import qrcode
 import os
 import time
-
+import json
+from pywebpush import webpush, WebPushException
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -68,6 +69,106 @@ def admin_required():
     return "admin_id" in session
 def super_admin_required():
     return "super_admin_id" in session
+# ==========================================
+# SEND ADMIN PUSH NOTIFICATION
+# ==========================================
+
+def send_admin_push_notification(
+    restaurant_id,
+    order_number,
+    table_number,
+    total_amount
+):
+
+    private_key = os.environ.get(
+        "VAPID_PRIVATE_KEY"
+    )
+
+    if not private_key:
+        print(
+            "VAPID private key not configured."
+        )
+        return
+
+    subscriptions = db.session.execute(
+        db.text("""
+            SELECT
+                id,
+                endpoint,
+                p256dh,
+                auth
+            FROM admin_push_subscriptions
+            WHERE restaurant_id = :restaurant_id
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().all()
+
+    if not subscriptions:
+        print(
+            "No admin push subscriptions found."
+        )
+        return
+
+    public_url = (
+        request.host_url.rstrip("/")
+        + "/admin/orders/"
+    )
+
+    for subscription in subscriptions:
+
+        subscription_info = {
+            "endpoint": subscription["endpoint"],
+            "keys": {
+                "p256dh": subscription["p256dh"],
+                "auth": subscription["auth"]
+            }
+        }
+
+        notification_data = {
+            "title": "New Order Received",
+            "body": (
+                f"Order {order_number} • "
+                f"Table {table_number} • "
+                f"Rs. {float(total_amount):.2f}"
+            ),
+            "tag": f"order-{order_number}",
+            "url": public_url
+        }
+
+        try:
+
+            webpush(
+                subscription_info=subscription_info,
+                data=json.dumps(
+                    notification_data
+                ),
+                vapid_private_key=private_key,
+                vapid_claims={
+                    "sub":
+                    "mailto:admin@example.com"
+                }
+            )
+
+            print(
+                "Push notification sent:",
+                order_number
+            )
+
+        except WebPushException as e:
+
+            print(
+                "Push notification failed:",
+                e
+            )
+
+        except Exception as e:
+
+            print(
+                "Push notification error:",
+                e
+            )
 @app.route("/super-admin/login", methods=["GET", "POST"])
 def super_admin_login():
 
@@ -2170,6 +2271,18 @@ def place_order():
 
     db.session.commit()
 
+# ==========================================
+# SEND ADMIN PUSH NOTIFICATION
+# ==========================================
+
+    send_admin_push_notification(
+    restaurant_id=restaurant_id,
+    order_number=order_number,
+    table_number=table_number,
+    total_amount=total_amount
+    )
+
+
 
     # Clear cart
     session.pop("cart", None)
@@ -2563,6 +2676,152 @@ def admin_orders_live():
         "success": True,
         "latest_order_id": latest_order_id
     }
+# ==========================================
+# ADMIN PUSH SUBSCRIPTION
+# ==========================================
+
+@app.route(
+    "/admin/push/subscribe",
+    methods=["POST"]
+)
+def admin_push_subscribe():
+
+    if not admin_required():
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }, 403
+
+    data = request.get_json()
+
+    if not data:
+        return {
+            "success": False,
+            "message": "Invalid data"
+        }, 400
+
+    endpoint = data.get("endpoint")
+    keys = data.get("keys", {})
+
+    p256dh = keys.get("p256dh")
+    auth = keys.get("auth")
+
+    if not endpoint or not p256dh or not auth:
+        return {
+            "success": False,
+            "message": "Invalid push subscription"
+        }, 400
+
+    restaurant_id = session["restaurant_id"]
+
+    # Check whether this device is already registered
+    existing = db.session.execute(
+        db.text("""
+            SELECT id
+            FROM admin_push_subscriptions
+            WHERE endpoint = :endpoint
+            LIMIT 1
+        """),
+        {
+            "endpoint": endpoint
+        }
+    ).mappings().first()
+
+    if existing:
+
+        return {
+            "success": True,
+            "message": "Subscription already exists"
+        }
+
+    db.session.execute(
+        db.text("""
+            INSERT INTO admin_push_subscriptions
+            (
+                restaurant_id,
+                endpoint,
+                p256dh,
+                auth
+            )
+            VALUES
+            (
+                :restaurant_id,
+                :endpoint,
+                :p256dh,
+                :auth
+            )
+        """),
+        {
+            "restaurant_id": restaurant_id,
+            "endpoint": endpoint,
+            "p256dh": p256dh,
+            "auth": auth
+        }
+    )
+
+    db.session.commit()
+
+    return {
+        "success": True,
+        "message": "Push subscription saved"
+    }
+# ==========================================
+# VAPID PUBLIC KEY
+# ==========================================
+
+@app.route("/admin/push/public-key")
+def admin_push_public_key():
+
+    if not admin_required():
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }, 403
+
+    public_key_pem = os.environ.get(
+        "VAPID_PUBLIC_KEY"
+    )
+
+    if not public_key_pem:
+        return {
+            "success": False,
+            "message": "VAPID public key not configured"
+        }, 500
+
+    try:
+
+        from cryptography.hazmat.primitives import serialization
+        import base64
+
+        public_key = serialization.load_pem_public_key(
+            public_key_pem.encode()
+        )
+
+        public_bytes = public_key.public_bytes(
+            encoding=serialization.Encoding.X962,
+            format=serialization.PublicFormat.UncompressedPoint
+        )
+
+        public_key_base64 = base64.urlsafe_b64encode(
+            public_bytes
+        ).decode().rstrip("=")
+
+        return {
+            "success": True,
+            "public_key": public_key_base64
+        }
+
+    except Exception as e:
+
+        print(
+            "VAPID public key error:",
+            e
+        )
+
+        return {
+            "success": False,
+            "message": "Invalid VAPID public key"
+        }, 500
 # =========================
 # DAILY REPORT
 # =========================

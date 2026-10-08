@@ -996,93 +996,275 @@
     </script>
     <script>
 
-  // ==========================================
-  // LIVE NEW ORDER CHECK
-  // ==========================================
+      // ==========================================
+      // LIVE NEW ORDER CHECK
+      // ==========================================
+      let latestKnownOrderId =
+        {% if orders %}
+            {{ orders[0].id }}
+        {% else %}
+          0
+        {% endif %};
 
-  let latestKnownOrderId =
-    {% if orders %}
-      {{ orders[0].id }}
-    {% else %}
-      0
-    {% endif %};
+      function checkForNewOrders() {
+
+        fetch(
+          "{{ url_for('admin_orders_live') }}",
+          {
+            method: "GET",
+            cache: "no-store"
+          }
+        )
+
+        .then(function(response) {
+
+          if (!response.ok) {
+
+            throw new Error(
+              "Live order check failed"
+            );
+
+          }
+
+          return response.json();
+
+        })
+
+        .then(function(data) {
+
+          if (!data.success) {
+            return;
+          }
 
 
-  function checkForNewOrders() {
+          const latestOrderId =
+            Number(data.latest_order_id);
 
-    fetch(
-      "{{ url_for('admin_orders_live') }}",
-      {
-        method: "GET",
-        cache: "no-store"
+
+          // New order detected
+          if (
+            latestOrderId > latestKnownOrderId
+          ) {
+
+            console.log(
+              "New order received:",
+              latestOrderId
+            );
+
+
+            latestKnownOrderId =
+              latestOrderId;
+
+
+            // Automatically update Manage Orders
+            window.location.reload();
+
+          }
+
+        })
+
+        .catch(function(error) {
+
+          console.log(
+            "Live order check:",
+            error.message
+          );
+
+        });
+
       }
-    )
 
-    .then(function(response) {
 
-      if (!response.ok) {
+      // Check every 3 seconds
 
-        throw new Error(
-          "Live order check failed"
+      setInterval(
+        checkForNewOrders,
+        3000
+      );
+    </script>
+    <script>
+
+  // ==========================================
+  // ADMIN PUSH NOTIFICATION SETUP
+  // ==========================================
+
+  async function setupAdminPush() {
+
+    try {
+
+      // Browser push support check
+      if (
+        !("serviceWorker" in navigator) ||
+        !("PushManager" in window) ||
+        !("Notification" in window)
+      ) {
+
+        console.log(
+          "Push notifications are not supported."
         );
 
-      }
-
-      return response.json();
-
-    })
-
-    .then(function(data) {
-
-      if (!data.success) {
         return;
       }
 
 
-      const latestOrderId =
-        Number(data.latest_order_id);
+      // Ask notification permission
+      const permission =
+        await Notification.requestPermission();
 
 
-      // New order detected
-      if (
-        latestOrderId > latestKnownOrderId
-      ) {
+      if (permission !== "granted") {
 
         console.log(
-          "New order received:",
-          latestOrderId
+          "Notification permission not granted."
+        );
+
+        return;
+      }
+
+
+      // Register service worker
+      const registration =
+        await navigator.serviceWorker.register(
+          "/static/service-worker.js"
         );
 
 
-        latestKnownOrderId =
-          latestOrderId;
+      console.log(
+        "Service worker registered."
+      );
 
 
-        // Automatically update Manage Orders
-        window.location.reload();
+      // Get VAPID public key
+      const keyResponse =
+        await fetch(
+          "{{ url_for('admin_push_public_key') }}",
+          {
+            method: "GET",
+            cache: "no-store"
+          }
+        );
+
+
+      const keyData =
+        await keyResponse.json();
+
+
+      if (!keyData.success) {
+
+        console.log(
+          "Could not get VAPID public key."
+        );
+
+        return;
+      }
+
+
+      // Convert public key
+      function urlBase64ToUint8Array(
+        base64String
+      ) {
+
+        const padding =
+          "=".repeat(
+            (4 - base64String.length % 4) % 4
+          );
+
+        const base64 =
+          (
+            base64String
+              .replace(/-/g, "+")
+              .replace(/_/g, "/")
+            + padding
+          );
+
+        const rawData =
+          window.atob(base64);
+
+        return Uint8Array.from(
+          [...rawData].map(
+            char => char.charCodeAt(0)
+          )
+        );
 
       }
 
-    })
 
-    .catch(function(error) {
+      // Create push subscription
+      let subscription =
+        await registration.pushManager.getSubscription();
 
-      console.log(
-        "Live order check:",
-        error.message
+
+      if (!subscription) {
+
+        subscription =
+          await registration.pushManager.subscribe({
+
+            userVisibleOnly: true,
+
+            applicationServerKey:
+              urlBase64ToUint8Array(
+                keyData.public_key
+              )
+
+          });
+
+      }
+
+
+      // Save subscription in database
+      const saveResponse =
+        await fetch(
+          "{{ url_for('admin_push_subscribe') }}",
+          {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify(
+                subscription.toJSON()
+              )
+
+          }
+        );
+
+
+      const saveData =
+        await saveResponse.json();
+
+
+      if (saveData.success) {
+
+        console.log(
+          "Admin push notification ready."
+        );
+
+      } else {
+
+        console.log(
+          "Push subscription could not be saved."
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Push setup error:",
+        error
       );
 
-    });
+    }
 
   }
 
 
-  // Check every 3 seconds
-
-  setInterval(
-    checkForNewOrders,
-    3000
-  );
+  // Start push setup
+  setupAdminPush();
 
 </script>
   </body>
