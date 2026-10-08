@@ -80,21 +80,30 @@ def send_admin_push_notification(
     total_amount
 ):
 
-    private_key = os.environ.get(
-        "VAPID_PRIVATE_KEY"
+    private_key_b64 = os.environ.get(
+        "VAPID_PRIVATE_KEY_B64"
     )
 
 
-    if private_key:
-        private_key = private_key.replace(
-           "\\n",
-          "\n"
-         ).strip()
-    if not private_key:
+   
+    if not private_key_B64:
         print(
             "VAPID private key not configured."
         )
         return
+    try:
+
+        private_key = base64.b64decode(
+          private_key_b64
+       ).decode()
+
+    except Exception as e:
+
+        print(
+        "VAPID private key decode error:",
+        e
+    )
+    return
 
     subscriptions = db.session.execute(
         db.text("""
