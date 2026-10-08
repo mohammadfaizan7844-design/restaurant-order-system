@@ -2524,7 +2524,45 @@ def admin_orders():
         selected_date=selected_date
 
     )
+# =========================
+# ADMIN ORDERS LIVE CHECK
+# =========================
 
+@app.route("/admin/orders/live")
+def admin_orders_live():
+
+    if not admin_required():
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }, 403
+
+    restaurant_id = session["restaurant_id"]
+
+    latest_order = db.session.execute(
+        db.text("""
+            SELECT
+                id
+            FROM orders
+            WHERE restaurant_id = :restaurant_id
+            ORDER BY id DESC
+            LIMIT 1
+        """),
+        {
+            "restaurant_id": restaurant_id
+        }
+    ).mappings().first()
+
+    latest_order_id = (
+        latest_order["id"]
+        if latest_order
+        else 0
+    )
+
+    return {
+        "success": True,
+        "latest_order_id": latest_order_id
+    }
 # =========================
 # DAILY REPORT
 # =========================

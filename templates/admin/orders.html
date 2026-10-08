@@ -994,5 +994,96 @@
 
       document.getElementById("completedCount").textContent = completedCount;
     </script>
+    <script>
+
+  // ==========================================
+  // LIVE NEW ORDER CHECK
+  // ==========================================
+
+  let latestKnownOrderId =
+    {% if orders %}
+      {{ orders[0].id }}
+    {% else %}
+      0
+    {% endif %};
+
+
+  function checkForNewOrders() {
+
+    fetch(
+      "{{ url_for('admin_orders_live') }}",
+      {
+        method: "GET",
+        cache: "no-store"
+      }
+    )
+
+    .then(function(response) {
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Live order check failed"
+        );
+
+      }
+
+      return response.json();
+
+    })
+
+    .then(function(data) {
+
+      if (!data.success) {
+        return;
+      }
+
+
+      const latestOrderId =
+        Number(data.latest_order_id);
+
+
+      // New order detected
+      if (
+        latestOrderId > latestKnownOrderId
+      ) {
+
+        console.log(
+          "New order received:",
+          latestOrderId
+        );
+
+
+        latestKnownOrderId =
+          latestOrderId;
+
+
+        // Automatically update Manage Orders
+        window.location.reload();
+
+      }
+
+    })
+
+    .catch(function(error) {
+
+      console.log(
+        "Live order check:",
+        error.message
+      );
+
+    });
+
+  }
+
+
+  // Check every 3 seconds
+
+  setInterval(
+    checkForNewOrders,
+    3000
+  );
+
+</script>
   </body>
 </html>
