@@ -6,6 +6,7 @@ import os
 import time
 import json
 import base64
+from py_vapid import Vapid
 from pywebpush import webpush, WebPushException
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
@@ -94,10 +95,9 @@ def send_admin_push_notification(
         ).decode("utf-8")
 
         # Verify that decoded value is a valid PEM private key
-        serialization.load_pem_private_key(
-             private_key.encode("utf-8"),
-             password=None
-     )
+        vapid_key = Vapid.from_pem(
+            private_key.encode("utf-8")
+        )
         print("PUSH DEBUG: private key validated successfully")
     except Exception as e:
             print("VAPID private key validation error:", e)
@@ -157,7 +157,7 @@ def send_admin_push_notification(
                 data=json.dumps(
                     notification_data
                 ),
-                vapid_private_key=private_key,
+                vapid_private_key=vapid_key,
                 vapid_claims={
                     "sub":
                     "mailto:admin@example.com"
