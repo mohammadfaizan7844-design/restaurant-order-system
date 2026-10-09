@@ -126,7 +126,7 @@ def send_admin_push_notification(
 
     public_url = (
         request.host_url.rstrip("/")
-        + "/admin/orders/"
+        + "/admin/orders"
     )
 
     for subscription in subscriptions:
