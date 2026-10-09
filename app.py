@@ -80,27 +80,27 @@ def send_admin_push_notification(
     table_number,
     total_amount
 ):
+    private_key_b64 = os.environ.get("VAPID_PRIVATE_KEY_B64")
 
-    private_key_b64 = os.environ.get(
-        "VAPID_PRIVATE_KEY_B64"
-    )
-
-
-   
     if not private_key_b64:
-        print(
-            "VAPID private key not configured."
-        )
+        print("VAPID private key not configured.")
         return
-    try:
 
+    try:
         private_key = base64.b64decode(
-          private_key_b64
-       ).decode()
+              private_key_b64.strip(),
+              validate=True
+        ).decode("utf-8")
+
+        # Verify that decoded value is a valid PEM private key
+        serialization.load_pem_private_key(
+             private_key.encode("utf-8"),
+             password=None
+     )
 
     except Exception as e:
-        print("VAPID private key decode error:", e)
-        return
+            print("VAPID private key validation error:", e)
+            return
 
     subscriptions = db.session.execute(
         db.text("""
