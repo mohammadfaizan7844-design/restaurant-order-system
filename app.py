@@ -12,7 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, timedelta, timezone
 from config import DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
-
+from cryptography.hazmat.primitives import serialization
 # =========================
 # CLOUDINARY CONFIG
 # =========================
@@ -2787,30 +2787,29 @@ def admin_push_subscribe():
 
 @app.route("/admin/push/public-key")
 def admin_push_public_key():
-
     if not admin_required():
         return {
             "success": False,
             "message": "Unauthorized"
         }, 403
 
-    public_key_pem = os.environ.get(
-        "VAPID_PUBLIC_KEY"
+    public_key_b64 = os.environ.get(
+        "VAPID_PUBLIC_KEY_B64"
     )
 
-    if not public_key_pem:
+    if not public_key_b64:
         return {
             "success": False,
             "message": "VAPID public key not configured"
         }, 500
 
     try:
-
-        from cryptography.hazmat.primitives import serialization
-        import base64
+        public_key_pem = base64.b64decode(
+            public_key_b64
+        )
 
         public_key = serialization.load_pem_public_key(
-            public_key_pem.encode()
+            public_key_pem
         )
 
         public_bytes = public_key.public_bytes(
@@ -2820,7 +2819,7 @@ def admin_push_public_key():
 
         public_key_base64 = base64.urlsafe_b64encode(
             public_bytes
-        ).decode().rstrip("=")
+        ).decode("utf-8").rstrip("=")
 
         return {
             "success": True,
@@ -2828,11 +2827,7 @@ def admin_push_public_key():
         }
 
     except Exception as e:
-
-        print(
-            "VAPID public key error:",
-            e
-        )
+        print("VAPID public key error:", e)
 
         return {
             "success": False,
