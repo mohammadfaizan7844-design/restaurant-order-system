@@ -13,6 +13,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, timedelta, timezone
 from config import DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
 # =========================
 # CLOUDINARY CONFIG
 # =========================
@@ -97,7 +98,7 @@ def send_admin_push_notification(
              private_key.encode("utf-8"),
              password=None
      )
-
+        print("PUSH DEBUG: private key validated successfully")
     except Exception as e:
             print("VAPID private key validation error:", e)
             return
