@@ -99,12 +99,8 @@ def send_admin_push_notification(
        ).decode()
 
     except Exception as e:
-
-        print(
-        "VAPID private key decode error:",
-        e
-    )
-    return
+        print("VAPID private key decode error:", e)
+        return
 
     subscriptions = db.session.execute(
         db.text("""
